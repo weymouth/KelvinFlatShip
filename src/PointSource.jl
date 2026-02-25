@@ -18,7 +18,7 @@ The function is integrated using a modified steepest descent method. The station
 - `ltol=-10`: Log tolerance for finding stationary points and finite ranges around them.
 
 """
-function wavelike(x,y,z,γ=one,Δg=6,ltol=-10)
+function wavelike(x,y,z;γ=one,Δg=6,ltol=-10)
     x,y,z = promote(x,abs(y),z)
     (x≥0 || z≤ltol) && return zero(x)         # no waves
 
@@ -49,14 +49,15 @@ end
 # Brute-force version for comparison
 brutewavelike(x,y,z) = x ≥ 0 ? zero(x) : 4quadgk(t->exp(z*(1+t^2))*sin(g(x,y,t)),-Inf,Inf)[1]
 
-# # Check the two wavelike implementations give the same answer and compare timings
-# function check(y,x=-1.,z=-0.1)
-#     kelvin = @timed wavelike(x,y,z)
-#     brute = @timed brutewavelike(x,y,z)
-#     println("y = $y: kelvin = $(kelvin.value), brute = $(brute.value), kelvin time = $(kelvin.time) seconds, brute time = $(brute.time) seconds")
-#     (y=y, kv = kelvin.value, bv = brute.value, kt = kelvin.time, bt = brute.time)
-# end
-# Table(check,(0.,0.01,0.1,1/sqrt(8.),1.))
+# Check the two wavelike implementations give the same answer and compare timings
+using BenchmarkTools
+function check(y,x=-1.,z=-0.001)
+    kelvin = @btimed wavelike($x,$y,$z) seconds=0.1
+    brute = @btimed brutewavelike($x,$y,$z) seconds=0.1
+    println("y = $y: kelvin = $(kelvin.value), brute = $(brute.value), kelvin time = $(kelvin.time) seconds, brute time = $(brute.time) seconds")
+    (y=y, relerror = abs(kelvin.value/brute.value-1), speedup = brute.time/kelvin.time)
+end
+Table(check(y) for y in (0.,0.1/sqrt(8.),0.125,1/sqrt(8.),1.25))
 
 # using Plots
 # contour(-20:0.1:1,-10:0.1:10,(x,y)->wavelike(x,y,-0.1),levels=-11:2:11,colormap=:phase,clims=(-12,12))
