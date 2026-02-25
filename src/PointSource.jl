@@ -57,7 +57,7 @@ function check(y,x=-1.,z=-0.001)
     println("y = $y: kelvin = $(kelvin.value), brute = $(brute.value), kelvin time = $(kelvin.time) seconds, brute time = $(brute.time) seconds")
     (y=y, relerror = abs(kelvin.value/brute.value-1), speedup = brute.time/kelvin.time)
 end
-Table(check(y) for y in (0.,0.1/sqrt(8.),0.125,1/sqrt(8.),1.25))
+make_table() = Table(check(y) for y in (0.,0.1/sqrt(8.),0.125,1/sqrt(8.),1.25))
 
 # using Plots
 # contour(-20:0.1:1,-10:0.1:10,(x,y)->wavelike(x,y,-0.1),levels=-11:2:11,colormap=:phase,clims=(-12,12))
