@@ -13,6 +13,14 @@ function spectrum(y,f)
     k = fftfreq(N, 1/dy) .* 2π
     k[2:end÷2],S²[2:end÷2]
 end
+function gbin((k,S); r=1.07)
+    nbins = ceil(Int,log(1-k[end]/k[1]*(1-r))/log(r))-1
+    edges = k[1] .* cumsum(r .^ (0:nbins)) .- k[1]/2
+    kbin = map(i->gmean(edges[i:i+1]),1:nbins)
+    Sbin = map(i->gmean(S[edges[i] .< k .≤ edges[i+1]]),1:nbins)
+    return kbin, Sbin
+end
+gmean(a) = log.(a) |> mean |> exp
 
 # make plot
 using Plots
@@ -31,13 +39,13 @@ begin
 
         # plt[2] spectral domain, much farther and only through 1/4 of the width
         x=-40; y = range(0,-x/4√2,2^14)
-        plot!(plt[2],spectrum(y,∂ₓW.(x,y,z))...,label="",c=colormap("Blues",6)[n])
+        plot!(plt[2],gbin(spectrum(y,∂ₓW.(x,y,z)))...,label="",c=colormap("Blues",6)[n])
     end
 
     # Elliptic line-source on z=-0.
     z=-0.; x=-8.; y = range(-2+x/√8,2-x/√8,2^10)
     plot!(plt[1],y,∂ₓWᵦ.(x,y,z),label="line-integrated z=0",c=:forestgreen)
     x=-40; y = range(0,-x/4√2,2^14)
-    plot!(plt[2],spectrum(y,∂ₓWᵦ.(x,y,z))...,label="",c=:forestgreen)
+    plot!(plt[2],gbin(spectrum(y,∂ₓWᵦ.(x,y,z)))...,label="",c=:forestgreen)
 end;plt
 savefig(plt,"point_spectrum.png")
