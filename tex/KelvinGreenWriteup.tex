@@ -245,7 +245,7 @@ to locate the interval boundaries, with safeguards for finite truncation $|t| \l
 
 As a validation, the point-source kernel evaluated on the centerline $y = 0$ with the $t_+ \to \infty$ saddle excluded reduces to a known Bessel function. The contour-deformation scheme reproduces this result to full working precision, confirming correct branch handling and quadrature weights independently of the singular near-centerline behavior.
 
-Values on the order of $\Delta g \approx 5$--$6$ provide accurate evaluations with modest quadrature cost for the point-source kernel.
+Values on the order of $\Delta g \approx 5$--$6$ provide accurate evaluations with modest quadrature cost for the point-source kernel. The speed-up relative to a direct quadrature on the real line depends on the depth $z$: for $z=0\^-$ the point-source kernel has no damping and direct quadrature fails, while for small negative $z$ the contour-deformation method provides a speedup of $10^3$--$10^4$ over direct quadrature with relative errors less than $10^{-8}$.
 
 \subsection{Line-Integrated Kernels and Hankel Decomposition}
 
@@ -253,7 +253,7 @@ The same contour-deformation strategy applies to the line-integrated kernel, ext
 \[
 J_1(z) = \tfrac{1}{2}\!\left(H_1^{(1)}(z)\,e^{iz} + H_1^{(2)}(z)\,e^{-iz}\right).
 \]
-The scaled Hankel functions $H_1^{(1,2)}$ are slowly varying and the exponential factors can be absorbed into the complex phase, producing tail integrals suitable for the same steepest-descent treatment as the previous section. Near $t = 0$, the real-line partition includes a segment on which the Bessel representation is used directly, avoiding the Hankel singularity at the origin. The additional oscillatory structure requires a larger phase separation ($\Delta g \approx 12$) than the point-source case, but the overall algorithmic structure is identical.
+The scaled Hankel functions $H_1^{(1,2)}$ are slowly varying and the exponential factors can be absorbed into the complex phase. The line-integrate kernel is therefore expressed as a sum of two oscillatory integrals with shifted phases $g(x,y \pm b)$. The same partitioning strategy is applied to each phase function to establish the slowly varying ranges. These ranges are then merged, direct quadrature is used on the real line using the Bessel prefactor weighting (which always covers $k=0$ where the Hankel functions are singular), and the Hankel contributions are added together on the semi-infinite tails using the appropriate phase function. The only additional complication is that the Hankel functions have branch cuts along the negative real axis, so the contour deformation must be designed to avoid crossing these cuts. Overall, the line-integral evaluation is around twice as expensive as the point-source evaluation, but provides $10^4$--$10^5$ speedup over direct quadrature on $z=0$.
 
 Note that we can use the same approach for the wave resistance integral~\eqref{eq:Cw} by defining
 \[
