@@ -31,11 +31,11 @@ function ∫₂wavelike(x,y,z;b=1,ltol=-10,Δg=6)
     # Find the stationary points and the finite ranges around them
     xv,yv,zv = value.((x,y,z))            # strip Duals
     R,atol = √(ltol/zv-1),10exp(ltol)     # angle limit and absolute tolerance
-    rngs = mapreduce(vcat,(-b,0,b)) do y′ # merge three phase ranges
-        S = TupleTools.sort(filter(s->-R<s<R,S₀(xv,yv+y′)))
+    rngs = mapreduce(vcat,(-b,b)) do y′   # merge three phase ranges
+        S = TupleTools.sort(filter(s->-R<s<R,(S₀(xv,yv+y′)...,zero(xv))))
         rng = finite_ranges(S,t->g(xv,yv+y′,t),Δg,R;atol)
         rng2int(first.(rng))
-    end |> merge_intervals
+    end |> sort |> merge
 
     # Real-line integrand and complex path phases and pre-factors
     f(t) = γj(t,b)*exp(z*(1+t^2))*sin(g(x,y,t))
@@ -48,30 +48,18 @@ function ∫₂wavelike(x,y,z;b=1,ltol=-10,Δg=6)
     end
 end
 rng2int(rngs::NTuple{N}) where N = [(rngs[2i-1],rngs[2i][1]) for i in 1:N÷2]
-function merge_intervals(intervals)
-    merged = Tuple{Float64,Float64}[]
-    for int in sort(intervals, by=first)
-        if isempty(merged) || int[1] > last(merged)[2]
-            push!(merged, int)
-        else
-            merged[end] = (merged[end][1], max(merged[end][2], int[2]))
-        end
-    end; merged
-end
-
-# Real-line integrand (use in quadgk and plotting)
-function ∫₂W(x,y,z,t)
-    kx = hypot(1,t); ky = t*kx; kz = 1+t^2
-    γj(t,1)*exp(z*kz)*sin(x*kx+y*ky)
+merge(intervals) = foldl(intervals[2:end], init=intervals[1:1]) do acc, (a,b)
+    a > acc[end][2] ? push(acc, (a,b)) : (acc[end] = (acc[end][1], max(acc[end][2], b)); acc)
 end
 
 # Brute-force version for comparison
-brute∫₂wavelike(x,y,z) = x ≥ 0 ? zero(x) : 4π*quadgk(t->∫₂W(x,y,z,t),-Inf,0,Inf)[1]
+∫₂Wₜ(x,y,z,t) = γj(t,1)*exp(z*(1+t^2))*sin((x+y*t)*hypot(1,t))
+brute∫₂wavelike(x,y,z) = x ≥ 0 ? zero(x) : 4π*quadgk(t->∫₂Wₜ(x,y,z,t),-Inf,0,Inf)[1]
 
 # Check the Bessel function integral identity is correct for an easy value of z
 begin
     x,y,z = -1.,0.5,-1.
-    @assert isapprox(quadgk(t->4π*∫₂W(x,y,z,t),-Inf,0,Inf)[1],quadgk(y′->√(1-y′^2)*NeumannKelvin.wavelike(x,abs(y-y′),z),-1,1)[1],rtol=1e-7)
+    @assert isapprox(brute∫₂wavelike(x,y,z),quadgk(y′->√(1-y′^2)*NeumannKelvin.wavelike(x,abs(y-y′),z),-1,1)[1],rtol=1e-7)
 end
 
 # Check the two ∫₂wavelike implementations give the same answer and compare timings
@@ -79,7 +67,7 @@ function check(y,x=-1.,z=-0.)
     wavelike = @btimed ∫₂wavelike($x,$y,$z) seconds=0.1
     brute = @timed brute∫₂wavelike(x,y,z)
     println("y = $y: wavelike = $(wavelike.value), brute = $(brute.value), wavelike time = $(wavelike.time) seconds, brute time = $(brute.time) seconds")
-    (y=y, relerror = abs(wavelike.value/brute.value-1), speedup = brute.time/wavelike.time)
+    (y=y, abserror = abs(wavelike.value-brute.value), relerror = abs(wavelike.value/brute.value-1), speedup = brute.time/wavelike.time)
 end
 flatship_table()=Table(check(y) for y in (0.,0.5,0.9,1.1,2.,4.))
 
