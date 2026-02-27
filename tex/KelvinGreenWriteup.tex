@@ -30,7 +30,7 @@ The problem is less severe for submeged bodies, but evaluation of the wavelike G
 
 For surface-piercing bodies, the free-surface limit becomes unavoidable. Baar and Price showed that the waterline contour contributes directly to the potential through a line integral that arises when Green's second identity is applied in the fluid domain. This contour term can have a leading-order influence on the wave field, yet its evaluation requires the Green's function precisely at the free surface---the regime where existing representations fail. Alternative formulations have been proposed to circumvent the waterline contribution. The Neumann-Michell approach of Noblesse, Huang, and Yang (2013) replaces the explicit Green's function with an implicit iterative scheme that avoids the contour integral entirely. While this sidesteps the numerical difficulty, it sacrifices the directness and efficiency of an explicit kernel representation for the potential. The present work retains the classical formulation and addresses the modelling and numerical obstacle directly.
 
-This paper addresses the $z\to 0^-$ limit with an emphasis on obtaining meaningful finite energy free-surface predictions. The first contribution is analytical: Section~\ref{sec:point_source_asymptotics} develops the limiting wave elevation spectrum $S_\zeta(k;z)\sim 1/(|z|R)$ stated above via stationary-phase analysis, showing that the point-source kernel is ill-posed; Section~\ref{sec:flat_ship_theory} then developed the flat-ship model for shallow-draft $z\approx 0$ planforms, deriving the elliptic spanwise distribution of source strength that arises from the constant-downwash condition. The leading order flat-ship potential \textit{is} the waterline contribution, but analytic integration replaces the divergent spectrum with a finite $S_{b,\zeta}(k;0)\sim J_1(k)^2/k$ which decays as $k^{-3/2}$, where $J_1$ is the first-order Bessel function. The second contribution is numerical: Section~\ref{sec:fast_evaluator} develops a practical evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$--$10^5$ speedup over direct quadrature while preserving the wave energy. The flat-ship theory, requiring only two (leading and trailing edge) kernel evaluations per field point, is then used to study the wave elevation and wave drag generated in the $z=0$ limit by a rectangular planform as a function of the length and beam based Froude-number. An open-source Julia implementation is provided for reproducibility.
+This paper addresses the $z\to 0^-$ limit with an emphasis on obtaining meaningful finite energy free-surface predictions. The first contribution is analytical: Section~\ref{sec:point_source_asymptotics} develops the limiting wave elevation spectrum $S_\zeta(k;z)\sim 1/(|z|R)$ stated above via stationary-phase analysis, showing that the point-source kernel is ill-posed; Section~\ref{sec:line_integrated_kernels} then developed the flat-ship model for shallow-draft $z\approx 0$ planforms, deriving the elliptic spanwise distribution of source strength that arises from the constant-downwash condition. The leading order flat-ship potential \textit{is} the waterline contribution, but analytic integration replaces the divergent spectrum with a finite $S_{b,\zeta}(k;0)\sim J_1(k)^2/k$ which decays as $k^{-3/2}$, where $J_1$ is the first-order Bessel function. The second contribution is numerical: Section~\ref{sec:fast_evaluator} develops a practical evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$--$10^5$ speedup over direct quadrature while preserving the wave energy. The flat-ship theory, requiring only two (leading and trailing edge) kernel evaluations per field point, is then used to study the wave elevation and wave drag generated in the $z=0$ limit by a rectangular planform as a function of the length and beam based Froude-number. An open-source Julia implementation is provided for reproducibility.
 
 \section{Mathematical Formulation}
 
@@ -58,9 +58,9 @@ and
 \[
 W = 4 H(-x)\int_{-\infty}^\infty \exp\bigl((1+t^2)z\bigr)\sin\bigl((x+|y|t)\sqrt{1+t^2}\bigr)\, dt,
 \]
-where $\text{expintx}(z)=e^z E_1(z)$ and where $H$ is the Heaviside function.
+where $\text{expintx}(z)=e^z E_1(z)$ is the scaled exponential integral and $H$ is the Heaviside function ensuring the wave wake only propagates downstream.
 
-The near-field term is smooth and admits efficient Chebyshev polynomial representations while evaluating $W$ in the limit of $z\to 0^-$ where the exponential damping is minimized is the central difficulty addressed here.
+The near-field term is smooth and admits efficient Chebyshev polynomial representations. However, treatment of the wavelike term $W$ in the limit of $z\to 0^-$ is the central difficulty addressed here.
 
 \subsection{Neumann-Kelvin Formulation}
 
@@ -70,7 +70,7 @@ For a submerged body with wetted surface $S$ entirely below $z=0$, the potential
 \[
 \phi(\vec x) = \iint_S q(\vec\alpha)\,G(\vec x,\vec\alpha)\,dS_{\alpha},
 \]
-with $q$ determined by enforcing the Neumann boundary condition $\partial_n\phi+U_n=0$ on $S$.
+with $q$ determined by enforcing the Neumann boundary condition $\partial_n\phi+U_n=0$ on $S$ where $\hat n$ is the outward facing normal.
 
 For a surface-piercing body, let $C$ denote the waterplane footprint, with waterline contour $\partial C$. On the free surface $z=0$, both $\phi$ and $G$ satisfy the linearized FSBC, which implies
 \[
@@ -88,6 +88,12 @@ The contour contribution requires evaluation of the Green's function near $z=0$ 
 For a linearized velocity potential $\phi$ to yield physically meaningful predictions, both $\phi$ and its $x$-derivative $\partial_x\phi$ must be finite. This section analyzes the stationary-point structure of the oscillatory integral defining $W$ and shows that the dominant saddle migrates to $t_+ \to \infty$ as the wake centerline is approached, producing wave energy contributions that grow without bound. This motivates the need for regularization through spanwise integration, which is developed in Section \ref{sec:line_integrated_kernels}.
 
 \subsection{A Unified Oscillatory-Integral Form}\label{ssec:unified}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{make_figures/point_spectrum.png}
+    \caption{Free surface wave cut and spectra downstream of a point-source with $z\to 0^-$ and line-integrate source on $z=0^-$. The wave cuts in the top and bottom plots are at $x=-8$ and $-40$, respectively. The line integrated results are for line half-beam $b=1$.}
+    \label{fig:wavecut}
+\end{figure}
 
 In anticipation of the spanwise integration in Section \ref{sec:line_integrated_kernels}, we write the wavelike contribution in the general form
 \[
@@ -113,7 +119,7 @@ where $A \equiv 1$ for the point source.
 
 This result is problematic for linear wave theory for two reasons. First, it is clear that at $z=0$ there is no exponential damping, and the point-source produces unbounded wave energy: as $t_+ \to \infty$ the amplitude grows as $|W(x,y,0)| \sim (t_+/R)^{1/2}$.
 
-Second, even for finite submergence, while the exponential factor provides damping that suppresses the large-$t$ contributions, the peak wavenumber can easily become unresolvable for small $|z|$. In terms of $k$, the wave elevation spectrum $S_\zeta = |\frac{U}{g} \partial_x W|^2$ for large $k$ at depth $z < 0$ is
+Second, even for finite submergence, while the exponential factor provides damping that suppresses the large-$t$ contributions, the peak wavenumber can easily become unresolvable for small $|z|$. In terms of $k$, the wave elevation spectrum $S^2_\zeta = |\frac{U}{g} \partial_x W|^2$ for large $k$ at depth $z < 0$ is
 %
 \begin{equation}
   S_\zeta(k;\,z) \sim \frac{k}{R}\,\exp\left(-2|z|k\right),
@@ -123,11 +129,11 @@ Second, even for finite submergence, while the exponential factor provides dampi
 which peaks at
 %
 \begin{equation}
-  k^* = \frac{1}{2|z|}, \qquad S_\zeta(k^*;\,z) \;\sim\; \frac{1}{R\,|z|}.
+  k^* = \frac{1}{2|z|}, \qquad S^2_\zeta(k^*;\,z) \;\sim\; \frac{1}{R\,|z|}.
   \label{eq:point_source_peak}
 \end{equation}
 %
-As $|z| \to 0$ the peak migrates to arbitrarily high wavenumber while its amplitude grows as $|z|^{-1}$. For any fixed numerical resolution $k_{\max}$, the spectrum becomes unresolvable once $|z| \lesssim 1/(2k_{\max})$. The $R^{-1}$ decay along the wake means this is not a local problem: a near-surface source radiates an unresolvable wavenumber band over the entire downstream wake. Figure~\ref{fig:point_source_spectrum} shows $S_\zeta(k;\,z)$ for a sequence of decreasing $|z|$ values, illustrating the peak migration and amplitude growth.
+As $|z| \to 0$ the peak migrates to arbitrarily high wavenumber while its amplitude grows as $|z|^{-1}$. For any fixed numerical resolution $k_{\max}$, the spectrum becomes unresolvable once $|z| \lesssim 1/(2k_{\max})$. The $R^{-1}$ decay along the wake means this is not a local problem: a near-surface source radiates an unresolvable wavenumber band over the entire downstream wake. Figure~\ref{fig:wavecut} shows wave cuts and their spectra downstream of a point source for a sequence of decreasing $|z|$ values, illustrating the peak migration and amplitude growth.
 
 The natural regularization in the waterline formulation is spanwise line integration, developed in the next section.
 
@@ -302,12 +308,6 @@ This section lists the intended verification and demonstration problems.
     \item \textbf{Submerged spheroid}: validation of Neumann-Kelvin predictions against the classical analytic result for steady wave resistance (Farrell, \textbf{TODO full citation}), as is standard in the subsequent literature.
     \item \textbf{Planing/flat-ship demonstrations}: parametric studies in beam Froude number and edge spacing.
 \end{enumerate}
-
-\textbf{TODO}: Insert specific quantitative comparisons and define error measures.
-
-\[
-\boxed{\textbf{AUTHOR TODO:} \text{Decide the primary output observable for the planing/flat-ship section (wave cut, far-field wave resistance from energy flux, or pressure-derived forces) and specify the nondimensionalization.}}
-\]
 
 \section*{References (incomplete)}
 
