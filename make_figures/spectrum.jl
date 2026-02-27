@@ -26,26 +26,30 @@ gmean(a) = log.(a) |> mean |> exp
 using Plots
 begin
     # Figure set up
-    plt = plot(layout=(2,1), size=(800,800), guidefontpadding=2)
-    plot!(plt[1],xlabel="y",ylabel="∂ₓW")
-    plot!(plt[2],xlabel="k",ylabel="|S|²", yscale=:log10, xscale=:log10)
+    plt1 = plot(size=(500,300),xlabel="y",ylabel="∂ₓW")
+    plt2 = plot(size=(400,300),xlabel="k",ylabel="|S|²")
 
     # Point-source over depths
     for n in 3:6
         z = -0.46416^n
         # plt[1] spacial domain, not too far away and the whole width
         x=-8; y = range(-2+x/√8,2-x/√8,2^10)
-        plot!(plt[1],y,∂ₓW.(x,y,z),label="z=$(round(z, digits=3))",c=colormap("Blues",6)[n])
+        plot!(plt1,y,∂ₓW.(x,y,z),label="z=$(round(z, digits=3))",c=colormap("Blues",6)[n])
 
         # plt[2] spectral domain, much farther and only through 1/4 of the width
         x=-40; y = range(0,-x/4√2,2^14)
-        plot!(plt[2],gbin(spectrum(y,∂ₓW.(x,y,z)))...,label="",c=colormap("Blues",6)[n])
+        plot!(plt2,gbin(spectrum(y,∂ₓW.(x,y,z)))...,label="",c=colormap("Blues",6)[n])
     end
 
     # Elliptic line-source on z=-0.
     z=-0.; x=-8.; y = range(-2+x/√8,2-x/√8,2^10)
-    plot!(plt[1],y,∂ₓWᵦ.(x,y,z),label="line-integrated z=0",c=:forestgreen)
+    plot!(plt1,y,∂ₓWᵦ.(x,y,z),label="line-integrated z=0",c=:forestgreen,lw=2)
     x=-40; y = range(0,-x/4√2,2^14)
-    plot!(plt[2],gbin(spectrum(y,∂ₓWᵦ.(x,y,z)))...,label="",c=:forestgreen)
-end;plt
-savefig(plt,"point_spectrum.png")
+    plot!(plt2,gbin(spectrum(y,∂ₓWᵦ.(x,y,z)))...,label="",c=:forestgreen,lw=2)
+
+    # Finalize and save
+    plot!(plt1, ylims=(-50,50), yticks=-50:25:50)
+    plot!(plt2, yscale=:log10, xscale=:log10, xlims=(0.5,1e4), xticks=[1e0,1e2,1e4]) 
+    savefig(plt1,"wavecut.png")
+    savefig(plt2,"spectrum.png")
+end
