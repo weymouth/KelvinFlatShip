@@ -18,7 +18,7 @@ The function is integrated using a modified steepest descent method. The station
 - `ltol=-10`: Log tolerance for finding stationary points and finite ranges around them.
 
 """
-function wavelike(x,y,z;γ=one,Δg=6,ltol=-10)
+function wavelike(x,y,z;γ=one,Δg=6,ltol=-10,xlag=NeumannKelvin.xlag,wlag=NeumannKelvin.wlag)
     x,y,z = promote(x,abs(y),z)
     (x≥0 || z≤ltol) && return zero(x)         # no waves
 
@@ -39,15 +39,15 @@ function wavelike(x,y,z;γ=one,Δg=6,ltol=-10)
     val = zero(f(zero(x)))
     for i in 1:2:length(rngs)
         (t₁,∞₁),(t₂,∞₂) = rngs[i],rngs[i+1]
-        ∞₁ && (val -= nsd(t₁,G,dG,γ))
+        ∞₁ && (val -= nsd(t₁,G,dG,γ;atol=2atol,xlag,wlag))
         val += quadgk(f,t₁,t₂;atol)[1]
-        ∞₂ && (val += nsd(t₂,G,dG,γ))
+        ∞₂ && (val += nsd(t₂,G,dG,γ;atol=2atol,xlag,wlag))
     end
     return 4val
 end
 
 # Brute-force version for comparison
-brutewavelike(x,y,z) = x ≥ 0 ? zero(x) : 4quadgk(t->exp(z*(1+t^2))*sin(g(x,y,t)),-Inf,Inf)[1]
+brutewavelike(x,y,z;atol=0) = x ≥ 0 ? zero(x) : quadgk(t->4exp(z*(1+t^2))*sin(g(x,y,t)),-Inf,Inf;atol)[1]
 
 # Check the two wavelike implementations give the same answer and compare timings
 using BenchmarkTools
