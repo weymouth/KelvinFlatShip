@@ -2,7 +2,7 @@
 include("../src/pointsource.jl")
 ∂ₓW(x,y,z) = derivative(x->wavelike(x,y,z),x)
 include("../src/flatship.jl")
-∂ₓWᵦ(x,y,z) = derivative(x->∫₂wavelike(x,y,z),x)
+∂ₓWᵦ(x,y,z) = derivative(x->∫₂wavelike(x,y,z)*2/π,x)
 
 # spectrum stuff
 using FFTW

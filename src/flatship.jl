@@ -77,7 +77,3 @@ flatship_table()=Table(flatship_check(y) for y in (0.,0.5,0.9,1.1,2.,4.))
 
 # Add the near-field contribution using direct integration
 ∫₂kelvin(x,y,z,b=1) = ∫₂wavelike(x,y,z;b)+quadgk(y′->√(1-(y′/b)^2)*nearfield(x,y-y′,z),-b,b;atol=1e-4)[1]
-
-# using Plots
-# contour(-20:0.1:1,-10:0.1:10,(x,y)->∫₂kelvin(x,y,-0.),levels=-11:2:11,colormap=:phase,clims=(-12,12))
-# contour(-20:0.1:1,-10:0.1:10,(x,y)->derivative(x->∫₂kelvin(x,y,-0.),x),levels=-11:2:11,clims=(-12,12))
