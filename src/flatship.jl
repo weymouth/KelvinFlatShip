@@ -23,16 +23,16 @@ where `J₁` is the Bessel function of the first kind and `k(t)=t√(1+t^2)`. Th
 
 where `H₁¹` and `H₁²` are the scaled Hankel functions of the first and second kind respectively. These functions are are treated as slowly varying prefactors while the exponentials are absorbed into the complex steepest descent path.
 """
-function ∫₂wavelike(x,y,z;b=1,ltol=-10,Δg=6)
+function ∫₂wavelike(x,y,z;b=1,ltol=-10,Δg=6,xlag=NeumannKelvin.xlag,wlag=NeumannKelvin.wlag)
     x,y,z = promote(x,y,z)
     (x≥0 || z≤ltol) && return zero(x)                             # no waves
     abs(y) > b-x/√8 && return π*wavelike(x,abs(y),z,γ=t->γj(t,b)) # fast treatment outside the wake
 
     # Find the stationary points and the finite ranges around them
-    xv,yv,zv = value.((x,y,z))               # strip Duals
-    atol = exp(ltol)                         # absolute tolerance
-    R = √min(ltol/zv-1,(2/π/b/atol^2)^(1/3)) # angle limit
-    rngs = mapreduce(vcat,(-b,b)) do y′      # merge phase ranges
+    xv,yv,zv = value.((x,y,z))                 # strip Duals
+    atol = 10exp(ltol)                         # absolute tolerance
+    R = √min(ltol/zv-1,(200/π/b/atol^2)^(1/3)) # angle limit
+    rngs = mapreduce(vcat,(-b,b)) do y′        # merge phase ranges
         S = TupleTools.sort(filter(s->-R<s<R,(S₀(xv,yv+y′)...,zero(xv))))
         rng = finite_ranges(S,t->g(xv,yv+y′,t),Δg,R;atol) .|> first |> interval
     end |> sort |> merge
@@ -41,7 +41,7 @@ function ∫₂wavelike(x,y,z;b=1,ltol=-10,Δg=6)
     f(t) = γj(t,b)*exp(z*(1+t^2))*sin(g(x,y,t))
     g₊(t)=g(x,y+b,t)-im*z*(1+t^2); dg₊(t)=dg(x,y+b,t)-2im*z*t; γ₊(t)=real(k(t)) > 0 ? γhx(t,1,b) : -γhx(t,2,-b)
     g₋(t)=g(x,y-b,t)-im*z*(1+t^2); dg₋(t)=dg(x,y-b,t)-2im*z*t; γ₋(t)=real(k(t)) > 0 ? γhx(t,2,b) : -γhx(t,1,-b)
-    tail(t₀) = nsd(t₀,g₊,dg₊,γ₊)+nsd(t₀,g₋,dg₋,γ₋)
+    tail(t₀) = nsd(t₀,g₊,dg₊,γ₊;atol=2atol,xlag,wlag)+nsd(t₀,g₋,dg₋,γ₋;atol=2atol,xlag,wlag)
 
     # Sum over finite ranges and semi-infinite tails
     4π*sum(rngs) do (t₁,t₂)
@@ -58,7 +58,7 @@ end
 
 # Brute-force version for comparison
 ∫₂Wₜ(x,y,z,t) = γj(t,1)*exp(z*(1+t^2))*sin((x+y*t)*hypot(1,t))
-brute∫₂wavelike(x,y,z) = x ≥ 0 ? zero(x) : 4π*quadgk(t->∫₂Wₜ(x,y,z,t),-Inf,0,Inf)[1]
+brute∫₂wavelike(x,y,z) = x ≥ 0 ? zero(x) : 4π*quadgk(t->∫₂Wₜ(x,y,z,t),-Inf,0,Inf,maxevals=10^8)[1]
 
 # Check the Bessel function integral identity is correct for an easy value of z
 begin
@@ -68,12 +68,13 @@ end
 
 # Check the two ∫₂wavelike implementations give the same answer and compare timings
 function flatship_check(y,x=-1.,z=-0.)
-    wavelike = @btimed ∫₂wavelike($x,$y,$z) seconds=0.1
+    Wᵦ = @btimed ∫₂wavelike($x,$y,$z,Δg=7) seconds=0.1
+    W = @btimed wavelike($x,$y-1,$z) seconds=0.1
     brute = @timed brute∫₂wavelike(x,y,z)
-    println("y = $y: wavelike = $(wavelike.value), brute = $(brute.value), wavelike time = $(wavelike.time) seconds, brute time = $(brute.time) seconds")
-    (y=y, abserror = abs(wavelike.value-brute.value), relerror = abs(wavelike.value/brute.value-1), speedup = brute.time/wavelike.time)
+    println("y = $y: Wᵦ = $(Wᵦ.value), brute = $(brute.value), Wᵦ time = $(Wᵦ.time) seconds, brute time = $(brute.time) seconds, W time = $(W.time) seconds")
+    (y=y, abserror = abs(Wᵦ.value-brute.value), relerror = abs(Wᵦ.value/brute.value-1), time = Wᵦ.time, speedup = brute.time/Wᵦ.time, slowdown = Wᵦ.time/W.time)
 end
-flatship_table()=Table(flatship_check(y) for y in (0.,0.5,0.9,1.1,2.,4.))
+flatship_table()=Table(flatship_check(y) for y in (0.,0.5,0.9,1.1,1.35))
 
 # Add the near-field contribution using direct integration
 ∫₂kelvin(x,y,z,b=1) = ∫₂wavelike(x,y,z;b)+quadgk(y′->√(1-(y′/b)^2)*nearfield(x,y-y′,z),-b,b;atol=1e-4)[1]

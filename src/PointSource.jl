@@ -53,7 +53,7 @@ brutewavelike(x,y,z;atol=0) = x ≥ 0 ? zero(x) : quadgk(t->4exp(z*(1+t^2))*sin(
 using BenchmarkTools
 function check(y,x=-1.,z=-0.001)
     kelvin = @btimed wavelike($x,$y,$z) seconds=0.1
-    brute = @btimed brutewavelike($x,$y,$z) seconds=0.1
+    brute = @btimed brutewavelike($x,$y-1,$z) seconds=0.1
     println("y = $y: kelvin = $(kelvin.value), brute = $(brute.value), kelvin time = $(kelvin.time) seconds, brute time = $(brute.time) seconds")
     (y=y, relerror = abs(kelvin.value/brute.value-1), speedup = brute.time/kelvin.time)
 end
