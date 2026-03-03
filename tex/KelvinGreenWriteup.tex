@@ -16,18 +16,18 @@
 \maketitle
 
 \begin{abstract}
-Linear wave theory captures the essential physics of free-surface flows at a fraction of the computational cost of nonlinear and viscous methods, making it attractive for applications in design, real-time control, and surrogate modeling. However, linear wave predictions for ships with forward speed require evaluating the Kelvin Green's function at the free surface $z=0$, where the point-source kernel is ill-posed; the wave elevation grows without bound as $z\to 0^-$ even far downstream, causing both numerical and physical interpretation difficulties. This paper develops a modified kernel for flat-ship theory encorporating elliptic spanwise line integration that naturally resolves this ill-posedness, yielding finite wave energy over the entire free surface. We then present a fast evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$-$10^5$ speedup over direct quadrature while preserving far-wake asymptotics. An open-source Julia implementation is provided.
+Linear wave theory captures the essential physics of free-surface flows at a fraction of the computational cost of nonlinear and viscous methods, making it attractive for applications in design, real-time control, and surrogate modeling. However, linear wave predictions for ships with forward speed require evaluating the Kelvin Green's function at the free surface $z=0$, where the point-source kernel is ill-posed; the wave elevation grows without bound as $z\to 0^-$ even far downstream, causing both numerical and physical interpretation difficulties. This paper develops a modified kernel for flat-ship theory incorporating elliptic spanwise line integration that naturally resolves this ill-posedness, yielding finite wave energy over the entire free surface. We then present a fast evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$-$10^5$ speedup over direct quadrature while preserving far-wake asymptotics. An open-source Julia implementation is provided.
 \end{abstract}
 
 \section{Introduction}
 
-Linear potential theory for steady forward-speed wave problems captures the essential physics of ship-wave interaction at a tiny fraction of the computational cost of nonlinear and viscous solvers. This speed makes it attractive for applications such as design optimization, real-time control, and as the physics-informed backbone for machine learning surrogate models.  However, these applications also require reliable predictions without empirical tuning or breakdown near the free surface.
+Linear potential theory for steady forward-speed wave problems captures the essential physics of ship-wave interaction at a tiny fraction of the computational cost of nonlinear and viscous solvers. This speed makes it attractive for applications such as design optimization, real-time control, and as the physics-informed backbone for machine learning surrogate models.  However, the predictions also need to be free from empirical tuning parameters and robust for any input provided, which can be a problem for undamped potential flow.
 
-The Kelvin Green's function for a steady translating disturbance exactly satisfies the linear free-surface boundary condition and has a well-established integral representation (Peters 1949; Noblesse 1981). For finite submergence, analytic and surrogate methods exist (Farell 1978, Newman 1987), but the free-surface elevation is ill-posed as $|z|\to 0^-$. The wave elevation spectrum $S^2_\zeta(k;z)$ peaks at $k^* \sim 1/|z|$ with amplitude $\sim 1/|z$, diverging as $|z|\to 0^-$ and making the downstream wake unresolvable. Series and steepest-descent methods (Baar and Price 1988; Iwashita and Ohkusu 1992) struggle with convergence, with stationary point coalescence, and with high wavenumbers in this limit. Recent contour deformation approaches (Huybrechs 2017; Gibbs \& Huybrechs 2024) are effective for analytic oscillatory integrands, but the Kelvin wavelike integral is non-analytic.
+The Kelvin Green's function for a steady translating disturbance exactly satisfies the linear free-surface boundary condition and has a well-established integral representation (Peters 1949; Noblesse 1981). For finite submergence, analytic and surrogate methods exist (Farell 1978; Newman 1987), but the elevation of the free surface is ill-posed as the source position moves up to the free surface, i.e., as $z\to 0^-$. The wave elevation spectrum $S_\zeta(k;z)$ peaks at $k^* \sim 1/|z|$ with amplitude $\sim 1/|z$, diverging as $|z|\to 0^-$ and making the downstream wake unresolvable. Series and steepest-descent methods (Baar and Price 1988; Iwashita and Ohkusu 1992) struggle with convergence, with stationary point coalescence, and with high wavenumbers in this limit. Recent contour deformation approaches (Huybrechs 2017; Gibbs \& Huybrechs 2024) are effective for analytic oscillatory integrands, but the Kelvin wavelike integral is non-analytic.
 
 For surface-piercing bodies, the free-surface limit becomes unavoidable. The waterline contour contributes directly to the potential and must be evaluated at $z=0$, (Baar and Price 1988). Classic flat ship theory (Tuck, Doctors, etc.) prioritized practical prediction of wave resistance and hull pressure for high-speed, shallow-draft vessels, often using analytic or semi-analytic models and empirical corrections (e.g., spray) to match experiments. However, the singularity in the free-surface Green's function at $z\to 0^-$ was not fully resolved, and direct evaluation of the waterline contribution remains problematic. The persistent difficulty of evaluating the free-surface Green's function led to the development of the Neumann-Michell theory (Noblesse, Huang, Yang 2013), which avoids the explicit Green's function by using an implicit iterative scheme. Notably, Neumann-Michell theory was developed after the classic flat ship work, highlighting that the fundamental issues remain unresolved. This method sidesteps the $z\to 0^-$ singularity but sacrifices the directness and efficiency of explicit kernel representations.
 
-This paper addresses the $z\to 0^-$ limit with an emphasis on obtaining meaningful finite energy free-surface predictions. The first contribution is analytical: Section~\ref{sec:point_source_asymptotics} identifies the limiting wave elevation spectrum $S^2_\zeta(k;z)\sim 1/(|z|R)$ stated above via stationary-phase analysis; Section~\ref{sec:line_integrated_kernels} then develops a modified flat-ship model for $z\approx 0$, deriving the elliptic spanwise distribution of source strength that arises from the constant-downwash condition. The leading order flat-ship potential \textit{is} the waterline contribution, but analytic integration replaces the divergent spectrum with a finite $S_\zeta(k;0)\sim \text{J}_1(k)^2/k$ which decays as $k^{-3/2}$, where $\text{J}_1$ is the first-order Bessel function. The second contribution is numerical: Section~\ref{sec:fast_evaluator} develops a practical evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$--$10^5$ speedup over direct quadrature while preserving the wave energy. The flat-ship theory, requiring only two (leading and trailing edge) kernel evaluations per field point, is then used to study the wave elevation and wave drag generated in the $z=0$ limit by a rectangular planform as a function of the length and beam based Froude-number. An open-source Julia implementation is provided for reproducibility.
+This paper addresses the $z\to 0^-$ limit with an emphasis on obtaining meaningful finite energy free-surface predictions. The first contribution is analytical: Section~\ref{sec:point_source_asymptotics} identifies the limiting wave elevation spectrum $S_\zeta(k;z)\sim 1/(|z|R)$ stated above via stationary-phase analysis; Section~\ref{sec:line_integrated_kernels} then develops a modified flat-ship model for $z\approx 0$, deriving the elliptic spanwise distribution of source strength that arises from the constant-downwash condition. The leading order flat-ship potential \textit{is} the waterline contribution, but analytic integration replaces the divergent spectrum with a finite $S_\zeta(k;0)\sim \text{J}_1(k)^2/k$ which decays as $k^{-3/2}$, where $\text{J}_1$ is the first-order Bessel function. The second contribution is numerical: Section~\ref{sec:fast_evaluator} develops a practical evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$--$10^5$ speedup over direct quadrature while preserving the wave energy. The flat-ship theory, requiring only two (leading and trailing edge) kernel evaluations per field point, is then used to study the wave elevation and wave drag generated in the $z=0$ limit by a rectangular planform as a function of the length and beam based Froude-number. An open-source Julia implementation is provided for reproducibility.
 
 \section{Mathematical Formulation}
 
@@ -70,9 +70,9 @@ where $\text{expintx}(z)=e^z E_1(z)$ is the scaled exponential integral and $H$ 
 
 In the Neumann-Kelvin formulation for steady forward speed, the potential is represented as a distribution of sources on the wetted surface of the body, plus a contribution from the waterline contour.
 
-For a submerged body with wetted surface $S$ entirely below $Z=0$, the potential may be written as
+For a submerged body with wetted surface $\cal B$ entirely below $Z=0$, the potential may be written as
 \[
-\Phi(\vec X) = \iint_S Q\bigl(\vec A\bigr)\,G\bigl(\vec X,\vec A\bigr)\di{S_A},
+\Phi(\vec X) = \iint_{\cal B} Q\bigl(\vec A\bigr)\,G\bigl(\vec X,\vec A\bigr)\di{S_A},
 \]
 where $Q$ is the source strength determined by enforcing the Neumann boundary condition $\partial_n\phi+Un_x=0$ on $S$ where $\hat n$ is the outward facing surface normal. The linear dependence on speed allows us to define the scaled strength $q=Q/U$ and scaled potential $\phi = \Phi/U\ell$. The scaled linear free surface elevation is then simply $\zeta = \partial_x\phi|_{Z=0}$.
 
@@ -82,7 +82,7 @@ For a surface-piercing body, let $C$ denote the waterplane footprint, with water
 \]
 Integrating over the exterior free surface and applying the divergence theorem reduces this to a contour integral over $\partial C$. Therefore, the potential for a surface-piercing body is a superposition of the submerged source distribution and the waterline contour contribution
 \[
-\phi(\vec X) = \ell\iint_S q\bigl(\vec A\bigr)\,G\bigl(\vec X,\vec A\bigr)\di{s_a}
+\phi(\vec X) = \ell\iint_{\cal B} q\bigl(\vec A\bigr)\,G\bigl(\vec X,\vec A\bigr)\di{s_a}
 \; + \; \ell\oint_{\partial C} q\bigl(\vec A\bigr)\,G\bigl(\vec X,\vec A\bigr)\,n_x\di{y_a}
 \]
 where $ds=dS/\ell^2$. Because the contour is on $Z=0$, the wave elevation $\zeta$ therefore requires evaluating the Green's function \textit{on} $z=0$. In the next section we show that the point-source kernel is ill-posed in this limit.
@@ -130,17 +130,17 @@ W_A(x,y,z) \sim A(t_+) \exp\left(-|z|\,t_+^2\right)\, \left(\frac{t_+}{R}\right)
 \]
 where $A \equiv 1$ for the point source.
 
-This result is problematic for linear wave theory for two reasons. First, it is clear that at $z=0$ there is no exponential damping, and the point-source produces unbounded wave energy: as $t_+ \to \infty$ the amplitude grows as $|W(x,y,0)| \sim (t_+/R)^{1/2}$. Second, even for finite submergence, while the exponential factor provides damping that suppresses the large-$t$ contributions, the peak wavenumber can easily become unresolvable for small $|z|$. In terms of $k$, the wavelike elevation spectrum $S^2_\zeta = |\partial_x W|^2$ for large $k$ at depth $z < 0$ is
+This result is problematic for linear wave theory for two reasons. First, it is clear that at $z=0$ there is no exponential damping, and the point-source produces unbounded wave energy: as $t_+ \to \infty$ the amplitude grows as $|W(x,y,0)| \sim (t_+/R)^{1/2}$. Second, even for finite submergence, while the exponential factor provides damping that suppresses the large-$t$ contributions, the peak wavenumber can easily become unresolvable for small $|z|$. In terms of $k$, the wavelike elevation spectrum $S_\zeta = |\partial_x W|^2$ for large $k$ at depth $z < 0$ is
 %
 \begin{equation}
-  S^2_\zeta(k;\,z) \sim \frac{k}{R}\,\exp\left(-2|z|k\right),
+  S_\zeta(k;\,z) \sim \frac{k}{R}\,\exp\left(-2|z|k\right),
   \label{eq:point_source_spectrum}
 \end{equation}
 %
 which peaks at
 %
 \begin{equation}
-  k^* = \frac{1}{2|z|}, \qquad S^2_\zeta(k^*;\,z) \;\sim\; \frac{1}{R\,|z|}.
+  k^* = \frac{1}{2|z|}, \qquad S_\zeta(k^*;\,z) \;\sim\; \frac{1}{R\,|z|}.
   \label{eq:point_source_peak}
 \end{equation}
 %
@@ -156,7 +156,7 @@ This section develops the line-integrated Kelvin kernel that arises naturally in
 
 Consider a horizontal surface-piercing planform, e.g., a planing hull, at small angle of attack $\alpha$. The flat-ship idealization imposes uniform downwash approaching the free surface
 \[
-\Phi_Z = \alpha U,\qquad (X,Y)\in S,\ Z\to 0^-.
+\Phi_Z = \alpha U,\qquad (X,Y)\in {\cal B},\ Z\to 0^-.
 \]
 For a rectangular planform of half-width $b\ell$ and length $L\ell$, the potential reduces to contributions from the leading and trailing edges:
 \[
@@ -176,8 +176,8 @@ q(y') = q_0\sqrt{1-(y'/b)^2}.
 We define the integrated wavelike contribution along a spanwise edge as
 %
 \begin{align}
-  W_b(x,y,z) &= \int_{-b}^{b} \sqrt{1-(y'/b)^2}\,W(x,y-y',z)\, \di y' \\
-  &=  4H(-x)\int_{-\infty}^{\infty} \exp\left(z(1+t^2)\right) \int_{-b}^{b} \sqrt{1-(y'/b)^2} \,\sin\left(g(x,y,t)\right)\,\di y'\di t,
+  W_b(x,y,z) &= \int_{-b}^{b} \sqrt{1-(y'/b)^2}\,W(x,y-y',z)\, \di{y'} \\
+  &=  4H(-x)\int_{-\infty}^{\infty} \exp\left(z(1+t^2)\right) \int_{-b}^{b} \sqrt{1-(y'/b)^2} \,\sin\left(g(x,y,t)\right)\,\di{y'}\di t,
   \label{eq:Wb_def}
 \end{align}
 %
@@ -243,7 +243,7 @@ Unlike the analytic phase functions treated in Gibbs and Huybrechs (2024) the wa
 
 The kernel is smooth over the non-oscillatory interval by construction, meaning a Gauss-Legendre quadrature with a fixed number of points related to $\Delta g$ can be applied. For this manuscript, we instead use an adaptive Gauss-Konrad quadrature to ensure a prescribed accuracy. The semi-infinite tails are evaluated using numerical steepest descent on a complex path emanating from the interval endpoints using Gauss-Laguerre quadrature, which is appropriate for exponentially decaying kernels. The contour points are located by Newton's method, selecting the $\sqrt{1+t^2}$ brand such that the phase remains continuous along each contour.
 
-Figure~\ref{fig:delta_phase} shows the maximum error of the point-source wavelike integral using the partioning method described above for the same wave cuts as in Figure~\ref{fig:wavecut}. The error envelop is insensitive to $\vec x$, handling the wave cusp merge as $y\to \pm x/\sqrt{8}$ and the energy growth as $z\to 0^-$ gracefully. The phase spacing $\Delta g$ is the primary numerical parameter of the approach, encoding a tradeoff between the number of oscillations integrated along the real line and the exponential decay along the contours. If the contour starts too close to a stationary point (small $\Delta g$), the phase is slowly varying and the integrand decays slowly in the complex plane, requiring more Gauss-Laguerre points for accuracy. Conversely, large $\Delta g$ ensures rapid decay and efficient contour quadrature, but increases the length and oscillatory nature of the real-axis intervals, making them more expensive to integrate. The number of Gauss-Laguerre points $N$ sets the rate at which the error decreases with $\Delta g$; higher $N$ yields faster error decay but increases computational cost. Herein, we set $\Delta g \approx 6$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost.
+Figure~\ref{fig:delta_phase} shows the maximum error of the point-source wavelike integral using the partioning method described above for the same wave cuts as in Figure~\ref{fig:wavecut}. The error envelop is insensitive to $\vec x$, handling the wave cusp merge as $y\to \pm x/\sqrt{8}$ and the energy growth as $z\to 0^-$ gracefully. The phase spacing $\Delta g$ is the primary numerical parameter of the approach, encoding a tradeoff between the number of oscillations integrated along the real line and the exponential decay along the contours. If the contour starts too close to a stationary point (small $\Delta g$), the phase is slowly varying and the integrand decays slowly in the complex plane, requiring more Gauss-Laguerre points for accuracy. Conversely, large $\Delta g$ ensures rapid decay and efficient contour quadrature, but increases the length and oscillatory nature of the real-axis intervals, making them more expensive to integrate. Increasing the number of Gauss-Laguerre points $N$ yields faster error decay rates but also increases the length of the contours. Herein, we set $\Delta g \approx 6$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost.
 
 \subsection{Hankel function decomposition}
 
