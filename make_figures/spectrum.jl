@@ -9,9 +9,9 @@ using FFTW
 function spectrum(y,f)
     dy,N = step(y),length(y)
     w = @. 0.5*(1 + cos(pi*(0:N-1)/(N-1)))
-    S² = abs2.(fft(f.*w)) * dy^2
+    S = abs2.(fft(f.*w)) * dy^2
     k = fftfreq(N, 1/dy) .* 2π
-    k[2:end÷2],S²[2:end÷2]
+    k[2:end÷2],S[2:end÷2]
 end
 function gbin((k,S); r=1.07)
     nbins = ceil(Int,log(1-k[end]/k[1]*(1-r))/log(r))-1
@@ -23,11 +23,11 @@ end
 gmean(a) = log.(a) |> mean |> exp
 
 # make plot
-using Plots
+using Plots,LaTeXStrings
 begin
     # Figure set up
-    plt1 = plot(size=(500,300),xlabel="y",ylabel="∂ₓW")
-    plt2 = plot(size=(400,300),xlabel="k",ylabel="|S|²")
+    plt1 = plot(size=(500,300),xlabel=L"y",ylabel=L"\zeta")
+    plt2 = plot(size=(400,300),xlabel=L"k_y",ylabel=L"S_\zeta")
 
     # Point-source over depths
     for n in 3:6
@@ -43,13 +43,14 @@ begin
 
     # Elliptic line-source on z=-0.
     z=-0.; x=-8.; y = range(-2+x/√8,2-x/√8,2^10)
-    plot!(plt1,y,∂ₓWᵦ.(x,y,z),label="line-integrated z=0",c=:forestgreen,lw=2)
+    plot!(plt1,y,∂ₓWᵦ.(x,y,z),label="line-integrated z=0",c=:brown2,lw=2)
     x=-40; y = range(0,-x/4√2,2^14)
-    plot!(plt2,gbin(spectrum(y,∂ₓWᵦ.(x,y,z)))...,label="",c=:forestgreen,lw=2)
+    plot!(plt2,gbin(spectrum(y,∂ₓWᵦ.(x,y,z)))...,label="",c=:brown2,lw=2)
 
     # Finalize and save
     plot!(plt1, ylims=(-50,50), yticks=-50:25:50)
     plot!(plt2, yscale=:log10, xscale=:log10, xlims=(0.5,1e4), xticks=[1e0,1e2,1e4]) 
+    plot!(plt2,[1,5e3],[1,(5e3)^(-2)], label="", ls=:dash, c=:grey)
     savefig(plt1,"wavecut.png")
     savefig(plt2,"spectrum.png")
 end
