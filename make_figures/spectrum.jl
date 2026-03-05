@@ -18,9 +18,8 @@ begin
     # plt2 spectral domain, further downstream and sampled along dg(t₊)=0
     plt2 = plot(size=(400,300),xlabel=L"k_y",ylabel=L"S^*_\zeta",labelfontsize=14)
     t = range(1/√2,8√50,2^14) # from the cusp to 8x the peak for z=-0.01
-    xs = -40; ys = @. -xs*t/(1+2t^2)
-    w =  @. √max(0,xs * (1 - 2t^2) / (1 + t^2)^(3/2))
     ky = @. t*hypot(1,t); ky = ky[1:end÷2]
+    xs = -40; ys = @. -xs*t/(1+2t^2)
 
     # Point-source over depths
     for n in 3:6
@@ -39,6 +38,7 @@ begin
     plot!(plt1, ylims=(-50,50), yticks=-50:25:50)
     plot!(plt2, yscale=:log10, ylims=(1e-3,1e3), yticks=10.0 .^ (-3:2:3))
     plot!(plt2, xscale=:log10, xticks=10.0 .^ (0:3))
+    plot!(plt2,[1,1e3],[15,15*(1e3)^(-3/2)],c=:brown3,ls=:dash,label="")
     savefig(plt1,"wavecut.png")
     savefig(plt2,"spectrum.png")
 end
