@@ -106,21 +106,21 @@ In anticipation of the spanwise integration in Section \ref{sec:line_integrated_
 W_A(x,y,z) = 4H(-x)\int_{-\infty}^{\infty} A(t)\,\exp\left(z(1+t^2)\right)\,\sin\left(g(x,y,t)\right)\di t,
 \end{equation}
 with phase $g(x,y,t) = (x + yt)\sqrt{1+t^2}$ and $A(t) = 1$ for the point-source case. The stationary points are given by $\partial_t g = 0$, which yields a quadratic equation in $t$:
-\[
-t_\pm = \frac{-x \pm \sqrt{x^2 - 8y^2}}{4y}.
-\]
-For $|y| > |x|/\sqrt{8}$ there are no real stationary points; for $|y| < |x|/\sqrt{8}$ there are two, corresponding to the transverse and diverging wave systems of the Kelvin wake. The critical observation is that in the near-centerline regime $|y| \ll |x|$, the larger root satisfies
+\begin{equation}\label{eq:sp}
+t_\pm = \frac{-x \pm \sqrt{x^2 - 8y^2}}{4y}.    
+\end{equation}
+For $|y| > |x|/\sqrt{8}$ there are no real stationary points; for $|y| < |x|/\sqrt{8}$ there are two, corresponding to the transverse and diverging wave systems of the Kelvin wake. On the diverging wave ridge $y=y(t_+)$ near the centerline we have
 \[
 t_+ \approx -\frac{x}{2y}, \qquad |t_+| \to \infty \text{ as } y \to 0,
 \]
-meaning that the dominant stationary point migrates to arbitrarily high values near the centerline, corresponding to wavenumber $k_y = t_+\sqrt{1 + t_+^2} \approx t_+^2$.
+meaning that the dominant stationary point migrates to arbitrarily high values corresponding to wavenumber $k_y = t_+\sqrt{1 + t_+^2} \approx t_+^2$.
 
 \subsection{Point-Kernel Stationary-Phase Estimate}
 \begin{figure}
     \centering
     \includegraphics[width=0.55\linewidth]{make_figures/wavecut.png}
     \includegraphics[width=0.44\linewidth]{make_figures/spectrum.png}
-    \caption{Free surface wave cut and spectra downstream of a point-source with $z\to 0^-$ and line-integrate source on $z=0$. The wave cuts on the left are at $x=-8$. The spectra are computed from wave cuts further downstream at $x=-40$ and $|y|\le 7$ to sample more diverging waves with $k_y\approx k$. The line integrated results are sampled at the same positions and use half-beam $b=1$ and $q_0=\frac 2 \pi$. The dashed line is the theoretical $S_\zeta\sim k_y^{-2}$ scaling.}
+    \caption{Free surface wave cut and spectra downstream of a point-source with $z\to 0^-$ and line-integrate source on $z=0$. The wave cuts on the left are $\zeta(x=-8,y,z)$. The spectra on the right are $S^*_\zeta=|\zeta(x=-40,y(k_y),z)|^2$ evaluated along the divergent wave ridge (equation~\ref{eq:sp}), with the carrier demodulated via Hilbert transform. The line integrated results are sampled at the same positions and use half-beam $b=1$ and $q_0=\frac 2 \pi$.}
     \label{fig:wavecut}
 \end{figure}
 
@@ -196,14 +196,14 @@ with
 %
 The factor $\text{J}_1(bk_y)/k_y$ is finite at $k_y=0$ (with limit $b/2$) and decays as $k_y \to \infty$. This is the mechanism by which spanwise smoothing regularizes the kernel: the elliptic distribution acts as a low-pass filter in wavenumber, suppressing the large-$k$ contributions that drove the point-source divergence in Section~\ref{ssec:unified}.
 
-The wave elevation spectrum at $z=0$ is
+Using stationary phase analysis with $A_b$ and $z=0$ gives the wave elevation spectrum as
 %
 \begin{equation}
-  S_{b,\zeta}(k;\,0) \sim \frac{\text{J}_1^2\left(b\,k\right)}{k}
+  S_{b,\zeta}(k;\,0) \sim \frac{\text{J}_1^2\left(b\,k_y\right)}{k_y^2}\frac{k_y^{3/2}} R \sim \frac 1{k_y^{3/2}R}
   \label{eq:Sb_spectrum}
 \end{equation}
 %
-which is $O(b^2)$ at $k=0$ and decays as $k^{-2}$ for large $k$ --- integrable, with a finite peak set by the beam $b$. This completely eliminates the divergent high wavenumber energy found in the point-source as shown in Figure~\ref{fig:wavecut} for $b=1$.
+This completely eliminates the divergent high wavenumber energy found in the point-source, as demonstrated in Figure~\ref{fig:wavecut} for $b=1$.
 
 \subsection{Wave Resistance}
 \label{sec:wave_resistance}
