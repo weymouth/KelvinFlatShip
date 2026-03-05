@@ -199,7 +199,7 @@ The factor $\text{J}_1(bk_y)/k_y$ is finite at $k_y=0$ (with limit $b/2$) and de
 Using stationary phase analysis with $A_b$ and $z=0$ gives the wave elevation spectrum as
 %
 \begin{equation}
-  S_{b,\zeta}(k;\,0) \sim \frac{\text{J}_1^2\left(b\,k_y\right)}{k_y^2}\frac{k_y^{3/2}} R \sim \frac 1{k_y^{3/2}R}
+  S_{b,\zeta}(k;\,0) \sim \frac{\text{J}_1^2\left(b\,k_y\right)}{k_y^2}\frac{k_y^{3/2}} R \sim \frac 1{k_y^{3/2}bR}
   \label{eq:Sb_spectrum}
 \end{equation}
 %
@@ -268,7 +268,7 @@ The same contour-deformation strategy applies to the line-integrated kernel, ext
 \end{equation}
 The scaled Hankel functions $\text{Hx}_1^{(1,2)}$ are slowly varying and the exponential factors can be absorbed into the complex phase. The line-integrate kernel is therefore expressed as a sum of two oscillatory integrals with shifted phases $g(x,y \pm b)$. The same partitioning strategy is applied to each phase function, and their union defines full non-oscillatory range. This region is integrated once with the Bessel prefactor weighting, and the semi-infinite tails are computed twice, once for each Hankel function using the appropriate phase function.
 
-Overall, the $W_b$ quadrature requires approximately twice as many phase and kernel evaluations as $W$, and Bessel function evaluations are $O(10)$ times as expensive as simple trigonometric functions. However, the computational cost is still $10^4$--$10^5$ faster than direct quadrature on $z=0$ with relative errors less than $10^{-6}$, Table~\ref{tab:wavelike}. Because the flat-ship limit reduces the planform influence to the leading and trailing edge spanwise line-integrals, two calls this function are sufficient to evaluate the potential at any field point.
+Overall, the $W_b$ quadrature requires approximately twice as many phase and kernel evaluations as $W$, and Bessel function evaluations are $O(10)$ times as expensive as simple trigonometric functions. However, the computational cost is still $10^4$--$10^5$ faster than direct quadrature on $z=0$ with relative errors less than $10^{-6}$, Table~\ref{tab:wavelike}. Because the flat-ship limit reduces the planform influence to the leading and trailing edge spanwise line-integrals, two function evaluations determine the potential at any field point.
 
 Note that we can use the same approach for the wave resistance integral~\eqref{eq:Cw}. Applying the Hankel function decomposition to $\text{J}_1^2$ results in three terms, two that oscillate as $e^{\pm i2bk_y}$ and one slowly varying part, meaning we have three phase functions: $g(x,y,t),\,g(x,y\pm2b,t)$. The fast $t^{-6}$ decay of $A_w$ means direct quadrature is also practical.
 
@@ -276,6 +276,13 @@ Note that we can use the same approach for the wave resistance integral~\eqref{e
 
 \begin{figure}
     \centering
+    \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b1.png}
+    \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b2.png}
+    \caption{Wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$ and $b=1,\, 2$ on the left and right, respectively.}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}
     \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b1.png}
     \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b2.png}
     \caption{Wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$ and $b=1,\, 2$ on the left and right, respectively.}
