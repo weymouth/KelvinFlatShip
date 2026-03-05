@@ -1,5 +1,6 @@
 # wave stuff
 include("../src/flatship.jl")
+∫₂kelvin(x,y,z,b=1) = ∫₂wavelike(x,y,z;b)+quadgk(y′->√(1-(y′/b)^2)*nearfield(x,y-y′,z),-b,b;atol=1e-4)[1]
 import AcceleratedKernels as AK
 function ζ(x,y,b)  # multi-threaded evaluation of ζ
     z = Array{Float64}(undef,length(x),length(y))

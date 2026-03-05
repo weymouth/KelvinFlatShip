@@ -75,6 +75,3 @@ function flatship_check(y,x=-1.,z=-0.)
     (y=y, abserror = abs(Wᵦ.value-brute.value), relerror = abs(Wᵦ.value/brute.value-1), time = Wᵦ.time, speedup = brute.time/Wᵦ.time, slowdown = Wᵦ.time/W.time)
 end
 flatship_table()=Table(flatship_check(y) for y in (0.,0.5,0.9,1.1,1.35))
-
-# Add the near-field contribution using direct integration
-∫₂kelvin(x,y,z,b=1) = ∫₂wavelike(x,y,z;b)+quadgk(y′->√(1-(y′/b)^2)*nearfield(x,y-y′,z),-b,b;atol=1e-4)[1]
