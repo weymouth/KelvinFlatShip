@@ -89,14 +89,6 @@ where $ds=dS/\ell^2$. Because the contour is on $Z=0$, the wave elevation $\zeta
 
 \section{Point-Source Asymptotics and Breakdown}\label{sec:point_source_asymptotics}
 
-\begin{figure}
-    \centering
-    \includegraphics[height=6cm]{example-image-a}
-    \includegraphics[height=6cm]{example-image-b}
-    \caption{Stationary point locations as a function of $y/x$ for the point-source and line-integral after applying the Hankel function decomposition of equation~\ref{eq:Hankel}}
-    \label{fig:placeholder}
-\end{figure}
-
 For a linearized velocity potential $\phi$ to yield physically meaningful predictions, both $\phi$ and its $x$-derivative $\partial_x\phi$ must be finite. This section analyzes the stationary-point structure of the oscillatory integral defining $W$ and shows that the dominant saddle migrates to $t_+ \to \infty$ as the wake centerline is approached, producing wave energy contributions that grow without bound. This motivates the need for regularization through spanwise integration, which is developed in Section \ref{sec:line_integrated_kernels}.
 
 \subsection{A Unified Oscillatory-Integral Form}\label{ssec:unified}
@@ -120,7 +112,7 @@ meaning that the dominant stationary point migrates to arbitrarily high values c
     \centering
     \includegraphics[width=0.55\linewidth]{make_figures/wavecut.png}
     \includegraphics[width=0.44\linewidth]{make_figures/spectrum.png}
-    \caption{Free surface wave cut and spectra downstream of a point-source with $z\to 0^-$ and line-integrate source on $z=0$. The wave cuts on the left are $\zeta(x=-8,y,z)$. The spectra on the right are $S^*_\zeta=|\zeta(x=-40,y(k_y),z)|^2$ evaluated along the divergent wave ridge (equation~\ref{eq:sp}), with the carrier demodulated via Hilbert transform. The line integrated results are sampled at the same positions and use half-beam $b=1$ and $q_0=\frac 2 \pi$.}
+    \caption{Free surface wave cut and spectra downstream of a unit point-source with $z\to 0^-$ and line-integrate source on $z=0$. The wave cuts on the left are $\zeta(x=-8,y,z)$. The spectra on the right are $S^*_\zeta=|\zeta(x=-40,y(k_y),z)|^2$ evaluated along the divergent wave ridge (equation~\ref{eq:sp}), with the carrier demodulated via Hilbert transform. The line integrated results are sampled at the same positions and use half-beam $b=1$ and $q_0=\frac 2 \pi$.}
     \label{fig:wavecut}
 \end{figure}
 
@@ -194,9 +186,7 @@ with
   \label{eq:Ab}
 \end{equation}
 %
-The factor $\text{J}_1(bk_y)/k_y$ is finite at $k_y=0$ (with limit $b/2$) and decays as $k_y \to \infty$. This is the mechanism by which spanwise smoothing regularizes the kernel: the elliptic distribution acts as a low-pass filter in wavenumber, suppressing the large-$k$ contributions that drove the point-source divergence in Section~\ref{ssec:unified}.
-
-Using stationary phase analysis with $A_b$ and $z=0$ gives the wave elevation spectrum as
+The factor $\text{J}_1(bk_y)/k_y$ is finite at $k_y=0$ (with limit $b/2$) and decays as $k_y \to \infty$. Thus, the spanwise integration regularizes the kernel even for $z=0$. Indeed, using stationary phase analysis of section~\ref{ssec:unified} with $A_b$ and $z=0$ gives the wave elevation spectrum as
 %
 \begin{equation}
   S_{b,\zeta}(k;\,0) \sim \frac{\text{J}_1^2\left(b\,k_y\right)}{k_y^2}\frac{k_y^{3/2}} R \sim \frac 1{k_y^{3/2}bR}
@@ -208,14 +198,14 @@ This completely eliminates the divergent high wavenumber energy found in the poi
 \subsection{Wave Resistance}
 \label{sec:wave_resistance}
 
-The flat-ship wave resistance $R_w$ follows from the Havelock formula. Working directly in the variable $t = \sin\theta/\cos^2\theta$ with Jacobian $d\theta/\cos^3\theta = (1+t^2)/(1+2t^2)\,dt$, the Havelock formula becomes
+The flat-ship wave resistance $D_W$ follows from the Havelock formula. Working directly in the variable $t = \sin\theta/\cos^2\theta$ with Jacobian $d\theta/\cos^3\theta = (1+t^2)/(1+2t^2)\,dt$, the Havelock formula becomes
 %
 \begin{equation}
-  R_w = \frac{\rho}{2\pi\ell^2} \int_{-\infty}^{\infty} |\text{K}(t)|^2\, \frac{1+t^2}{1+2t^2}\di t,
+  D_W = \frac{\rho}{2\pi\ell^2} \int_{-\infty}^{\infty} |\text{K}(t)|^2\, \frac{1+t^2}{1+2t^2}\di t,
   \label{eq:havelock}
 \end{equation}
 %
-where $\text{K}$ is the Kochin function, the source-strength-weighted integral of the wavelike kernel over the planform. Defining the wave drag coefficient $C_W = R_w/(\rho U^2 b^2\ell^2)$ and substituting the elliptic spanwise distribution derived above gives
+where $\text{K}$ is the Kochin function, the source-strength-weighted integral of the wavelike kernel over the planform. Defining the wave drag coefficient $C_W = D_W/(\rho U^2 b^2\ell^2)$ and substituting the elliptic spanwise distribution derived above gives
 %
 \begin{equation}
   C_W = \pi q_0^2 \int_{-\infty}^{\infty}
@@ -223,7 +213,7 @@ where $\text{K}$ is the Kochin function, the source-strength-weighted integral o
   \label{eq:Cw}
 \end{equation}
 %
-with $q_0 \propto \alpha$. The integrand is $O(1)$ at $k=0$ and decays as $k^{-3}$ for large $k$, so~\eqref{eq:Cw} is well-posed and rapidly convergent. The Bessel factor controls the angular energy spreading with beam $b$ while the interference factor $1-\cos(L\sqrt{1+t^2})$ oscillates with $L$, producing the classical constructive and destructive interference between bow and stern wave systems.
+with $q_0 \propto \alpha$. The integrand is $O(1)$ at $t=0$ and decays as $t^{-6}$ for large $t$, so~\eqref{eq:Cw} is well-posed and rapidly convergent. The Bessel factor controls the angular energy spreading with beam $b$ while the interference factor $1-\cos(L\sqrt{1+t^2})$ oscillates with $L$, producing the classical constructive and destructive interference between bow and stern wave systems.
 
 \section{Unified contour deformation framework} \label{sec:fast_evaluator}
 
@@ -235,7 +225,7 @@ The general wavelike integral of equation~\ref{eq:wavelike_general}, which cover
     \centering
     \includegraphics[width=0.495\linewidth]{make_figures/dphase_z.png}
     \includegraphics[width=0.495\linewidth]{make_figures/dphase_GLn.png}
-    \caption{Error convergence of the partitioned quadrature method  with $\Delta g$ applied to the same wavecuts in figure \ref{fig:wavecut}. Left shows the independence of the error as $z\to 0^-$ for $N=4$ Gauss-Laguerre points, and right shows the reduction of error with increasing $N$ for $z=-0.01$.}
+    \caption{Error convergence of the partitioned quadrature method applied to $W(-8,y,z)$ on the same wavecuts in figure \ref{fig:wavecut}. Left shows the independence of the error as $z\to 0^-$ for $N=4$ Gauss-Laguerre points, and right shows the reduction of error with increasing $N$ for $z=-0.01$.}
     \label{fig:delta_phase}
 \end{figure}
 
@@ -278,13 +268,13 @@ Note that we can use the same approach for the wave resistance integral~\eqref{e
     \centering
     \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b1.png}
     \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b2.png}
-    \caption{Wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$ and $b=1,\, 2$ on the left and right, respectively.}
+    \caption{Flat-ship wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$ and $b=1,\, 2$ on the left and right, respectively.}
     \label{fig:wave_elevation}
 \end{figure}
 
 \begin{figure}
     \includegraphics[width=0.495\linewidth]{make_figures/wave_drag.png}
-    \caption{Flat ship wave drag coefficient $C_W/q_0^2$ as a function of the Kelvin-scaled length $L$ and width $b$.}
+    \caption{Flat ship wave drag coefficient $C_W$ scaled by $q_0^2$ as a function of the Kelvin-scaled planform length $L$ and width $b$.}
     \label{fig:wave_drag}
 \end{figure}
 
