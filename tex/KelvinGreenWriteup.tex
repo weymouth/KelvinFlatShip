@@ -142,7 +142,7 @@ The natural regularization in the waterline formulation is spanwise line integra
 
 \section{Line-Integrated Potential and Flat-Ship Theory}\label{sec:line_integrated_kernels}
 
-This section develops the line-integrated Kelvin kernel that arises naturally in waterline-driven configurations. We first establish the flat-ship model as the physical context, derive the elliptic spanwise distribution, and then show that the resulting line-integrated kernel is finite and differentiable at $z=0$ --- in sharp contrast to the point-source behavior analyzed in Section~\ref{sec:point_source_asymptotics}.
+This section develops the line-integrated Kelvin kernel that arises naturally in waterline-driven configurations. We first establish the flat-ship model as the physical context, derive the elliptic spanwise distribution, show that the resulting line-integrated kernel is finite and differentiable at $z=0$, and determine the resulting wave resistance.
 
 \subsection{The Flat-Ship Model}\label{ssec:flat_ship_model}
 
@@ -150,9 +150,9 @@ Consider a horizontal surface-piercing planform, e.g., a planing hull, at small 
 \[
 \partial_Z\Phi = \alpha U,\qquad (X,Y)\in {\cal B},\ Z\to 0^-.
 \]
-For a rectangular planform of half-width $b\ell$ and length $L\ell$, the potential reduces to contributions from the leading and trailing edges:
+In this limit, the waterline contour $\oint_{\partial C}dy$ becomes the entire source patch contribution. For a rectangular planform of half-width $b\ell$ and length $L\ell$, the potential downstream reduces to the wavelike contributions from the leading and trailing edges:
 \[
-\phi(\vec X) = \ell\int_{-b}^{b} q(y_P)\left[G(x,y-y_P,z)-G(x-L,y-y_P,z)\right]\,\di{y_P}.
+\phi(\vec x) = \int_{-b}^{b} q(y_P)\left[W(x,y-y_P,z)-W(x-L,y-y_P,z)\right]\,\di{y_P}.
 \]
 The remaining unknown is the spanwise distribution $q(y_P)$. For uniform downwash forcing, the dominant nearfield operator is logarithmic in span:
 \[
@@ -173,13 +173,7 @@ We define the integrated wavelike contribution along a spanwise edge as
   \label{eq:Wb_def}
 \end{align}
 %
-where we have swapped the order of integration. This is the Fourier transform of the elliptic distribution which has a known Bessel function representation, giving
-\begin{equation}
-  W_b(x,y,z) = 4\pi H(-x)\int_{-\infty}^{\infty} A_b(t)\,\exp\left(z(1+t^2)\right)\,\sin\left(g(x,y,t)\right)\,dt,
-  \label{eq:Wb_integral}
-\end{equation}
-%
-with
+where we have swapped the order of integration. The inner integral is the Fourier transform of the elliptic distribution which has a known Bessel function representation. We can therefore write $W_b$ using equation~\ref{eq:wavelike_general} with amplitude function $A_b$ given by
 %
 \begin{equation}
   A_b(t) = \pi\,\frac{\text{J}_1\bigl(b\,k_y(t)\bigr)}{k_y(t)},\qquad k_y(t)=t\sqrt{1+t^2}.
@@ -198,22 +192,25 @@ This completely eliminates the divergent high wavenumber energy found in the poi
 \subsection{Wave Resistance}
 \label{sec:wave_resistance}
 
-The flat-ship wave resistance $D_W$ follows from the Havelock formula. Working directly in the variable $t = \sin\theta/\cos^2\theta$ with Jacobian $d\theta/\cos^3\theta = (1+t^2)/(1+2t^2)\,dt$, the Havelock formula becomes
+The flat-ship wave resistance $D_W$ follows from the Havelock formula. Working in the variable $t = \tan\theta$, the Havelock formula becomes
 %
 \begin{equation}
-  D_W = \frac{\rho}{2\pi\ell^2} \int_{-\infty}^{\infty} |\text{K}(t)|^2\, \frac{1+t^2}{1+2t^2}\di t,
+  D_W = \frac{\rho}{\pi\ell^2} \int_{-\pi/2}^{\pi/2} |\text{K}(\theta)|^2\,\sec^3\theta\di\theta = \frac{\rho}{\pi\ell^2} \int_{-\infty}^{\infty} |\text{K}(t)|^2\, k_x(t)\di t,\quad k_x(t) = \sqrt{1+t^2}
   \label{eq:havelock}
 \end{equation}
 %
-where $\text{K}$ is the Kochin function, the source-strength-weighted integral of the wavelike kernel over the planform. Defining the wave drag coefficient $C_W = D_W/(\rho U^2 b^2\ell^2)$ and substituting the elliptic spanwise distribution derived above gives
+where $\text{K(t)}$ is the Kochin function, the source-strength-weighted integral of the wavelike kernel over the planform. 
+
+
+Defining the wave drag coefficient $C_W = D_W/(\rho U^2 b^2\ell^2)$ and substituting the elliptic spanwise distribution derived above gives
 %
 \begin{equation}
   C_W = \pi q_0^2 \int_{-\infty}^{\infty}
-  A_w(t)\bigl(1 - \cos\bigl(L\sqrt{1+t^2}\bigr)\bigr)\di t\quad \text{where}\quad A_w(t)=\frac{\text{J}_1^2(b\,k_y(t))}{b^2t^2(1+2t^2)}.
+  A_w\bigl(1 - \cos\bigl(Lk_x\bigr)\bigr)\di t\quad \text{where}\quad A_w=\left(\frac{\text{J}_1(b\,k_y)}{bk_y}\right)^2 k_x.
   \label{eq:Cw}
 \end{equation}
 %
-with $q_0 \propto \alpha$. The integrand is $O(1)$ at $t=0$ and decays as $t^{-6}$ for large $t$, so~\eqref{eq:Cw} is well-posed and rapidly convergent. The Bessel factor controls the angular energy spreading with beam $b$ while the interference factor $1-\cos(L\sqrt{1+t^2})$ oscillates with $L$, producing the classical constructive and destructive interference between bow and stern wave systems.
+with $q_0 \propto \alpha$. The amplitude $A_w$ is $O(1)$ at $t=0$ and decays as $t^{-5}$ for large $t$, so~\eqref{eq:Cw} is well-posed and rapidly convergent. The Bessel factor controls the angular energy spreading with beam $b$ while the interference factor $1-\cos(Lk_x)$ oscillates with $L$, producing the classical constructive and destructive interference between bow and stern wave systems.
 
 \section{Unified contour deformation framework} \label{sec:fast_evaluator}
 
@@ -231,9 +228,9 @@ The general wavelike integral of equation~\ref{eq:wavelike_general}, which cover
 
 Unlike the analytic phase functions treated in Gibbs and Huybrechs (2024) the wavelike phase $g(x,y,t) = (x+yt)\sqrt{1+t^2}$ introduces branch points at $t = \pm i$. To avoid these points, we limit the non-oscillatory intervals to the real axis such that each endpoint is separated from the nearest stationary point by a prescribed phase increment $\Delta g$. The non-analytic phase also means that these partition boundaries must be located by numerical 1D root-finding.
 
-The kernel is smooth over the non-oscillatory interval by construction, meaning a Gauss-Legendre quadrature with a fixed number of points related to $\Delta g$ can be applied. For this manuscript, we instead use an adaptive Gauss-Konrad quadrature to ensure a prescribed accuracy. The semi-infinite tails are evaluated using numerical steepest descent on a complex path emanating from the interval endpoints using Gauss-Laguerre quadrature, which is appropriate for exponentially decaying kernels. The contour points are located by Newton's method, selecting the $\sqrt{1+t^2}$ brand such that the phase remains continuous along each contour.
+The kernel is smooth over the non-oscillatory interval by construction, meaning a Gauss-Legendre quadrature with a fixed number of points related to $\Delta g$ can be applied. For this manuscript, we instead use an adaptive Gauss-Konrad quadrature to ensure a prescribed accuracy. The semi-infinite tails are evaluated using numerical steepest descent on a complex path emanating from the interval endpoints using the Gauss-Laguerre quadrature, which is appropriate for exponentially decaying kernels. The contour points are located by Newton's method, selecting the $\sqrt{1+t^2}$ brand such that the phase remains continuous along each contour.
 
-Figure~\ref{fig:delta_phase} shows the maximum error of the point-source wavelike integral using the partioning method described above for the same wave cuts as in Figure~\ref{fig:wavecut}. The error envelop is insensitive to $\vec x$, handling the wave cusp merge as $y\to \pm x/\sqrt{8}$ and the energy growth as $z\to 0^-$ gracefully. The phase spacing $\Delta g$ is the primary numerical parameter of the approach, encoding a tradeoff between the number of oscillations integrated along the real line and the exponential decay along the contours. If the contour starts too close to a stationary point (small $\Delta g$), the phase is slowly varying and the integrand decays slowly in the complex plane, requiring more Gauss-Laguerre points for accuracy. Conversely, large $\Delta g$ ensures rapid decay and efficient contour quadrature, but increases the length and oscillatory nature of the real-axis intervals, making them more expensive to integrate. Increasing the number of Gauss-Laguerre points $N$ yields faster error decay rates but also increases the length of the contours. Herein, we set $\Delta g \approx 6$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost.
+Figure~\ref{fig:delta_phase} shows the maximum error of the point-source wavelike integral using the partitioning method described above for the same wave cuts as in Figure~\ref{fig:wavecut}. The error envelope is insensitive to $\vec x$, handling the wave cusp merge as $y\to \pm x/\sqrt{8}$ and the energy growth as $z\to 0^-$ gracefully. The phase spacing $\Delta g$ is the primary numerical parameter of the approach, encoding a tradeoff between the number of oscillations integrated along the real line and the exponential decay along the contours. If the contour starts too close to a stationary point (small $\Delta g$), the phase is slowly varying and the integrand decays slowly in the complex plane, requiring more Gauss-Laguerre points for accuracy. Conversely, large $\Delta g$ ensures rapid decay and efficient contour quadrature, but increases the length and oscillatory nature of the real-axis intervals, making them more expensive to integrate. The number of Gauss-Laguerre points $N$, is a secondary parameter: increasing $N$ increases the error decay rate but also increases the length of the contours and computational expense. Herein, we set $\Delta g \approx 6$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost.
 
 \subsection{Hankel function decomposition}
 
@@ -252,15 +249,15 @@ Figure~\ref{fig:delta_phase} shows the maximum error of the point-source wavelik
     \label{tab:wavelike}
 \end{table}
 
-The same contour-deformation strategy applies to the line-integrated kernel, extended to handle the additional oscillatory structure introduced by the Bessel prefactor $\text{J}_1(bk_y)/k_y$. The Bessel function is decomposed using Hankel functions away from $t = 0$
+The same contour-deformation strategy applies to the line-integrated kernel, extended to handle the additional oscillatory structure introduced by the Bessel prefactor in equation~\ref{eq:Ab}. The Bessel function is decomposed using Hankel functions away from $t = 0$
 \begin{equation}\label{eq:Hankel}
 \text{J}_1(z) = \frac{1}{2}\left(\text{Hx}_1^{(1)}(z)\,e^{iz} + \text{Hx}_1^{(2)}(z)\,e^{-iz}\right)
 \end{equation}
-The scaled Hankel functions $\text{Hx}_1^{(1,2)}$ are slowly varying and the exponential factors can be absorbed into the complex phase. The line-integrate kernel is therefore expressed as a sum of two oscillatory integrals with shifted phases $g(x,y \pm b)$. The same partitioning strategy is applied to each phase function, and their union defines full non-oscillatory range. This region is integrated once with the Bessel prefactor weighting, and the semi-infinite tails are computed twice, once for each Hankel function using the appropriate phase function.
+The scaled Hankel functions $\text{Hx}_1^{(1,2)}$ are slowly varying and the exponential factors can be absorbed into the complex phase. The line-integrate kernel is therefore expressed as a sum of two oscillatory integrals with shifted phases $g(x,y \pm b,t)$. The same partitioning strategy is applied to each phase function, and their union defines full non-oscillatory range. This region is integrated once with the Bessel prefactor weighting, and the semi-infinite tails are computed twice, once for each Hankel function using the appropriate phase function.
 
-Overall, the $W_b$ quadrature requires approximately twice as many phase and kernel evaluations as $W$, and Bessel function evaluations are $O(10)$ times as expensive as simple trigonometric functions. However, the computational cost is still $10^4$--$10^5$ faster than direct quadrature on $z=0$ with relative errors less than $10^{-6}$, Table~\ref{tab:wavelike}. Because the flat-ship limit reduces the planform influence to the leading and trailing edge spanwise line-integrals, two function evaluations determine the potential at any field point.
+In general, the $W_b$ quadrature requires approximately twice as many phase and kernel evaluations as $W$, and Bessel function evaluations are $O(10)$ times as expensive as simple trigonometric functions. However, the computational cost is still $10^4$--$10^5$ faster than direct quadrature on $z=0$ with relative errors less than $10^{-6}$, Table~\ref{tab:wavelike}. Because the flat-ship limit reduces the planform influence to the leading and trailing edge spanwise line-integrals, two function evaluations determine the potential at any field point.
 
-Note that we can use the same approach for the wave resistance integral~\eqref{eq:Cw}. Applying the Hankel function decomposition to $\text{J}_1^2$ results in three terms, two that oscillate as $e^{\pm i2bk_y}$ and one slowly varying part, meaning we have three phase functions: $g(x,y,t),\,g(x,y\pm2b,t)$. The fast $t^{-6}$ decay of $A_w$ means direct quadrature is also practical.
+Note that we can use the same approach for the wave resistance integral~\eqref{eq:Cw}. However, the faster $A_w\sim t^{-5}$ decay and slower $k_x\sim t$ phase function means direct quadrature is also practical.
 
 \section{Wavefield and wave drag predictions}
 
