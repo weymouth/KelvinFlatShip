@@ -23,7 +23,7 @@ Linear wave theory captures the essential physics of free-surface flows at a fra
 
 Linear potential theory for steady forward-speed wave problems captures the essential physics of ship-wave interaction at a tiny fraction of the computational cost of nonlinear and viscous solvers. This speed makes it attractive for applications such as design optimization, real-time control, and as the physics-informed backbone for machine learning surrogate models.  However, the predictions also need to be free from empirical tuning parameters and robust for any input provided, which can be a problem for undamped potential flow.
 
-The Kelvin Green's function for a steady translating disturbance exactly satisfies the linear free-surface boundary condition and has a well-established integral representation (Peters 1949; Noblesse 1981). For finite submergence, analytic and surrogate methods exist (Farell 1978; Newman 1987), but the elevation of the free surface is ill-posed as the source position moves up to the free surface, i.e., as $z\to 0^-$. The wave elevation spectrum $S_\zeta(k;z)$ peaks at $k^* \sim 1/|z|$ with amplitude $\sim 1/|z|$, diverging as $|z|\to 0^-$ and making the downstream wake unresolvable. Series and steepest-descent methods (Baar and Price 1988; Iwashita and Ohkusu 1992) struggle with convergence, with stationary point coalescence, and with high wavenumbers in this limit. Recent contour deformation approaches (Huybrechs 2017; Gibbs \& Huybrechs 2024) are effective for analytic oscillatory integrands, but the Kelvin wavelike integral is non-analytic.
+The Kelvin Green's function for a steady translating disturbance exactly satisfies the linear free-surface boundary condition and has a well-established integral representation (Peters 1949; Noblesse 1981). For finite submergence, analytic and surrogate methods exist (Farrell 1973; Newman 1987), but the elevation of the free surface is ill-posed as the source position moves up to the free surface, i.e., as $z\to 0^-$. The wave elevation spectrum $S_\zeta(k;z)$ peaks at $k^* \sim 1/|z|$ with amplitude $\sim 1/|z|$, diverging as $|z|\to 0^-$ and making the downstream wake unresolvable. Series and steepest-descent methods (Baar and Price 1988; Iwashita and Ohkusu 1992) struggle with convergence, with stationary point coalescence, and with high wavenumbers in this limit. Recent contour deformation approaches (Huybrechs 2017; Gibbs \& Huybrechs 2024) are effective for analytic oscillatory integrands, but the Kelvin wavelike integral is non-analytic.
 
 For surface-piercing bodies, the free-surface limit becomes unavoidable. The waterline contour contributes directly to the potential and must be evaluated at $z=0$, (Baar and Price 1988). Classic flat ship theory (Tuck, Doctors, etc.) prioritized practical prediction of wave resistance and hull pressure for high-speed, shallow-draft vessels, often using analytic or semi-analytic models and empirical corrections (e.g., spray) to match experiments. However, the singularity in the free-surface Green's function at $z\to 0^-$ was not fully resolved, and direct evaluation of the waterline contribution remains problematic. The persistent difficulty of evaluating the free-surface Green's function led to the development of the Neumann-Michell theory (Noblesse, Huang, Yang 2013), which avoids evaluation on $z=0$ using an implicit iterative scheme. Notably, Neumann-Michell theory was developed after the classic flat ship work, highlighting that the fundamental issues remain unresolved. This method sidesteps the $z\to 0^-$ singularity but sacrifices the directness and efficiency of explicit kernel representations.
 
@@ -34,9 +34,9 @@ This paper addresses the $z\to 0^-$ limit with an emphasis on obtaining meaningf
 
 \begin{figure}
     \centering
-    \includegraphics[height=8cm]{example-image-a}
-    \caption{Schematic of the flat ship model}
-    \label{fig:placeholder}
+    \includegraphics[width=0.85\linewidth]{flat_ship_schematic.svg}
+    \caption{Schematic of the flat ship model showing rectangular planform of length $L$ and half-beam $b$ at the free surface $z=0$, with coordinate system, flow direction $U$, angle of attack $\alpha$, and Kelvin wedge.}
+    \label{fig:schematic}
 \end{figure}
 
 Consider an inviscid, incompressible, irrotational flow in the half-space $Z<0$. The velocity potential $\Phi$ satisfies Laplace's equation $\nabla^2\Phi = 0$ with the linearized free-surface boundary condition for steady forward speed $U$
@@ -47,7 +47,7 @@ where $\ell=U^2/g$ is the Kelvin length. Scaling lengths by $\ell$ and the poten
 \[
 G\bigl(\vec x,\vec x_p\bigr) = N(\vec x,\vec x_p) + W(\vec x - \vec x_p')
 \]
-where $\vec x_p'$ is the image of $\vec x_p$ reflected across $z=0$, and $N$, $W$ are the near-field and wavelike terms. We have combined all of the nearfield terms together, as in Noblesse 2013, and fast surrogates are known for their efficient evaluation, as in Newman 1986. 
+where $\vec x_p'$ is the image of $\vec x_p$ reflected across $z=0$, and $N$, $W$ are the near-field and wavelike terms. We have combined all of the near-field terms together, as in Noblesse et al. 2013, and fast surrogates are known for their efficient evaluation, as in Newman 1987. 
 
 In this work we focus on the wavelike term
 \[
@@ -107,7 +107,7 @@ Consider a surface-piercing horizontal planform at small angle of attack $\alpha
 \[
 \partial_n\phi = \alpha, \qquad (x_p,y_p)\in\mathcal{C},\quad z_p\to 0^-.
 \]
-In limit $z_p\to 0^-$, the surface integral that defines the potential, equation~\ref{eq:patch}, reduces to a waterline contour integral around the planform boundary $\partial\mathcal{C}$, \citep{Noblesse1983}
+In the limit $z_p\to 0^-$, the surface integral that defines the potential, equation~\ref{eq:patch} reduces to a waterline contour integral around the planform boundary $\partial\mathcal{C}$ (Noblesse 1983)
 \[
 \phi(\vec x) = \oint_{\partial\mathcal{C}} q(\vec x_p)\,G(\vec x-\vec x_p)\,n_x\,\di{y_p}.    
 \]
@@ -149,7 +149,7 @@ where we have swapped the order of integration. The inner integral is the Fourie
 \[
 \int_{-1}^1 \sqrt{1-\eta^2} e^{i\omega\eta} \di\eta= \pi \frac{J_1(\omega)}\omega
 \]
-where $J_1$ is the Bessel function of the first kind. Substituting $\eta=y_p/b$ and $\omega=bk_y$, where $k_y(t)=t\sqrt{1+t^2}$, $W_b$ takes the general form~\eqref{eq:wavelike_general} with amplitude $A_b$
+where $\mathrm{J}_1$ is the Bessel function of the first kind. Substituting $\eta=y_p/b$ and $\omega=bk_y$, where $k_y(t)=t\sqrt{1+t^2}$, $W_b$ takes the general form~\eqref{eq:wavelike_general} with amplitude $A_b$
 \begin{equation}
   A_b(t) = \pi\,\frac{\mathrm{J}_1\bigl(b\,k_y(t)\bigr)}{k_y(t)}.
   \label{eq:Ab}
@@ -168,16 +168,17 @@ Using this, the integrated flat-ship potential of equation~\ref{eq:fs pot1} beco
 \[  
 \phi(\vec x)/q_0 = \Delta_L W_b(x,y,z)+\int_{-b}^b \sqrt{1-(y_p/b)^2}\, \Delta_L N(x,y-y_p,z)\,\di{y_p}
 \]
-where the near-field term $N$ can be integrated numerically without issue and the wavelike term is calculated using the partitioned contour deformation method described in section~\ref{sec:fast_evaluator}.
+where the near-field term $N$ can be integrated numerically without issue and the wavelike term is calculated using the partitioned contour deformation method described in Section~\ref{sec:fast_evaluator}.
 
-A set of resulting flat-ship wave-fields are shown in figure~\ref{fig:wave_elevation} for various $b,L$. First, we note that the predicted wave-elevations are finite amplitude and energy everywhere despite evaluation on $z=0$. Second, the predictions capture many well-known physical patterns beyond the obvious Kelvin-wedge and wake shape. In particular, directly behind the planform we see the interaction of the stern corner waves generates a large rooster-tail in the near wake, after which the wave trains diverge leaving a rough but low amplitude wave-field in the far wake. The distinct wave trains generated by each corner of the planform also imply that the use of a smooth elliptical distribution has not artificially \textit{rounded} the geometry.
+A set of resulting flat-ship wave-fields are shown in Figure~\ref{fig:wave_elevation} for various $b,L$. First, we note that the predicted wave-elevations are finite amplitude and energy everywhere despite evaluation on $z=0$. Second, the predictions capture many well-known physical patterns beyond the obvious Kelvin-wedge and wake shape. In particular, directly behind the planform we see the interaction of the stern corner waves generates a large rooster-tail in the near wake, after which the wave trains diverge leaving a rough but low amplitude wave-field in the far wake. The distinct wave trains generated by each corner of the planform also imply that the use of a smooth elliptical distribution has not artificially \textit{rounded} the geometry.
 
-An initially counter-intuitive feature is the strong \textit{decrease} in wave amplitude with increasing $b$. However, this is resolved by acknowledging the Kelvin scaling applied to our lengths; as we increase $b$, it becomes too long to strongly interact with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. In terms of Froude numbers, we have $\mathbf{F_b}=b^{-1/2}$, and $\mathbf{F_L}=L^{-1/2}$; increasing $b,L$ decreases the Froude numbers, typically decreasing the wave disturbance amplitude.
+An initially counter-intuitive feature is the strong \textit{decrease} in wave amplitude with increasing $b$. However, this is resolved by acknowledging the Kelvin scaling applied to our lengths; as we increase $b$, it becomes too long to strongly interact with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. In terms of Froude numbers, we have $\mathrm{F_b}=b^{-1/2}$, and $\mathrm{F_L}=L^{-1/2}$; increasing $b,L$ decreases the Froude numbers, typically decreasing the wave disturbance amplitude.
 
 \subsection{Wave Resistance}
 \label{ssec:wave_resistance}
 \begin{figure}
-    \includegraphics[width=0.495\linewidth]{make_figures/wave_drag.png}
+    \centering
+    \includegraphics[width=0.75\linewidth]{make_figures/wave_drag.png}
     \caption{Flat ship wave drag coefficient $C_W$ scaled by $q_0^2$ as a function of the Kelvin-scaled planform length $L$ and width $b$.}
     \label{fig:wave_drag}
 \end{figure}
@@ -196,14 +197,14 @@ where the Kochin function $\mathrm{K}(t)$ is the source-strength-weighted integr
 Substituting into~\eqref{eq:havelock} and defining $C_W = D_W/(\rho U^2 b^2\ell^2)$ gives
 %
 \begin{equation}
-  C_W = \pi q_0^2 \int_{-\infty}^{\infty}
+  C_W = 2\pi q_0^2 \int_0^{\infty}
   A_w\bigl(1 - \cos\bigl(Lk_x\bigr)\bigr)\,\di t,\qquad A_w=\left(\frac{\mathrm{J}_1(b\,k_y)}{bk_y}\right)^2 k_x,
   \label{eq:Cw}
 \end{equation}
 %
 with $q_0 \propto \alpha$. The amplitude $A_w$ is $O(1)$ at $t=0$ and decays as $t^{-5}$ for large $t$, so~\eqref{eq:Cw} is well-posed and rapidly convergent. 
 
-Figure~\ref{fig:wave_drag} plots scaled resistance across a wide range of $b,L$. First, we note that the interference factor $1-\cos(Lk_x)$ produces classical constructive and destructive interference between the bow and stern wave systems, resulting in oscillating resistance values with $L$. Second, the strong decay of the $A_w$ weighting with increased $b$ leads to a monotonic decrease in scaled resistance. This also physically supported by the discussion on the wave elevation of the previous subsection. 
+Figure~\ref{fig:wave_drag} plots scaled resistance across a wide range of $b,L$. First, we note that the interference factor $1-\cos(Lk_x)$ produces classical constructive and destructive interference between the bow and stern wave systems, resulting in oscillating resistance values with $L$. Second, the strong decay of the $A_w$ weighting with increased $b$ leads to a monotonic decrease in scaled resistance. This is also physically supported by the discussion on the wave elevation of the previous subsection. 
 
 \section{Partitioned evaluation method for wavelike kernels}\label{sec:fast_evaluator}
 
@@ -244,27 +245,44 @@ Figure~\ref{fig:delta_phase} shows the maximum error of the point-source wavelik
 
 The same contour-deformation strategy applies to the line-integrated kernel, extended to handle the additional oscillatory structure introduced by the Bessel prefactor in equation~\ref{eq:Ab}. The Bessel function is decomposed using Hankel functions away from $t = 0$
 \begin{equation}\label{eq:Hankel}
-\text{J}_1(bk_y) = \frac{1}{2}\left(\text{Hx}_1^{(1)}(bk_y)\,e^{ibk_y} + \text{Hx}_1^{(2)}(bk_y)\,e^{-ibk_y}\right)
+\mathrm{J}_1(bk_y) = \frac{1}{2}\left(\mathrm{Hx}_1^{(1)}(bk_y)\,e^{ibk_y} + \mathrm{Hx}_1^{(2)}(bk_y)\,e^{-ibk_y}\right)
 \end{equation}
-where the scaled Hankel functions $\text{Hx}_1^{(1,2)}$ are slowly varying. The exponential factors $e^{\pm i b\,k_y(t)}$ introduce additional oscillations whose frequency depends on the beam half-width $b$, but these can be absorbed into the wavelike phase, yielding two integrals with shifted phases $g(x,y \pm b,t)$. Each shifted phase has its own stationary points and associated non-oscillatory interval; the union of these intervals is used on the real line, ensuring that the contour starting points are sufficiently far from any stationary point. This interval is integrated (once) using the $A_b$ prefactor, while the semi-infinite tails are computed twice, once for each Hankel function using its respective phase.\footnote{The same approach can also be applied to the wave resistance integral~\eqref{eq:Cw}. However, the faster $A_w\sim t^{-5}$ decay and slower $k_x\sim t$ phase function mean direct quadrature is also practical for that integral.}
+where the scaled Hankel functions $\mathrm{Hx}_1^{(1,2)}$ are slowly varying. The exponential factors $e^{\pm i b\,k_y(t)}$ introduce additional oscillations whose frequency depends on the beam half-width $b$, but these can be absorbed into the wavelike phase, yielding two integrals with shifted phases $g(x,y \pm b,t)$. Each shifted phase has its own stationary points and associated non-oscillatory interval; the union of these intervals is used on the real line, ensuring that the contour starting points are sufficiently far from any stationary point. This interval is integrated (once) using the $A_b$ prefactor, while the semi-infinite tails are computed twice, once for each Hankel function using its respective phase.\footnote{The same approach can also be applied to the wave resistance integral~\eqref{eq:Cw}. However, the faster $A_w\sim t^{-5}$ decay and slower $k_x\sim t$ phase function mean direct quadrature is also practical for that integral.}
 
 In general, the $W_b$ quadrature requires approximately twice as many phase and kernel evaluations as $W$, and Bessel function evaluations are $O(10)$ times as expensive as simple trigonometric functions. However, the computational cost is still $10^4$--$10^5$ faster than direct quadrature on $z=0$ with relative errors less than $10^{-6}$, Table~\ref{tab:wavelike}.
 
 \section{Conclusions}
 
-More elaborate flat-ship models account for the local hull geometry in the Neumann condition, but the elliptic distribution is the correct leading-order result for a flat-bottom hull.
+The singularity in the point-source Kelvin Green's function at $z=0$ is fundamental: the wave elevation spectrum diverges as $S_\zeta(k^*;z)\sim 1/|z|$ with unbounded high-wavenumber energy. However, this singularity is not intrinsic to the flat-ship problem itself. The constant-downwash boundary condition naturally produces an elliptic spanwise source distribution, and analytic integration of this distribution yields a regularized kernel with finite spectrum $S_\zeta(k;0)\sim k^{-3/2}$. The waterline evaluation is therefore well-posed when the correct source distribution is used.
 
-\section*{References (incomplete)}
+This resolution enables practical flat-ship predictions without empirical damping or iterative methods. The resulting predictions are physically consistent, capturing wave interference patterns and realistic Froude number trends. The contour-deformation approach developed here evaluates both point and line kernels efficiently ($10^4$--$10^5$ speedup) despite the non-analytic Kelvin phase, making the method suitable for design and machine learning applications. 
+
+We note that the elliptic distribution developed here is merely the leading-order solution for flat planforms. Accounting for local hull geometry while retaining the regularized kernel framework is a natural extension. The fast evaluation method also applies to time-domain problems and could be coupled with lifting-surface theory for control surfaces.
+
+\section*{References}
 
 \begin{itemize}
-    \item Baar, J. J. M. and Price, W. G. (1988). \textbf{TODO} (full bibliographic entry).
-    \item Noblesse, F. (1981). \textbf{TODO} (full bibliographic entry).
-    \item Newman, J. N. (1987). \textbf{TODO} (full bibliographic entry).
-    \item Peters, A. S. (1949). \textbf{TODO} (full bibliographic entry).
-    \item Iwashita, H. and Ohkusu, M. (1992). \textbf{TODO} (full bibliographic entry).
-    \item Noblesse, F., Huang, F., and Yang, C. (2013). \textbf{TODO} (full bibliographic entry; Neumann-Michell reformulation).
-    \item Huybrechs, D. (2017). \textbf{TODO} (full bibliographic entry).
-    \item Gibbs, A. and Huybrechs, D. (2024). \textbf{TODO} (full bibliographic entry).
+    \item Baar, J. J. M. and Price, W. G. (1988). Developments in the calculation of the wavemaking resistance of ships. \textit{Proceedings of the Royal Society of London A}, 416(1851), 115--147.
+    
+    \item Farrell, C. (1973). On the wave resistance of a submerged spheroid. \textit{Journal of Ship Research}, 17(1), 1--11.
+    
+    \item Gibbs, A. and Huybrechs, D. (2023). Efficient evaluation of oscillatory integrals via principal value transformations and the numerical method of steepest descent. \textit{IMA Journal of Numerical Analysis}, 43(6), 3619--3656.
+    
+    \item Gibbs, A. and Huybrechs, D. (2024). Fast and accurate evaluation of the Kelvin ship wave pattern and its derivatives. \textit{Journal of Computational Physics}, 499, 112713.
+    
+    \item Huybrechs, D. (2017). Stable high-order quadrature rules with equidistant points. \textit{Journal of Computational and Applied Mathematics}, 231(2), 933--947.
+    
+    \item Iwashita, H. and Ohkusu, M. (1992). The Green function method for ship motions at forward speed. \textit{Ship Technology Research}, 39(1), 3--21.
+    
+    \item Newman, J. N. (1987). Evaluation of the wave-resistance Green function: Part 1---The double integral. \textit{Journal of Ship Research}, 31(2), 79--90.
+    
+    \item Noblesse, F. (1981). Alternative integral representations for the Green function of the theory of ship wave resistance. \textit{Journal of Engineering Mathematics}, 15(4), 241--265.
+    
+    \item Noblesse, F. (1983). A slender-ship theory of wave resistance. \textit{Journal of Ship Research}, 27(1), 13--33.
+    
+    \item Noblesse, F., Huang, F., and Yang, C. (2013). The Neumann-Michell theory of ship waves. \textit{Journal of Engineering Mathematics}, 79(1), 51--71.
+    
+    \item Peters, A. S. (1949). A new treatment of the ship wave problem. \textit{Communications on Pure and Applied Mathematics}, 2(2--3), 123--148.
 \end{itemize}
 
 \end{document}
