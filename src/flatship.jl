@@ -19,9 +19,11 @@ where `t∈[-∞,∞], `g(x,y,t)=(x+yt)√(1+t²)`, and `H` is the Heaviside fun
 
 where `J₁` is the Bessel function of the first kind and `k(t)=t√(1+t^2)`. This is better regularized than the original integral for z≈0⁻, but still requires the use of a complex path of integration to avoid wasting 1000s of function evaluations on the decaying tail oscillations. Away from the stationary points and t=0 we use the identity
 
-    J₁(z) = (H₁¹(z) exp(iz) + H₁²(z) exp(-iz))/2
+    J₁(z) = (Hx₁¹(z) exp(iz) + Hx₁²(z) exp(-iz))/2
 
-where `H₁¹` and `H₁²` are the scaled Hankel functions of the first and second kind respectively. These functions are are treated as slowly varying prefactors while the exponentials are absorbed into the complex steepest descent path.
+where `Hx₁¹` and `Hx₁²` are the scaled Hankel functions of the first and second kind respectively. These functions are are treated as slowly varying prefactors while the exponentials are absorbed into the complex steepest descent path.
+
+See `wavelike` for optional arguments.
 """
 function ∫₂wavelike(x,y,z;b=1,ltol=-10,Δg=6,xlag=NeumannKelvin.xlag,wlag=NeumannKelvin.wlag)
     x,y,z = promote(x,y,z)
@@ -37,7 +39,7 @@ function ∫₂wavelike(x,y,z;b=1,ltol=-10,Δg=6,xlag=NeumannKelvin.xlag,wlag=Ne
         rng = finite_ranges(S,t->g(xv,yv+y′,t),Δg,R;atol) .|> first |> interval
     end |> sort |> merge
 
-    # Real-line integrand and complex path phases and pre-factors
+    # Real-line integrand and complex path phases and pre-factors avoiding Hx branch cut
     f(t) = γj(t,b)*exp(z*(1+t^2))*sin(g(x,y,t))
     g₊(t)=g(x,y+b,t)-im*z*(1+t^2); dg₊(t)=dg(x,y+b,t)-2im*z*t; γ₊(t)=real(k(t)) > 0 ? γhx(t,1,b) : -γhx(t,2,-b)
     g₋(t)=g(x,y-b,t)-im*z*(1+t^2); dg₋(t)=dg(x,y-b,t)-2im*z*t; γ₋(t)=real(k(t)) > 0 ? γhx(t,2,b) : -γhx(t,1,-b)
