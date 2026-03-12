@@ -3,6 +3,7 @@
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage[authoryear,round]{natbib}
 \usepackage{bm}
 \geometry{margin=1in}
 \newcommand{\di}[1]{\mathop{\mathrm{d}#1}} % dx, dy, etc
@@ -23,9 +24,9 @@ Linear wave theory captures the essential physics of free-surface flows at a fra
 
 Linear potential theory for steady forward-speed wave problems captures the essential physics of ship-wave interaction at a tiny fraction of the computational cost of nonlinear and viscous solvers. This speed makes it attractive for applications such as design optimization, real-time control, and as the physics-informed backbone for machine learning surrogate models.  However, the predictions also need to be free from empirical tuning parameters and robust for any input provided, which can be a problem for undamped potential flow.
 
-The Kelvin Green's function for a steady translating disturbance exactly satisfies the linear free-surface boundary condition and has a well-established integral representation (Peters 1949; Noblesse 1981). For finite submergence, analytic and surrogate methods exist (Farrell 1973; Newman 1987), but the elevation of the free surface is ill-posed as the source position moves up to the free surface, i.e., as $z\to 0^-$. The wave elevation spectrum $S_\zeta(k)$ peaks at $k^* \sim 1/|z|$ with amplitude $\sim 1/|z|$, diverging as $|z|\to 0$ and making the downstream wake unresolvable. Series and steepest-descent methods (Baar and Price 1988; Iwashita and Ohkusu 1992) struggle with convergence, with stationary point coalescence, and with high wavenumbers in this limit. Recent contour deformation approaches (Huybrechs 2017; Gibbs \& Huybrechs 2024) are effective for analytic oscillatory integrands, but the Kelvin wavelike integral is non-analytic.
+The Kelvin Green's function for a steady translating disturbance exactly satisfies the linear free-surface boundary condition and has a well-established integral representation \citep{peters_new_1949, noblesse_alternative_1981}. For finite submergence, analytic and surrogate methods exist \citep{farell_wave_1973,newman_evaluation_1987}, but the elevation of the free surface is ill-posed as the source position moves up to the free surface, i.e., as $z\to 0^-$. The wave elevation spectrum $S_\zeta(k)$ peaks at $k^* \sim 1/|z|$ with amplitude $\sim 1/|z|$, diverging as $|z|\to 0$ and making the downstream wake unresolvable. Series and steepest-descent methods \citep{baar_evaluation_1988, iwashita_green_1992, doctors_convergence_1987} struggle with convergence, with stationary point coalescence, and with high wavenumbers in this limit. Recent contour deformation approaches \citep{deano_computing_2018, gibbs_numerical_2024} are effective for analytic oscillatory integrands, but the Kelvin wavelike integral is non-analytic.
 
-For surface-piercing bodies, the free-surface limit becomes unavoidable. The waterline contour contributes directly to the potential and must be evaluated at $z=0$ (Baar and Price 1988). Classic flat ship theory (Tuck, Doctors, etc.) prioritized practical prediction of wave resistance and hull pressure for high-speed, shallow-draft vessels, often using analytic or semi-analytic models and empirical corrections (e.g., spray) to match experiments. However, the singularity in the free-surface Green's function at $z\to 0^-$ was not fully resolved, and direct evaluation of the waterline contribution remains problematic. The persistent difficulty of evaluating the free-surface Green's function led to the development of the Neumann-Michell theory (Noblesse, Huang, Yang 2013), which avoids evaluation on $z=0$ using an implicit iterative scheme. Notably, Neumann-Michell theory was developed after the classic flat ship work, highlighting that the fundamental issues remain unresolved. This method sidesteps the $z\to 0$ singularity but sacrifices the directness and efficiency of explicit kernel representations.
+For surface-piercing bodies, the free-surface limit becomes unavoidable. The waterline contour contributes directly to the potential and must be evaluated at $z=0$ \citep{baar_developments_1988}. Classic flat ship theory \citep{tuck_low-aspect-ratio_1975} prioritized practical prediction of wave resistance and hull pressure for high-speed, shallow-draft vessels, often using analytic or semi-analytic models and empirical corrections (e.g., spray) to match experiments, \citep{cole_simple_1988}. However, the singularity in the free-surface Green's function at $z\to 0^-$ was not fully resolved, and direct evaluation of the waterline contribution remains problematic. The persistent difficulty of evaluating the free-surface Green's function led to the development of the Neumann-Michell theory \citep{noblesse_neumannmichell_2013}, which avoids evaluation on $z=0$ using an implicit iterative scheme. Notably, Neumann-Michell theory was developed after the classic flat ship work, highlighting that the fundamental issues remain unresolved. This method sidesteps the $z\to 0$ singularity but sacrifices the directness and efficiency of explicit kernel representations.
 
 This paper addresses the $z\to 0$ limit with an emphasis on obtaining meaningful finite energy free-surface predictions. The first contribution is analytical: Section~\ref{sec:point_source_asymptotics} identifies the limiting wave elevation spectrum $S_\zeta(k^*)\sim 1/|z|$ stated above via stationary-phase analysis; Section~\ref{sec:line_integrated_kernels} then develops a modified flat-ship model for $z\approx 0$, deriving the elliptic spanwise distribution of source strength that arises from the constant-downwash condition. The leading order flat-ship potential \textit{is} the waterline contribution, but analytic integration replaces the divergent spectrum with a finite $S_\zeta(k)\sim 1/k^{3/2}$ even on $z=0$. The second contribution is numerical: Section~\ref{sec:fast_evaluator} develops a practical evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$--$10^5$ speedup over direct quadrature while preserving the wave energy. The new flat-ship theory is then used to study the wave elevation and wave drag generated by a rectangular planform on $z=0$ as a function of the length and beam based Froude-number. An open-source Julia implementation is provided for reproducibility.
 
@@ -48,7 +49,7 @@ The well known Kelvin Green's function of a translating point source at $\vec x_
 \[
 G\bigl(\vec x_f,\vec x_p\bigr) = N(\vec x_f,\vec x_p) + W(\vec x_f - \vec x_p')
 \]
-where $\vec x_f$ is the field evaluation point and $\vec x_p'=(x_p,y_p,-z_p)$ is the image point reflected across $z=0$. As in Noblesse et al. 2013, we have combined all of the near-field terms together, and fast surrogates are known for it's efficient evaluation, such as in Newman 1987. In this work, we focus on the wavelike term. 
+where $\vec x_f$ is the field evaluation point and $\vec x_p'=(x_p,y_p,-z_p)$ is the image point reflected across $z=0$. As in \cite{noblesse_neumannmichell_2013}, we have combined all of the near-field terms together, and fast surrogates are known for it's efficient evaluation, such as in \cite{newman_evaluation_1987}. In this work, we focus on the wavelike term. 
 
 Applying this Green's function, the induced potential of a source-patch $\mathcal{P}$ is
 \begin{equation}\label{eq:patch}
@@ -100,7 +101,7 @@ The singularity identified above motivates replacing the point-source waterline 
 
 \subsection{The Flat-Ship Model}\label{ssec:flat_ship_model}
 
-Consider an extremely shallow-draft ship such as a flat-bottom planing hull with a small pitch angle $\alpha$. In the limit $z_p\to 0^-$, the surface integral that defines the potential, equation~\ref{eq:patch} reduces to a waterline contour integral around the planform boundary $\partial\mathcal{P}$ (Noblesse 1983)
+Consider an extremely shallow-draft ship such as a flat-bottom planing hull with a small pitch angle $\alpha$. In the limit $z_p\to 0^-$, the surface integral that defines the potential, equation~\ref{eq:patch} reduces to a waterline contour integral around the planform boundary $\partial\mathcal{P}$ \citep{noblesse_slender-ship_1983}
 \[
 \phi(\vec x_f) = \oint_{\partial\mathcal{P}} q(\vec x_p)\,G(\vec x_f-\vec x_p)\,n_x\,\di{y_p}.
 \]
@@ -262,30 +263,31 @@ This resolution enables practical flat-ship predictions without empirical dampin
 
 We note that the elliptic distribution developed here is merely the leading-order solution for flat planforms. Accounting for local hull geometry while retaining the regularized kernel framework is a natural extension. The approach could also be extended to time-varying source-strengths enabling direct calculation of the forward speed waterline contribution to ship motions in ocean waves.
 
-\section*{References}
+\bibliographystyle{plainnat}
+\bibliography{references}
 
-\begin{itemize}
-    \item Baar, J. J. M. and Price, W. G. (1988). Developments in the calculation of the wavemaking resistance of ships. \textit{Proceedings of the Royal Society of London A}, 416(1851), 115--147.
+% \begin{itemize}
+%     \item Baar, J. J. M. and Price, W. G. (1988). Developments in the calculation of the wavemaking resistance of ships. \textit{Proceedings of the Royal Society of London A}, 416(1851), 115--147.
 
-    \item Farrell, C. (1973). On the wave resistance of a submerged spheroid. \textit{Journal of Ship Research}, 17(1), 1--11.
+%     \item Farrell, C. (1973). On the wave resistance of a submerged spheroid. \textit{Journal of Ship Research}, 17(1), 1--11.
 
-    \item Gibbs, A. and Huybrechs, D. (2023). Efficient evaluation of oscillatory integrals via principal value transformations and the numerical method of steepest descent. \textit{IMA Journal of Numerical Analysis}, 43(6), 3619--3656.
+%     \item Gibbs, A. and Huybrechs, D. (2023). Efficient evaluation of oscillatory integrals via principal value transformations and the numerical method of steepest descent. \textit{IMA Journal of Numerical Analysis}, 43(6), 3619--3656.
 
-    \item Gibbs, A. and Huybrechs, D. (2024). Fast and accurate evaluation of the Kelvin ship wave pattern and its derivatives. \textit{Journal of Computational Physics}, 499, 112713.
+%     \item Gibbs, A. and Huybrechs, D. (2024). Fast and accurate evaluation of the Kelvin ship wave pattern and its derivatives. \textit{Journal of Computational Physics}, 499, 112713.
 
-    \item Huybrechs, D. (2017). Stable high-order quadrature rules with equidistant points. \textit{Journal of Computational and Applied Mathematics}, 231(2), 933--947.
+%     \item Huybrechs, D. (2017). Stable high-order quadrature rules with equidistant points. \textit{Journal of Computational and Applied Mathematics}, 231(2), 933--947.
 
-    \item Iwashita, H. and Ohkusu, M. (1992). The Green function method for ship motions at forward speed. \textit{Ship Technology Research}, 39(1), 3--21.
+%     \item Iwashita, H. and Ohkusu, M. (1992). The Green function method for ship motions at forward speed. \textit{Ship Technology Research}, 39(1), 3--21.
 
-    \item Newman, J. N. (1987). Evaluation of the wave-resistance Green function: Part 1---The double integral. \textit{Journal of Ship Research}, 31(2), 79--90.
+%     \item Newman, J. N. (1987). Evaluation of the wave-resistance Green function: Part 1---The double integral. \textit{Journal of Ship Research}, 31(2), 79--90.
 
-    \item Noblesse, F. (1981). Alternative integral representations for the Green function of the theory of ship wave resistance. \textit{Journal of Engineering Mathematics}, 15(4), 241--265.
+%     \item Noblesse, F. (1981). Alternative integral representations for the Green function of the theory of ship wave resistance. \textit{Journal of Engineering Mathematics}, 15(4), 241--265.
 
-    \item Noblesse, F. (1983). A slender-ship theory of wave resistance. \textit{Journal of Ship Research}, 27(1), 13--33.
+%     \item Noblesse, F. (1983). A slender-ship theory of wave resistance. \textit{Journal of Ship Research}, 27(1), 13--33.
 
-    \item Noblesse, F., Huang, F., and Yang, C. (2013). The Neumann-Michell theory of ship waves. \textit{Journal of Engineering Mathematics}, 79(1), 51--71.
+%     \item Noblesse, F., Huang, F., and Yang, C. (2013). The Neumann-Michell theory of ship waves. \textit{Journal of Engineering Mathematics}, 79(1), 51--71.
 
-    \item Peters, A. S. (1949). A new treatment of the ship wave problem. \textit{Communications on Pure and Applied Mathematics}, 2(2--3), 123--148.
-\end{itemize}
+%     \item Peters, A. S. (1949). A new treatment of the ship wave problem. \textit{Communications on Pure and Applied Mathematics}, 2(2--3), 123--148.
+% \end{itemize}
 
 \end{document}
