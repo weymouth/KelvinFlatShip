@@ -62,10 +62,11 @@ end
 ∫₂Wₜ(x,y,z,t) = γj(t,1)*exp(z*(1+t^2))*sin((x+y*t)*hypot(1,t))
 brute∫₂wavelike(x,y,z) = x ≥ 0 ? zero(x) : 4π*quadgk(t->∫₂Wₜ(x,y,z,t),-Inf,0,Inf,maxevals=10^8)[1]
 
-# Check the Bessel function integral identity is correct for an easy value of z
+# Check the Bessel function integral identity matches the directly integrated point-source for an easy value of z
 begin
-    x,y,z = -1.,0.5,-1.
-    @assert isapprox(brute∫₂wavelike(x,y,z),quadgk(y′->√(1-y′^2)*NeumannKelvin.wavelike(x,abs(y-y′),z),-1,1)[1],rtol=1e-7)
+    x,y,z = -1.,0.5,-0.1
+    brutepointwavelike(x,y,z) = quadgk_count(y′->√(1-y′^2)*NeumannKelvin.wavelike(x,abs(y-y′),z),-1,1,rtol=1e-7)
+    @assert isapprox(brute∫₂wavelike(x,y,z),brutepointwavelike(x,y,z)[1],rtol=1e-6)
 end
 
 # Check the two ∫₂wavelike implementations give the same answer and compare timings
