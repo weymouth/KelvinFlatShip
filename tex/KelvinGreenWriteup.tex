@@ -36,12 +36,12 @@ This paper addresses the $z\to 0$ limit with an emphasis on obtaining meaningful
 
 \begin{figure}
     \centering
-    \includesvg{./flat_ship_schematic.svg}
-    \caption{Schematic of the flat ship model showing rectangular planform of length $L$ and half-beam $b$ at the free surface $z=0$, with coordinate system, flow direction $U$, angle of attack $\alpha$, and Kelvin wedge.}
+    \includesvg[width=0.8\textwidth]{./flat_ship_schematic.svg}
+    \caption{Schematic of the free surface prediction problem with submerged point source and flat-ship planform.}
     \label{fig:schematic}
 \end{figure}
 
-We consider steady, incompressible and irrotational flow in the half-space $z\le0$ with a reference frame translating in direction $x$ at speed $U$. After scaling all lengths by the Kelvin length $\ell=U^2/\mathrm{g}$ (where $\mathrm{g}$ is the gravitational acceleration) and the velocity potential $\phi$ by $U\ell$, that potential must satisfy $\nabla^2\phi = 0$ in the half-space and the linear free-surface boundary condition on the undisturbed free-surface plane
+We consider steady, incompressible and irrotational flow in the half-space $z\le0$ with a reference frame translating in direction $x$ at speed $U$, Figure~\ref{fig:schematic}. After scaling all lengths by the Kelvin length $\ell=U^2/\mathrm{g}$ (where $\mathrm{g}$ is the gravitational acceleration) and the velocity potential $\phi$ by $U\ell$, that potential must satisfy $\nabla^2\phi = 0$ in the half-space and the linear free-surface boundary condition on the undisturbed free-surface plane
 \[
 \partial_{xx}\phi + \partial_z\phi = 0\quad\text{on}\quad z=0
 \]
@@ -98,7 +98,7 @@ As $z\to 0$, the peak migrates to arbitrarily high wavenumber with unbounded amp
 
 \section{Line-Integrated Potential for Flat-Ship Theory}\label{sec:line_integrated_kernels}
 
-The singularity identified above motivates replacing the point-source waterline kernel with an integrated Green's function. The flat-ship model provides a uniquely challenging setting as the entire planform rests on $z=0$.
+The singularity identified above motivates replacing the point-source waterline kernel with an integrated Green's function. The flat-ship model provides a uniquely challenging setting as the entire planform rests on $z=0$, Figure~\ref{fig:schematic}.
 
 \subsection{The Flat-Ship Model}\label{ssec:flat_ship_model}
 
