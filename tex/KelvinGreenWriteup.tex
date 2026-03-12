@@ -3,12 +3,13 @@
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{svg}
 \usepackage[authoryear,round]{natbib}
 \usepackage{bm}
 \geometry{margin=1in}
 \newcommand{\di}[1]{\mathop{\mathrm{d}#1}} % dx, dy, etc
 
-\title{Linear Kelvin Wave Predictions in the $z\to 0^$ Limit}
+\title{Linear Kelvin Wave Predictions in the $z\to 0$ Limit}
 \author{G. D. Weymouth}
 \date{\today}
 
@@ -35,7 +36,7 @@ This paper addresses the $z\to 0$ limit with an emphasis on obtaining meaningful
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.85\linewidth]{flat_ship_schematic.svg}
+    \includesvg{./flat_ship_schematic.svg}
     \caption{Schematic of the flat ship model showing rectangular planform of length $L$ and half-beam $b$ at the free surface $z=0$, with coordinate system, flow direction $U$, angle of attack $\alpha$, and Kelvin wedge.}
     \label{fig:schematic}
 \end{figure}
@@ -179,7 +180,7 @@ The amplitude $A_w$ is $O(1)$ at $t=0$ and decays as $t^{-5}$ for large $t$, so~
 
 \section{Partitioned evaluation method for wavelike kernels}\label{sec:fast_evaluator}
 
-Direct numerical quadrature and series expansions for the wavelike integral equation~\ref{eq:wavelike_general} are inefficient or even non-convergent as $z\to0$. In this section, we detail an efficient and universally robust partitioned contour-deformation approach for the wavelike kernels, leveraging the classical stationary phase results above. An open-source Julia implementation is provided.
+Direct numerical quadrature and series expansions for the wavelike integral equation~\ref{eq:wavelike_general} are inefficient or even non-convergent as $z\to0$. In this section, we detail an efficient and universally robust partitioned contour-deformation approach for the wavelike kernels, leveraging the classical stationary phase results above. An open-source Julia implementation is provided at \cite{weymouth_kelvinflatship_2026}.
 
 \subsection{Defining the saddle regions and quadrature methods}
 
@@ -249,7 +250,7 @@ An initially counter-intuitive feature is the strong \textit{decrease} in wave a
 \begin{figure}
     \centering
     \includegraphics[width=0.9\linewidth]{make_figures/wave_drag.png}
-    \caption{Left: Wave elevation $\zeta$ at three spanwise locations ($y=0$, $y=0.6$, $y=1.2$) for increasing depth ($z=-0.1$, $z=-0.01$, $z=0$) with half-beam $b=1$. Right: Flat ship wave drag coefficient $C_W$ scaled by $q_0^2$ as a function of the Kelvin-scaled planform length $L$ and width $b$.}
+    \caption{Flat ship wave drag coefficient $C_W$ scaled by $q_0^2$ as a function of the Kelvin-scaled planform length $L$ and width $b$.}
     \label{fig:wave_drag}
 \end{figure}
 
@@ -257,7 +258,7 @@ Figure~\ref{fig:wave_drag} plots scaled resistance across a wide range of $b,L$.
 
 \section{Conclusions}
 
-The singularity in the point-source Kelvin Green's function at $z=0$ is fundamental, with the wave elevation spectrum diverging as $S_\zeta(k^*;z)\sim 1/|z|$ due to unbounded high-wavenumber energy. However, this singularity is not intrinsic to linear potential flow itself. The constant-downwash boundary condition on a flat-ship naturally produces an elliptic spanwise source distribution, and analytic integration of this distribution yields a regularized kernel with finite spectrum $S_\zeta(k;0)\sim k^{-3/2}$. 
+The singularity in the point-source Kelvin Green's function as $z\to 0$ is fundamental, with the wave elevation spectrum diverging as $S_\zeta(k^*)\sim 1/|z|$ due to unbounded high-wavenumber energy. However, this singularity is not intrinsic to linear potential flow itself. The constant-downwash boundary condition on a flat-ship naturally produces an elliptic spanwise source distribution, and analytic integration of this distribution yields a regularized kernel with finite spectrum $S_\zeta(k)\sim k^{-3/2}$. 
 
 This resolution enables practical flat-ship predictions without empirical damping or iterative methods. The resulting predictions are physically consistent, capturing wave interference patterns and realistic Froude number trends. The contour-deformation approach developed here evaluates both point and line kernels efficiently ($10^4$--$10^5$ speedup) despite the non-analytic Kelvin phase, making the method suitable for design and machine learning applications.
 
