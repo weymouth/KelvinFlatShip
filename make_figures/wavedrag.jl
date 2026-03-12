@@ -18,5 +18,5 @@ z = Cw(L,b)
 contourf(L,b,z',levels=18,lw=0,cmap=:amp,clims=(0,30),
     ylabel="      b",yscale=:log10,yguidefontrotation=-90,
     xlabel="L",xticks=([π,3π,5π],["π","3π","5π"]),
-    size=(600,600),colorbar_title="\nCw/q₀²",rightmargin=5Plots.mm)
+    size=(800,300),colorbar_title="\nCw/q₀²",rightmargin=5Plots.mm)
 savefig("wave_drag.png")
