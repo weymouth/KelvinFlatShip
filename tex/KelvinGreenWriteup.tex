@@ -23,11 +23,11 @@ Linear wave theory captures the essential physics of free-surface flows at a fra
 
 Linear potential theory for steady forward-speed wave problems captures the essential physics of ship-wave interaction at a tiny fraction of the computational cost of nonlinear and viscous solvers. This speed makes it attractive for applications such as design optimization, real-time control, and as the physics-informed backbone for machine learning surrogate models.  However, the predictions also need to be free from empirical tuning parameters and robust for any input provided, which can be a problem for undamped potential flow.
 
-The Kelvin Green's function for a steady translating disturbance exactly satisfies the linear free-surface boundary condition and has a well-established integral representation (Peters 1949; Noblesse 1981). For finite submergence, analytic and surrogate methods exist (Farrell 1973; Newman 1987), but the elevation of the free surface is ill-posed as the source position moves up to the free surface, i.e., as $z\to 0^-$. The wave elevation spectrum $S_\zeta(k;z)$ peaks at $k^* \sim 1/|z|$ with amplitude $\sim 1/|z|$, diverging as $|z|\to 0$ and making the downstream wake unresolvable. Series and steepest-descent methods (Baar and Price 1988; Iwashita and Ohkusu 1992) struggle with convergence, with stationary point coalescence, and with high wavenumbers in this limit. Recent contour deformation approaches (Huybrechs 2017; Gibbs \& Huybrechs 2024) are effective for analytic oscillatory integrands, but the Kelvin wavelike integral is non-analytic.
+The Kelvin Green's function for a steady translating disturbance exactly satisfies the linear free-surface boundary condition and has a well-established integral representation (Peters 1949; Noblesse 1981). For finite submergence, analytic and surrogate methods exist (Farrell 1973; Newman 1987), but the elevation of the free surface is ill-posed as the source position moves up to the free surface, i.e., as $z\to 0^-$. The wave elevation spectrum $S_\zeta(k)$ peaks at $k^* \sim 1/|z|$ with amplitude $\sim 1/|z|$, diverging as $|z|\to 0$ and making the downstream wake unresolvable. Series and steepest-descent methods (Baar and Price 1988; Iwashita and Ohkusu 1992) struggle with convergence, with stationary point coalescence, and with high wavenumbers in this limit. Recent contour deformation approaches (Huybrechs 2017; Gibbs \& Huybrechs 2024) are effective for analytic oscillatory integrands, but the Kelvin wavelike integral is non-analytic.
 
-For surface-piercing bodies, the free-surface limit becomes unavoidable. The waterline contour contributes directly to the potential and must be evaluated at $z=0$ (Baar and Price 1988). Classic flat ship theory (Tuck, Doctors, etc.) prioritized practical prediction of wave resistance and hull pressure for high-speed, shallow-draft vessels, often using analytic or semi-analytic models and empirical corrections (e.g., spray) to match experiments. However, the singularity in the free-surface Green's function at $z\to 0^-$ was not fully resolved, and direct evaluation of the waterline contribution remains problematic. The persistent difficulty of evaluating the free-surface Green's function led to the development of the Neumann-Michell theory (Noblesse, Huang, Yang 2013), which avoids evaluation on $z=0$ using an implicit iterative scheme. Notably, Neumann-Michell theory was developed after the classic flat ship work, highlighting that the fundamental issues remain unresolved. This method sidesteps the $z\to 0^-$ singularity but sacrifices the directness and efficiency of explicit kernel representations.
+For surface-piercing bodies, the free-surface limit becomes unavoidable. The waterline contour contributes directly to the potential and must be evaluated at $z=0$ (Baar and Price 1988). Classic flat ship theory (Tuck, Doctors, etc.) prioritized practical prediction of wave resistance and hull pressure for high-speed, shallow-draft vessels, often using analytic or semi-analytic models and empirical corrections (e.g., spray) to match experiments. However, the singularity in the free-surface Green's function at $z\to 0^-$ was not fully resolved, and direct evaluation of the waterline contribution remains problematic. The persistent difficulty of evaluating the free-surface Green's function led to the development of the Neumann-Michell theory (Noblesse, Huang, Yang 2013), which avoids evaluation on $z=0$ using an implicit iterative scheme. Notably, Neumann-Michell theory was developed after the classic flat ship work, highlighting that the fundamental issues remain unresolved. This method sidesteps the $z\to 0$ singularity but sacrifices the directness and efficiency of explicit kernel representations.
 
-This paper addresses the $z\to 0^-$ limit with an emphasis on obtaining meaningful finite energy free-surface predictions. The first contribution is analytical: Section~\ref{sec:point_source_asymptotics} identifies the limiting wave elevation spectrum $S_\zeta(k^*;z)\sim 1/|z|$ stated above via stationary-phase analysis; Section~\ref{sec:line_integrated_kernels} then develops a modified flat-ship model for $z\approx 0$, deriving the elliptic spanwise distribution of source strength that arises from the constant-downwash condition. The leading order flat-ship potential \textit{is} the waterline contribution, but analytic integration replaces the divergent spectrum with a finite $S_\zeta(k;0)\sim 1/k^{3/2}$. The second contribution is numerical: Section~\ref{sec:fast_evaluator} develops a practical evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$--$10^5$ speedup over direct quadrature while preserving the wave energy. The new flat-ship theory is then used to study the wave elevation and wave drag generated by a rectangular planform on $z=0$ as a function of the length and beam based Froude-number. An open-source Julia implementation is provided for reproducibility.
+This paper addresses the $z\to 0$ limit with an emphasis on obtaining meaningful finite energy free-surface predictions. The first contribution is analytical: Section~\ref{sec:point_source_asymptotics} identifies the limiting wave elevation spectrum $S_\zeta(k^*)\sim 1/|z|$ stated above via stationary-phase analysis; Section~\ref{sec:line_integrated_kernels} then develops a modified flat-ship model for $z\approx 0$, deriving the elliptic spanwise distribution of source strength that arises from the constant-downwash condition. The leading order flat-ship potential \textit{is} the waterline contribution, but analytic integration replaces the divergent spectrum with a finite $S_\zeta(k)\sim 1/k^{3/2}$ even on $z=0$. The second contribution is numerical: Section~\ref{sec:fast_evaluator} develops a practical evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$--$10^5$ speedup over direct quadrature while preserving the wave energy. The new flat-ship theory is then used to study the wave elevation and wave drag generated by a rectangular planform on $z=0$ as a function of the length and beam based Froude-number. An open-source Julia implementation is provided for reproducibility.
 
 
 \section{Kelvin Green's Function for Linear Potential Flow}
@@ -56,7 +56,7 @@ Applying this Green's function, the induced potential of a source-patch $\mathca
 \end{equation}
 where $q$ is the source strength scaled by $U$. If $\mathcal{P}$ lies on or near $z=0$, then evaluating the linear free-surface elevation $\zeta = \partial_x\phi|_{z_f=0}$ and wave drag requires evaluating $G$, and in particular $W$, close to $z=0$. In the next section, we show that this limit is singular for a point source even far downstream. This divergence is well known in practice, spurring developments such as Neumann-Michell theory, but we characterize it explicitly below as a basis for comparison.
 
-\section{Point-Source Singularity as $z\to 0^-$}\label{sec:point_source_asymptotics}
+\section{Point-Source Singularity as $z\to 0$}\label{sec:point_source_asymptotics}
 
 \begin{figure}
     \centering
@@ -78,21 +78,21 @@ t_\pm = -\frac{x \pm \sqrt{x^2 - 8y^2}}{4y}
 \end{equation}
 corresponding to the transverse and diverging wave systems inside the Kelvin wedge $|y| < |x|/\sqrt{8}$. Near the centerline we have $|y/x|\to 0$ and therefore the diverging ridge goes to $t_+ \approx -x/(2y) \to \infty$. A standard stationary-phase estimate for the diverging wave contribution on $z=0$ gives
 \[
-W(x,y,0) \sim \left(\frac{t_+}{R}\right)^{1/2},\quad\text{where}\quad R = \sqrt{x^2+y^2}
+W(x,y,0) \sim \frac{A_+}{\sqrt{\partial_{tt}g_+}}\sim \sqrt{\frac{t_+}{R}},\quad\text{where}\quad R = \sqrt{x^2+y^2}
 \]
 which grows without bound as $t_+\to\infty$.
 
-For finite submergence $z<0$, the diverging wave contribution to the wavelike elevation spectrum $S_\zeta = |\partial_x W|^2$ is
+For finite submergence $z<0$, exponential damping makes the diverging wave contribution to the wavelike elevation spectrum $S_\zeta = |\partial_x W|^2$ finite, but still unbounded in the limit. Defining $k_x=\sqrt{1+t^2}$, $k_y=tk_x$ and $k=|\vec k|=1+t^2$; for large $t_+$ we have $k_x\approx |t_+|$ and $|k_y|\approx k \approx t_+^2$, and stationary phase analysis on the wave elevation spectrum gives
 \begin{equation}
-  S_\zeta(k;\,z) \sim \frac{k}{R}\,\exp\left(-2|z|k\right),
+  S_\zeta(k) \sim \left(k_x\exp(-|z|k)\left(\frac{t_+}{R}\right)^{1/2}\right)^2 \sim \frac{k}{R}\,\exp\left(-2|z|k\right)
   \label{eq:point_source_spectrum}
 \end{equation}
-peaking at
+where the $k_x$ factor comes from differentiation by $x$. This spectrum peaks at
 \begin{equation}
-  k^* = \frac{1}{2|z|}, \qquad S_\zeta(k^*;\,z) \sim \frac{1}{R\,|z|}.
+  k^* = \frac{1}{2|z|}, \qquad S_\zeta(k^*) \sim \frac{1}{R\,|z|}.
   \label{eq:point_source_peak}
 \end{equation}
-Therefore, the exponential $\exp(-|z|t_+^2)$ provides damping, but as $|z|\to 0$ the peak still migrates to arbitrarily high wavenumber with unbounded amplitude. This is not a local artifact: every point along the downstream wake is affected, with amplitude only slowly modulated with $R^{-1}$. Figure~\ref{fig:wavecut} illustrates the unbounded growth as $z\to 0^-$ well downstream, in contrast with the regularized line-integrated kernel derived in the next section.
+As $z\to 0$, the peak migrates to arbitrarily high wavenumber with unbounded amplitude. This is not a local artifact: every point along the downstream wake is affected, with amplitude only slowly modulated with $R^{-1}$. Figure~\ref{fig:wavecut} illustrates the unbounded growth as $z\to 0$ well downstream, in contrast with the regularized line-integrated kernel derived in the next section.
 
 \section{Line-Integrated Potential for Flat-Ship Theory}\label{sec:line_integrated_kernels}
 
@@ -138,7 +138,7 @@ where we have swapped the order of integration. The inner integral is the Fourie
 \[
 \int_{-1}^1 \sqrt{1-\eta^2} e^{i\omega\eta} \di\eta= \pi \frac{J_1(\omega)}\omega
 \]
-where $\mathrm{J}_1$ is the Bessel function of the first kind. Substituting $\eta=y_p/b$ and $\omega=bk_y$, where $k_y(t)=t\sqrt{1+t^2}$, $W_b$ takes the general form~\eqref{eq:wavelike_general} with amplitude $A_b$
+where $\mathrm{J}_1$ is the Bessel function of the first kind. Substituting $\eta=y_p/b$ and $\omega=bk_y$, $W_b$ takes the general form~\eqref{eq:wavelike_general} with amplitude $A_b$
 \begin{equation}
   A_b(t) = \pi\,\frac{\mathrm{J}_1\bigl(b\,k_y(t)\bigr)}{k_y(t)}.
   \label{eq:Ab}
@@ -147,7 +147,7 @@ where $\mathrm{J}_1$ is the Bessel function of the first kind. Substituting $\et
 The factor $A_b$ is finite at $k_y=0$ (with limit $\frac 12 \pi b$) and decays as $k_y^{-3/2}$ for large $k_y$, filtering high wavenumber content even on $z=0$. Applying the stationary-phase analysis of Section~\ref{sec:point_source_asymptotics} with amplitude $A_b$ at $z=0$ gives the wave elevation spectrum
 %
 \begin{equation}
-  S_{b,\zeta}(k;\,0) \sim \frac{\mathrm{J}_1^2\left(b\,k_y\right)}{k_y^2}\frac{k_y^{3/2}}{R} \sim \frac{1}{k_y^{3/2}bR},
+  S_{b,\zeta}(k) \sim \frac{\mathrm{J}_1^2\left(b\,k_y\right)}{k_y^2}\frac{k_y^{3/2}}{R} \sim \frac{1}{k_y^{3/2}bR},
   \label{eq:Sb_spectrum}
 \end{equation}
 %
@@ -155,7 +155,7 @@ which is uniformly decaying and integrable, completely eliminating the unbounded
 
 \subsection{Wave Resistance}\label{ssec:wave_resistance}
 
-The wave spectrum leads directly to the flat-ship wave resistance $D_W$ from the Havelock formula. Working in the variable $t = \tan\theta$ and using $k_x(t)= \sqrt{1+t^2}=\sec\theta$ we have
+The wave spectrum leads directly to the flat-ship wave resistance $D_W$ from the Havelock formula. Working in the variable $t = \tan\theta$ and using $k_x= \sqrt{1+t^2}=\sec\theta$ we have
 %
 \begin{equation}
   D_W = \frac{\rho}{\pi\ell^2} \int_{-\pi/2}^{\pi/2} |\mathrm{K}(\theta)|^2\,\sec^3\theta\,\di\theta = \frac{\rho}{\pi\ell^2} \int_{-\infty}^{\infty} |\mathrm{K}(t)|^2\, k_x(t)\,\di t
@@ -178,7 +178,7 @@ The amplitude $A_w$ is $O(1)$ at $t=0$ and decays as $t^{-5}$ for large $t$, so~
 
 \section{Partitioned evaluation method for wavelike kernels}\label{sec:fast_evaluator}
 
-Direct numerical quadrature and series expansions for the wavelike integral equation~\ref{eq:wavelike_general} are inefficient or even non-convergent as $z\to0$. In this section, we detail an efficient and universally robust partitioned contour-deformation approach for the wavelike kernels. An open-source Julia implementation is provided.
+Direct numerical quadrature and series expansions for the wavelike integral equation~\ref{eq:wavelike_general} are inefficient or even non-convergent as $z\to0$. In this section, we detail an efficient and universally robust partitioned contour-deformation approach for the wavelike kernels, leveraging the classical stationary phase results above. An open-source Julia implementation is provided.
 
 \subsection{Defining the saddle regions and quadrature methods}
 
@@ -213,7 +213,9 @@ Figure~\ref{fig:delta_phase} shows the error of the point-source wavelike integr
     \label{tab:wavelike}
 \end{table}
 
-The same contour-deformation strategy applies to the line-integrated kernel, extended to handle the additional oscillatory structure introduced by the Bessel prefactor in equation~\ref{eq:Ab}. The Bessel function is decomposed using Hankel functions away from $t = 0$
+The same contour-deformation strategy applies to the line-integrated source, extended to handle the additional oscillatory structure introduced by the Bessel function in equation~\ref{eq:Ab}. 
+
+The Bessel function is decomposed using Hankel functions away from $t = 0$  
 \begin{equation}\label{eq:Hankel}
 \mathrm{J}_1(bk_y) = \frac{1}{2}\left(\mathrm{Hx}_1^{(1)}(bk_y)\,e^{ibk_y} + \mathrm{Hx}_1^{(2)}(bk_y)\,e^{-ibk_y}\right)
 \end{equation}
@@ -222,13 +224,6 @@ where the scaled Hankel functions $\mathrm{Hx}_1^{(1,2)}$ are slowly varying. Th
 In general, the $W_b$ quadrature requires approximately twice as many phase and kernel evaluations as $W$, and Bessel function evaluations are $O(10)$ times as expensive as simple trigonometric functions. However, the computational cost is still $10^4$--$10^5$ faster than direct quadrature on $z=0$ with relative errors less than $10^{-6}$, Table~\ref{tab:wavelike}.
 
 \section{Flat-ship wave predictions}
-\begin{figure}
-    \centering
-    \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b1.png}
-    \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b2.png}
-    \caption{Flat-ship wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$ and $b=1,\, 2$ on the left and right, respectively.}
-    \label{fig:wave_elevation}
-\end{figure}
 
 Using the elliptic distribution, the flat-ship potential of equation~\ref{eq:fs phi} becomes
 \[
@@ -237,6 +232,14 @@ Using the elliptic distribution, the flat-ship potential of equation~\ref{eq:fs 
 where the near-field term $N$ can be numerically integrated without issue and the wavelike term is calculated using the partitioned contour deformation method described in Section~\ref{sec:fast_evaluator}. Automatic Differentiation is used to evaluate the $\zeta=\partial_x\phi$ derivative.
 
 Figure~\ref{fig:wave_elevation} shows a set of resulting flat-ship wave-fields for various $b,L$. First, we note that the predicted wave-elevations have finite amplitudes and energy everywhere despite evaluating the function on $z=0$. Also, the near-field contribution retains the expected logarithmic singularity across the line-source, resulting in a finite jump in $\zeta$ across the planform bow and stern edges. This discontinuity correctly represents the pressure jump across a zero-thickness flat ship and does not affect the far-field wave predictions.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b1.png}
+    \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b2.png}
+    \caption{Flat-ship wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$ and $b=1,\, 2$ on the left and right, respectively.}
+    \label{fig:wave_elevation}
+\end{figure}
 
 Second, the predictions capture many well-known physical patterns beyond the obvious Kelvin-wedge and wake shape. In particular, directly behind the planform we see that the interaction of the stern corner waves generates a large rooster-tail in the near wake, after which the wave trains diverge leaving a rough but low amplitude wave-field in the far wake. The distinct waves generated by each corner of the planform also imply that the use of a smooth elliptical distribution has not artificially \textit{rounded} the geometry.
 
