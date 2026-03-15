@@ -221,11 +221,11 @@ Figure~\ref{fig:delta_phase} shows the error of the point-source wavelike integr
     \label{tab:wavelike}
 \end{table}
 
-The same contour-deformation strategy applies to the line-integrated source, extended to handle the additional oscillatory structure introduced by the Bessel function in $A_b$ \eqref{eq:Ab}. To isolate these oscillations, the Bessel function is decomposed using Hankel functions away from $t = 0$  
+The same contour-deformation strategy applies to the line-integrated source, extended to handle the additional oscillatory structure introduced by the Bessel function in $A_b$ \eqref{eq:Ab}. To isolate these oscillations, the Bessel function is decomposed using Hankel functions away from $t = 0$ 
 \begin{equation}\label{eq:Hankel}
-\mathrm{J}_1(bk_y) = \frac{1}{2}\left(\mathrm{Hx}_1^{(1)}(bk_y)\,e^{ibk_y} + \mathrm{Hx}_1^{(2)}(bk_y)\,e^{-ibk_y}\right)
+\mathrm{J}_1(\omega) = \frac{1}{2}\left(\mathrm{Hx}_1^{(1)}(\omega)\,e^{i\omega} + \mathrm{Hx}_1^{(2)}(\omega)\,e^{-i\omega}\right)
 \end{equation}
-where the scaled Hankel functions $\mathrm{Hx}_1^{(1,2)}$ are slowly varying. The exponential factors $e^{\pm i b\,k_y(t)}$ oscillate at a frequency that depends on the beam half-width $b$, but these can be absorbed into the wavelike phase, yielding two integrals with shifted phases $g(x,y \pm b,t)$. Each shifted phase has its own stationary points and associated non-oscillatory interval. The union of these intervals is integrated along the real line using the $A_b$ prefactor. The union operator ensures that the contour starting points are sufficiently far from any stationary point, and these contours are computed twice, once for each Hankel function using its respective phase.\footnote{The same approach can also be applied to the wave resistance integral~\eqref{eq:Cw}. However, the faster $A_w\sim t^{-5}$ decay and slower $k_x\sim t$ phase function mean direct quadrature is also practical for that integral.}
+where the scaled Hankel functions $\mathrm{Hx}_1^{(1,2)}$ are slowly varying. The exponential factors oscillate at a frequency $\omega = bk_y$, but these can be absorbed into the wavelike phase, yielding two integrals with shifted phases $g(x,y \pm b,t)$. Each shifted phase has its own stationary points and associated non-oscillatory interval. The union of these intervals is integrated along the real line using the $A_b$ prefactor. The union operator ensures that the contour starting points are sufficiently far from any stationary point, and these contours are computed twice, once for each Hankel function using its respective phase.\footnote{The same approach can also be applied to the wave resistance integral~\eqref{eq:Cw}. However, the faster $A_w\sim t^{-5}$ decay and slower $k_x\sim t$ phase function mean direct quadrature is also practical for that integral.}
 
 In general, the $W_b$ quadrature requires approximately twice as many phase and kernel evaluations as $W$, and Bessel function evaluations are $O(10)$ times as expensive as simple trigonometric functions. However, the computational cost is still $10^4$--$10^5$ faster than direct quadrature on $z=0$ with relative errors less than $10^{-6}$, Table~\ref{tab:wavelike}.
 
@@ -235,12 +235,12 @@ In general, the $W_b$ quadrature requires approximately twice as many phase and 
     \centering
     \includegraphics[width=0.54\linewidth]{make_figures/wave_field_b1.png}
     \hfill
-    \begin{minipage}[]{0.44\linewidth}
+    \begin{minipage}[]{0.45\linewidth}
         \vspace{-65mm}
-        \includegraphics[width=\linewidth,trim=30 290 60 0,clip]{make_figures/wave_field_b0.5.png}\\[2pt]
-        \includegraphics[width=\linewidth,trim=30 0 60 250,clip]{make_figures/wave_field_b2.png}
+        \includegraphics[width=\linewidth,trim=30 292 60 0,clip]{make_figures/wave_field_b0.5.png}\\[1pt]
+        \includegraphics[width=\linewidth,trim=30 0 60 249,clip]{make_figures/wave_field_b2.png}
     \end{minipage}
-    \caption{Flat-ship wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$. Left: full symmetric field for $b=1$. Right: half-field for $b=0.5$ (top) and $b=2$ (bottom).}
+    \caption{Flat-ship wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$. Left: full symmetric field for $b=1$. Right: half-field for $b=1/2$ (top) and $b=2$ (bottom) using the same contour levels.}
     \label{fig:wave_elevation}
 \end{figure}
 
@@ -250,11 +250,11 @@ Using the elliptic distribution, the flat-ship potential \eqref{eq:fs phi} becom
 \]
 where the near-field term $N$ can be numerically integrated without issue and the wavelike term is calculated using the partitioned contour deformation method described in Section~\ref{sec:fast_evaluator}. Automatic Differentiation is used to evaluate the $\zeta=\partial_x\phi$ derivative.
 
-Figure~\ref{fig:wave_elevation} shows a set of resulting flat-ship wave-fields for various $b,L$. First, we note that the predicted wave-elevations using the elliptic distribution have finite amplitudes and energy everywhere. Since submergence adds exponential wave damping, achieving finite energy at the flat-ship $z_p=0$ limit guarantees well-behaved predictions for any submerged $z_p<0$. In addition, the near-field contribution retains the expected logarithmic singularity across the line-source, resulting in a finite jump in $\zeta$ across the planform bow and stern edges. This discontinuity correctly represents the pressure jump across a zero-thickness flat ship and does not affect the far-field wave predictions.
+Figure~\ref{fig:wave_elevation} shows a set of resulting flat-ship wave-fields for various $b$. First, we note that the predicted wave-elevations using the elliptic distribution have finite amplitudes and energy everywhere. Since submergence adds exponential wave damping, achieving finite energy at the flat-ship $z_p=0$ limit guarantees well-behaved predictions for any submerged $z_p<0$. In addition, the near-field contribution retains the expected logarithmic singularity across the line-source, resulting in a finite jump in $\zeta$ across the planform bow and stern edges. This discontinuity correctly represents the pressure jump across a zero-thickness flat ship and does not affect the far-field wave predictions.
 
 Second, the predictions capture many well-known physical patterns beyond the obvious Kelvin-wedge and wake shape. In particular, directly behind the planform we see that the interaction of the stern corner waves generates a large rooster-tail in the near wake, leaving a rough but low amplitude wave-field after the wave trains diverge in the far wake. The distinct waves generated by each corner of the planform also imply that the use of a smooth elliptical distribution has not artificially \textit{rounded} the geometry.
 
-Another interesting feature is the strong decrease in wave elevation amplitude with increasing $b$. Intuitively, increasing the Kelvin-scaled beam $b$ decreases the beam-based Froude number $\mathrm{F_b}=b^{-1/2}$, taking the planform out of strong resonance with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. More specifically, as $b$ increases, the continuous elliptic source distribution integrated across the trailing edge generates waves with increasingly diverse spanwise phases, increasing the destructive interference. This mechanism is encoded in the Bessel function amplitude $A_b$~\eqref{eq:Ab} which filters high-wavenumber contributions more aggressively as $b$ increases.
+Another interesting feature is the strong decrease in wave elevation amplitude with increasing $b$ for a given integrated line-source strength $\frac \pi 2 q_0 b$. Intuitively, increasing the Kelvin-scaled beam $b$ decreases the beam-based Froude number $\mathrm{F_b}=b^{-1/2}$, taking the planform out of strong resonance with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. More specifically, as $b$ increases, the continuous elliptic source distribution integrated across the spanwise edges generates waves with increasingly diverse spanwise phases, increasing the destructive interference. This mechanism is encoded in the Bessel function amplitude $A_b$~\eqref{eq:Ab} which filters high-wavenumber contributions more aggressively as $b$ increases.
 
 \begin{figure}
     \centering
@@ -263,7 +263,7 @@ Another interesting feature is the strong decrease in wave elevation amplitude w
     \label{fig:wave_drag}
 \end{figure}
 
-Figure~\ref{fig:wave_drag} plots scaled resistance~\eqref{eq:Cw} across a wide range of $b,L$. The interference factor $1-\cos(Lk_x)$ produces classical constructive and destructive interference between the bow and stern wave systems, resulting in oscillating resistance values with $L$. More notably, the destructive interference discussed above results in a scaling $A_w\sim b^{-3}$ for large $b$ and leads to a monotonic decrease in the resistance coefficient $C_W$. This contrasts with classical thin-ship theory, which uses beam-to-length ratio as a small parameter and predicts wave drag increasing quadratically with beam. In flat-ship theory, the pitch angle $\alpha$ is the perturbation parameter while $b$ is encoded into the Bessel function weighting of the wavelike kernel, leading to the observed $C_W$ behavior.
+Figure~\ref{fig:wave_drag} plots scaled resistance~\eqref{eq:Cw} across a wide range of $b,L$. The interference factor $1-\cos(Lk_x)$ produces classical constructive and destructive interference between the bow and stern wave systems, resulting in oscillating resistance values with $L$. More notably, the destructive spanwise interference discussed above results in a scaling $A_w\sim b^{-3}$ for large $b$ and leads to a monotonic decrease in the resistance coefficient $C_W$ with increasing $b$. This contrasts with classical thin-ship theory, which uses the beam-to-length ratio as a small parameter and predicts that wave drag increases quadratically with beam. In flat-ship theory, the pitch angle $\alpha$ is the perturbation parameter while $b$ is encoded in the Bessel function of the wavelike kernel, leading to the observed behavior of $C_W$.
 
 \section{Conclusions}
 
