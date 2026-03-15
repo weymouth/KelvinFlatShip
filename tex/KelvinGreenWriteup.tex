@@ -56,7 +56,7 @@ The well known Kelvin Green's function of a translating point source at $\vec x_
 \[
 G\bigl(\vec x_f,\vec x_p\bigr) = N(\vec x_f,\vec x_p) + W(\vec x_f - \vec x_p\!')
 \]
-where $\vec x_f$ is the field evaluation point and $\vec x_p\!'=(x_p,y_p,-z_p)$ is the image point reflected across $z=0$. As in \cite{noblesse_neumannmichell_2013}, we have combined all of the near-field terms together, and fast surrogates are known for it's efficient evaluation, such as in \cite{newman_evaluation_1987}. In this work, we focus on the wavelike term.
+where $\vec x_f$ is the field evaluation point and $\vec x_p\!'=(x_p,y_p,-z_p)$ is the image point reflected across $z=0$. As in \cite{noblesse_neumannmichell_2013}, we have combined all of the near-field terms together, and fast surrogates are known for its efficient evaluation, such as in \cite{newman_evaluation_1987}. In this work, we focus on the wavelike term.
 
 Applying this Green's function, the induced potential of a source-patch $\mathcal{P}$ is
 \begin{equation}\label{eq:patch}
@@ -108,7 +108,7 @@ The singularity identified above motivates replacing the point-source waterline 
 
 \subsection{The Flat-Ship Model}\label{ssec:flat_ship_model}
 
-Consider an extremely shallow-draft ship such as a flat-bottom planing hull with a small pitch angle $\alpha$. In the limit $z_p\to 0^-$, the surface integral that defines the potential, \eqref{eq:patch} reduces to a waterline contour integral around the planform boundary $\partial\mathcal{P}$ \citep{noblesse_slender-ship_1983}
+Consider an extremely shallow-draft ship such as a flat-bottom planing hull with a small pitch angle $\alpha$. In the limit $z_p\to 0^-$, the surface integral that defines the potential, \eqref{eq:patch}, reduces via Green's theorem and the linear free-surface boundary condition to a waterline contour integral around the planform boundary $\partial\mathcal{P}$ \citep{noblesse_slender-ship_1983,baar_developments_1988}
 \[
 \phi(\vec x_f) = \oint_{\partial\mathcal{P}} q(\vec x_p)\,G(\vec x_f-\vec x_p)\,n_x\,\di{y_p}.
 \]

@@ -32,7 +32,7 @@
      stroke-width="1.2057"
      id="path941"
      sodipodi:nodetypes="ccccc"
-     style="fill:#ffa98b;stroke:#ff4900;fill-opacity:1;stroke-opacity:1" />
+     style="fill:#ff8f74;stroke:#ff4900;fill-opacity:1;stroke-opacity:1" />
   <path
      id="path1307"
      style="fill:url(#linearGradient1448);fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -96,24 +96,24 @@
        style="font-style:normal;text-align:center;text-anchor:middle"
        id="tspan1021">$L$</tspan></text>
   <text
-     x="709.62036"
-     y="282.67169"
+     x="700.56665"
+     y="273.10138"
      font-size="19.1986px"
      font-family="serif"
      font-weight="bold"
      id="text993"
-     transform="matrix(0.8560011,-0.04310619,0.05868013,1.1652678,0,0)"
-     style="text-align:center;text-anchor:middle;fill:#ff4f00;fill-opacity:1;stroke-width:1.37133"><tspan
-       style="font-weight:normal;text-align:center;text-anchor:middle;fill:#ff4f00;fill-opacity:1;stroke-width:1.37133"
+     transform="matrix(0.85708433,-0.00159346,0.00216916,1.1667423,0,0)"
+     style="text-align:center;text-anchor:middle;fill:#ff3e00;fill-opacity:1;stroke-width:1.37133;"><tspan
+       style="font-weight:normal;text-align:center;text-anchor:middle;fill:#ff3e00;fill-opacity:1;stroke-width:1.37133;"
        id="tspan1079">$\cal P$</tspan></text>
   <text
-     x="569.24005"
-     y="-281.65381"
+     x="579.89667"
+     y="-257.82654"
      font-size="14.5744px"
      font-family="serif"
      font-style="italic"
      id="text2259"
-     transform="matrix(0.61466439,0.80966245,-0.78351985,0.59481794,0,0)"
+     transform="matrix(0.64664805,0.78435444,-0.75902899,0.6257689,0,0)"
      style="text-align:center;text-anchor:middle;stroke-width:0.910895"><tspan
        style="font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;stroke-width:0.910895"
        id="tspan2257">$2b$</tspan></text>
@@ -504,18 +504,18 @@
   <g
      id="g1374" />
   <line
-     x1="556.54974"
-     y1="216.2336"
-     x2="615.21344"
-     y2="216.2336"
+     x1="578.86407"
+     y1="223.43176"
+     x2="637.52777"
+     y2="223.43176"
      stroke="#0066cc"
      stroke-width="1.6794"
      marker-end="url(#arrowhead-blue)"
      id="line1031"
      style="fill:#000000;stroke:#000000;stroke-width:2.13;stroke-miterlimit:4;stroke-dasharray:none;marker-end:url(#marker1423)" />
   <text
-     x="569.48077"
-     y="204.88876"
+     x="591.7951"
+     y="212.08693"
      font-size="16px"
      font-family="serif"
      font-weight="bold"
@@ -541,26 +541,26 @@
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:17.2318px;line-height:1.25;font-family:sans-serif;fill:#0000ff;fill-opacity:0.913725;stroke:none;stroke-width:0.430795"
-     x="596.75928"
-     y="169.19742"
+     x="597.14612"
+     y="167.85796"
      id="text1469-6"
      transform="scale(0.93041448,1.0747898)"><tspan
        sodipodi:role="line"
        id="tspan1467-4"
-       x="596.75928"
-       y="169.19742"
+       x="597.14612"
+       y="167.85796"
        style="fill:#0000ff;stroke:none;stroke-width:0.430795">$\vec x_p$</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:17.2318px;line-height:1.25;font-family:sans-serif;opacity:0.7;fill:#0000ff;fill-opacity:0.913725;stroke:none;stroke-width:0.430795"
-     x="590.70447"
-     y="91.345573"
+     x="597.14612"
+     y="87.996933"
      id="text1469-6-6"
      transform="scale(0.93041448,1.0747898)"><tspan
        sodipodi:role="line"
        id="tspan1467-4-4"
-       x="590.70447"
-       y="91.345573"
+       x="597.14612"
+       y="87.996933"
        style="fill:#0000ff;stroke-width:0.430795">$\vec x_p\!'$</tspan></text>
   <path
      style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#arrowhead)"
@@ -595,9 +595,9 @@
      d="M 545.09176,180.97997 543.98939,94.499489"
      id="path1671" />
   <ellipse
-     style="opacity:1;fill:#7373ff;fill-opacity:1;stroke:none;stroke-width:0.404982;stroke-miterlimit:4;stroke-dasharray:0.809966, 0.40498200000000001;stroke-dashoffset:0;stroke-opacity:0.5"
+     style="opacity:1;fill:#7373ff;fill-opacity:1;stroke:none;stroke-width:0.404982;stroke-miterlimit:4;stroke-dasharray:0.809966, 0.404982;stroke-dashoffset:0;stroke-opacity:0.5"
      id="ellipse1919"
-     cx="544.39319"
+     cx="544.39557"
      cy="94.828865"
      rx="3.7994447"
      ry="3.7974699" />
