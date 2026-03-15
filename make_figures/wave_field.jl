@@ -13,11 +13,13 @@ end
 
 # make contour plots
 using Plots
-ζm = 8.5
-for (b,h) in ((1,0.05),(2,0.1))
+ζm = 10
+for (b,h) in ((2,0.1),(0.5,0.05),(1,0.05))
     x=-20:h:1; y=-10:h:10; z = clamp.((ζb(x,y,b)-ζb(x .+ 5,y,b)),-ζm,ζm)
     contourf(x,y,z',levels=18,clims=(-ζm,ζm),colormap=:balance,line=0)
-    plot!(Shape([(0,b),(0,-b),(-5,-b),(-5,b)]),label="",c=:black,alpha=0.5,aspect_ratio=1,xlabel="x",ylabel="y",size=(600,600))
+    plot!(Shape([(0,b),(0,-b),(-5,-b),(-5,b)]),label="",c=:black,alpha=0.5,
+        aspect_ratio=1,xlabel="x",ylabel="y",size=(600,550),margin=0Plots.mm,
+        xlims=(-20,1),ylims=(-10,10))
     savefig("wave_field_b$(b).png")
 end
 

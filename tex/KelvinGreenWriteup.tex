@@ -234,8 +234,12 @@ In general, the $W_b$ quadrature requires approximately twice as many phase and 
 \begin{figure}
     \centering
     \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b1.png}
-    \includegraphics[width=0.495\linewidth]{make_figures/wave_field_b2.png}
-    \caption{Flat-ship wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$ and $b=1,\, 2$ on the left and right, respectively.}
+    \begin{minipage}[c]{0.495\linewidth}
+        \centering
+        \includegraphics[width=\linewidth,trim=0 300 50 0,clip]{make_figures/wave_field_b0.5.png}\\[2pt]
+        \includegraphics[width=\linewidth,trim=0 300 50 0,clip]{make_figures/wave_field_b2.png}
+    \end{minipage}
+    \caption{Flat-ship wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$. Left: full symmetric field for $b=1$. Right: half-field for $b=0.5$ (top) and $b=2$ (bottom).}
     \label{fig:wave_elevation}
 \end{figure}
 
