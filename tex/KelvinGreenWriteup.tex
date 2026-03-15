@@ -1,18 +1,17 @@
-\documentclass[12pt]{article}
-% \documentclass[lineno]{JFM-FLM_Au}
+\documentclass[lineno]{JFM-FLM_Au}
 
 \usepackage{amsmath, amssymb, amsfonts}
-\usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{svg}
-\usepackage[authoryear,round]{natbib}
-\usepackage{bm}
-\geometry{margin=2cm}
 \newcommand{\di}[1]{\mathop{\mathrm{d}#1}} % dx, dy, etc
 
+\lefttitle{G. D. Weymouth}
+\righttitle{Journal of Fluid Mechanics}
 \title{Linear Kelvin Wave Predictions in the $z\to 0$ Limit}
-\author{G. D. Weymouth}
+\author{Gabriel D. Weymouth}
+\corresau{\email{G.D.Weymouth@tudelft.nl}}
+\affiliation{Faculty of Mechanical Engineering (ME), Delft University of Technology, Delft, Netherlands}
 \date{\today}
 
 \begin{document}
@@ -22,6 +21,10 @@
 \begin{abstract}
 Linear wave theory captures the essential physics of free-surface flows at a fraction of the computational cost of nonlinear and viscous methods, making it attractive for design, real-time control, and surrogate modeling applications. However, the Kelvin Green's function for a translating point-source generates unbounded wave energy in the $z\to 0$ limit, causing both numerical difficulties and physical inconsistencies. This paper develops a modified kernel for flat-ship theory incorporating an elliptic spanwise line integration that naturally resolves this ill-posedness, yielding finite wave energy over the entire free surface. We then present a fast evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving $10^4$-$10^5$ speedup over direct quadrature while preserving the wake asymptotics. An open-source Julia implementation is provided.
 \end{abstract}
+
+\begin{keywords}
+Kelvin waves, Green's function, numerical integration
+\end{keywords}
 
 \section{Introduction}
 
@@ -39,6 +42,7 @@ This paper addresses the $z\to 0$ limit with an emphasis on obtaining meaningful
 \begin{figure}
     \centering
     \includesvg[width=0.8\textwidth]{./flat_ship_schematic.svg}
+    \vspace{-3mm}
     \caption{Schematic of the free surface prediction problem with submerged point source and flat-ship planform.}
     \label{fig:schematic}
 \end{figure}
@@ -52,7 +56,7 @@ The well known Kelvin Green's function of a translating point source at $\vec x_
 \[
 G\bigl(\vec x_f,\vec x_p\bigr) = N(\vec x_f,\vec x_p) + W(\vec x_f - \vec x_p\!')
 \]
-where $\vec x_f$ is the field evaluation point and $\vec x_p\!'=(x_p,y_p,-z_p)$ is the image point reflected across $z=0$. As in \cite{noblesse_neumannmichell_2013}, we have combined all of the near-field terms together, and fast surrogates are known for it's efficient evaluation, such as in \cite{newman_evaluation_1987}. In this work, we focus on the wavelike term. 
+where $\vec x_f$ is the field evaluation point and $\vec x_p\!'=(x_p,y_p,-z_p)$ is the image point reflected across $z=0$. As in \cite{noblesse_neumannmichell_2013}, we have combined all of the near-field terms together, and fast surrogates are known for it's efficient evaluation, such as in \cite{newman_evaluation_1987}. In this work, we focus on the wavelike term.
 
 Applying this Green's function, the induced potential of a source-patch $\mathcal{P}$ is
 \begin{equation}\label{eq:patch}
@@ -66,7 +70,7 @@ where $q$ is the source strength scaled by $U$. If $\mathcal{P}$ lies on or near
     \centering
     \includegraphics[width=0.55\linewidth]{make_figures/wavecut.png}
     \includegraphics[width=0.44\linewidth]{make_figures/spectrum.png}
-    \caption{Free surface wave cut and spectra downstream of a unit point-source with $z\to 0$ and line-integrated source on $z=0$. The wave cuts on the left are $\zeta(x\mathbin{=}-8,y,z)$. The spectra on the right are $S^*_\zeta=|\zeta(x\mathbin{=}-40,y(t_+),z)|^2$ evaluated along the divergent wave ridge, equation~\ref{eq:sp}, with the carrier demodulated via Hilbert transform. The line-integrated results use half-beam $b\mathbin{=}1$ and $q_0\mathbin{=}\frac{2}{\pi}$ and the dashed line is the predicted $S_\zeta\sim k_y^{-3/2}$ decay.}
+    \caption{Free surface wave cut and spectra downstream of a unit point-source with $z\to 0$ and line-integrated source on $z=0$. The wave cuts on the left are $\zeta(x\mathbin{=}-8,y,z)$. The spectra on the right are $S^*_\zeta=|\zeta(x\mathbin{=}-40,y(t_+),z)|^2$ evaluated along the divergent wave ridge, \eqref{eq:sp}, with the carrier demodulated via Hilbert transform. The line-integrated results use half-beam $b\mathbin{=}1$ and $q_0\mathbin{=}\frac{2}{\pi}$ and the dashed line is the predicted $S_\zeta\sim k_y^{-3/2}$ decay.}
     \label{fig:wavecut}
 \end{figure}
 
@@ -104,7 +108,7 @@ The singularity identified above motivates replacing the point-source waterline 
 
 \subsection{The Flat-Ship Model}\label{ssec:flat_ship_model}
 
-Consider an extremely shallow-draft ship such as a flat-bottom planing hull with a small pitch angle $\alpha$. In the limit $z_p\to 0^-$, the surface integral that defines the potential, equation~\ref{eq:patch} reduces to a waterline contour integral around the planform boundary $\partial\mathcal{P}$ \citep{noblesse_slender-ship_1983}
+Consider an extremely shallow-draft ship such as a flat-bottom planing hull with a small pitch angle $\alpha$. In the limit $z_p\to 0^-$, the surface integral that defines the potential, \eqref{eq:patch} reduces to a waterline contour integral around the planform boundary $\partial\mathcal{P}$ \citep{noblesse_slender-ship_1983}
 \[
 \phi(\vec x_f) = \oint_{\partial\mathcal{P}} q(\vec x_p)\,G(\vec x_f-\vec x_p)\,n_x\,\di{y_p}.
 \]
@@ -118,7 +122,7 @@ To determine the distribution of $q$, we impose a uniform downward velocity on t
 \[
 \partial_n\phi = \alpha, \qquad (x_p,y_p)\in\mathcal{P},\quad z_p\to 0^-.
 \]
-Substituting $G = N + W$ into equation~\eqref{eq:fs phi} and noting that $W$ varies slowly compared to $N$ on the planform, the dominant operator acting on $q$ is the logarithmic near field term:
+Substituting $G = N + W$ into \eqref{eq:fs phi} and noting that $W$ varies slowly compared to $N$ on the planform, the dominant operator acting on $q$ is the logarithmic near field term:
 \[
 \int_{-b}^{b} q(y_p)\log|y-y_p|\,\di{y_p} = \mathrm{const},\qquad |y|<b.
 \]
@@ -182,7 +186,7 @@ The amplitude $A_w$ is $O(1)$ at $t=0$ and decays as $t^{-5}$ for large $t$, so~
 
 \section{Partitioned evaluation method for wavelike kernels}\label{sec:fast_evaluator}
 
-Direct numerical quadrature and series expansions for the wavelike integral equation~\ref{eq:wavelike_general} are inefficient or even non-convergent as $z\to0$. In this section, we detail an efficient and universally robust partitioned contour-deformation approach for the wavelike kernels, leveraging the classical stationary phase results above. An open-source Julia implementation is provided at \cite{weymouth_kelvinflatship_2026}.
+Direct numerical quadrature and series expansions for the wavelike integral \eqref{eq:wavelike_general} are inefficient or even non-convergent as $z\to0$. In this section, we detail an efficient and universally robust partitioned contour-deformation approach for the wavelike kernels, leveraging the classical stationary phase results above. An open-source Julia implementation is provided at \cite{weymouth_kelvinflatship_2026}.
 
 \subsection{Defining the saddle regions and quadrature methods}
 
@@ -194,19 +198,19 @@ Direct numerical quadrature and series expansions for the wavelike integral equa
     \label{fig:delta_phase}
 \end{figure}
 
-As in Gibbs and Huybrechs 2023, the integral is partitioned into non-oscillatory intervals around stationary points, where standard quadrature is efficient, and the remaining semi-infinite tails, where complex contour quadratures converge exponentially. Unlike the analytic phase functions treated in Gibbs and Huybrechs, the wavelike phase $g(x,y,t) = (x+yt)\sqrt{1+t^2}$ is non-analytic and introduces branch points at $t = \pm i$. Therefore, we limit the non-oscillatory intervals to the real axis, defined such that each endpoint is separated from the nearest stationary point by a prescribed phase increment $\Delta g$. Limiting the intervals to the real axis also simplifies locating the partition boundaries with numerical 1D root-finding.
+As in \cite{gibbs_numerical_2024}, the wavelike integral is partitioned into two types of regions; (i) non-oscillatory intervals around stationary points, where standard quadrature is efficient, and (ii) the remaining semi-infinite tails, where complex contour quadratures converge exponentially. Unlike the analytic phase functions treated in Gibbs et al., the wavelike phase $g(x,y,t) = (x+yt)\sqrt{1+t^2}$ is non-analytic and introduces branch points at $t = \pm i$. Therefore, we limit the non-oscillatory intervals to the real axis, defined such that each endpoint is separated from the nearest stationary point by a prescribed phase increment $\Delta g$. Limiting the intervals to the real axis also simplifies locating the partition boundaries with numerical 1D root-finding.
 
-The kernel is smooth over the non-oscillatory interval by construction, meaning Gauss-Legendre quadrature with a fixed number of points related to $\Delta g$ can be applied. For this manuscript, we instead use adaptive Gauss-Kronrod quadrature to ensure a prescribed accuracy. The semi-infinite tails are evaluated using numerical steepest descent with Gauss-Laguerre quadrature on a complex contour emanating from the interval endpoints. The points along the complex contour are located by Newton's method, selecting the $\sqrt{1+t^2}$ branch such that the phase remains continuous along each contour. Outside the Kelvin wedge, a single pseudo-stationary point $t_0=-x/4y=\Re(t_\pm)$ is used, and the procedure is otherwise identical; this ensures continuity across the wedge boundary and the correct exponential decay in its vicinity.
+The kernel is smooth over the non-oscillatory interval by construction, meaning direct quadrature can be applied efficiently. For this manuscript, we use adaptive Gauss-Kronrod quadrature to ensure a prescribed accuracy. The semi-infinite tails are evaluated using numerical steepest descent with Gauss-Laguerre quadrature on a complex contour emanating from the interval endpoints. The points along the complex contour are located by Newton's method, selecting the $\sqrt{1+t^2}$ branch such that the phase remains continuous along each contour. Outside the Kelvin wedge, a single pseudo-stationary point $t_0=-x/4y=\Re(t_\pm)$ is used, and the procedure is otherwise identical; this ensures continuity across the wedge boundary and the correct exponential decay in its vicinity.
 
-Figure~\ref{fig:delta_phase} shows the error of the point-source wavelike integral using this partitioning method. The error envelope is insensitive to $\vec x$, handling the wave cusp merge as $y\to \pm x/\sqrt{8}$ and the energy growth as $z\to 0$ gracefully. The phase spacing $\Delta g$ is the primary numerical parameter of the approach, encoding a tradeoff between the number of oscillations integrated along the real line and the exponential decay along the contours. If the contour starts too close to a stationary point (small $\Delta g$), the phase is slowly varying and the integrand decays slowly in the complex plane, requiring more Gauss-Laguerre points for accuracy. Conversely, large $\Delta g$ ensures rapid decay and efficient contour quadrature, but increases the oscillations in the real-axis intervals, making them more expensive to integrate. The number of Gauss-Laguerre points $N$, is a secondary parameter: increasing $N$ increases the error decay rate but also increases the length of the contours and computational expense. Herein, we set $\Delta g \approx 6$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost.
+Figure~\ref{fig:delta_phase} shows the error of the point-source wavelike integral using this partitioning method. The error envelope is insensitive to $\vec x$, handling the wave cusp merge as $y\to \pm x/\sqrt{8}$ and the energy growth as $z\to 0$ gracefully. The partition half-width $\Delta g$ is the primary numerical parameter of the approach, encoding a tradeoff between the number of oscillations integrated along the real line and the exponential decay along the contours. If the contour starts too close to a stationary point (small $\Delta g$), the phase is slowly varying and the integrand decays slowly in the complex plane, requiring more Gauss-Laguerre points for accuracy. Conversely, large $\Delta g$ ensures rapid decay and efficient contour quadrature, but increases the oscillations in the real-axis intervals, making them more expensive to integrate. The number of Gauss-Laguerre points $N$, is a secondary parameter: increasing $N$ increases the error decay rate but also increases the length of the contours and computational expense. Herein, we set $\Delta g \approx 2\pi$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost.
 
 \subsection{Hankel function decomposition}
 
-\begin{table}[]
+\begin{table}
     \centering
     \begin{tabular}{r|ccccc}
-    y    & absolute error   & relative error  & time ($\mu s)$ & speedup   & slowdown \\
-    \hline
+    $y$    & absolute error   & relative error  & time ($\mu s)$ & speedup   & slowdown \\[1pt]
+    \midrule[0.5pt]\\[-8pt]
     0    & 3.78e-6 & 2.64e-7 &  30.4 & 6.59e4 & 7.02   \\
     0.5  & 1.16e-6 & 9.45e-8 &  34.3 &  1.77e5 & 6.45  \\
     0.9  & 1.14e-6 & 1.56e-7 & 131.7 &  7.86e4 & 26.6  \\
@@ -217,9 +221,7 @@ Figure~\ref{fig:delta_phase} shows the error of the point-source wavelike integr
     \label{tab:wavelike}
 \end{table}
 
-The same contour-deformation strategy applies to the line-integrated source, extended to handle the additional oscillatory structure introduced by the Bessel function in equation~\ref{eq:Ab}. 
-
-The Bessel function is decomposed using Hankel functions away from $t = 0$  
+The same contour-deformation strategy applies to the line-integrated source, extended to handle the additional oscillatory structure introduced by the Bessel function in $A_b$ \eqref{eq:Ab}. To isolate these oscillations, the Bessel function is decomposed using Hankel functions away from $t = 0$  
 \begin{equation}\label{eq:Hankel}
 \mathrm{J}_1(bk_y) = \frac{1}{2}\left(\mathrm{Hx}_1^{(1)}(bk_y)\,e^{ibk_y} + \mathrm{Hx}_1^{(2)}(bk_y)\,e^{-ibk_y}\right)
 \end{equation}
@@ -237,15 +239,15 @@ In general, the $W_b$ quadrature requires approximately twice as many phase and 
     \label{fig:wave_elevation}
 \end{figure}
 
-Using the elliptic distribution, the flat-ship potential of equation~\ref{eq:fs phi} becomes
+Using the elliptic distribution, the flat-ship potential \eqref{eq:fs phi} becomes
 \[
-\phi(\vec x_f)/q_0 = \Delta_L W_b(x_f-x_p,y_f,z_f)+\Delta_L \int_{-b}^b \sqrt{1-(y_p/b)^2}\, N(x_f-x_p,y_f-y_p,z_f)\,\di{y_p}
+\frac{\phi(\vec x_f)}{q_0} = \Delta_L W_b(x_f-x_p,y_f,z_f)+\Delta_L \int_{-b}^b \sqrt{1-(y_p/b)^2}\, N(x_f-x_p,y_f-y_p,z_f)\,\di{y_p}
 \]
 where the near-field term $N$ can be numerically integrated without issue and the wavelike term is calculated using the partitioned contour deformation method described in Section~\ref{sec:fast_evaluator}. Automatic Differentiation is used to evaluate the $\zeta=\partial_x\phi$ derivative.
 
 Figure~\ref{fig:wave_elevation} shows a set of resulting flat-ship wave-fields for various $b,L$. First, we note that the predicted wave-elevations have finite amplitudes and energy everywhere despite evaluating the function on $z=0$. Also, the near-field contribution retains the expected logarithmic singularity across the line-source, resulting in a finite jump in $\zeta$ across the planform bow and stern edges. This discontinuity correctly represents the pressure jump across a zero-thickness flat ship and does not affect the far-field wave predictions.
 
-Second, the predictions capture many well-known physical patterns beyond the obvious Kelvin-wedge and wake shape. In particular, directly behind the planform we see that the interaction of the stern corner waves generates a large rooster-tail in the near wake, after which the wave trains diverge leaving a rough but low amplitude wave-field in the far wake. The distinct waves generated by each corner of the planform also imply that the use of a smooth elliptical distribution has not artificially \textit{rounded} the geometry.
+Second, the predictions capture many well-known physical patterns beyond the obvious Kelvin-wedge and wake shape. In particular, directly behind the planform we see that the interaction of the stern corner waves generates a large rooster-tail in the near wake, leaving a rough but low amplitude wave-field after the wave trains diverge in the far wake. The distinct waves generated by each corner of the planform also imply that the use of a smooth elliptical distribution has not artificially \textit{rounded} the geometry.
 
 An initially counter-intuitive feature is the strong \textit{decrease} in wave amplitude with increasing $b$. However, this is resolved by acknowledging the Kelvin scaling applied to our lengths; as we increase $b$, it becomes too long to strongly interact with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. In terms of Froude numbers, we have $\mathrm{F_b}=b^{-1/2}$, and $\mathrm{F_L}=L^{-1/2}$; increasing $b,L$ decreases the Froude numbers, typically decreasing the wave disturbance amplitude.
 
@@ -266,31 +268,6 @@ This resolution enables practical flat-ship predictions without empirical dampin
 
 We note that the elliptic distribution developed here is merely the leading-order solution for flat planforms. Accounting for local hull geometry while retaining the regularized kernel framework is a natural extension. The approach could also be extended to time-varying source-strengths enabling direct calculation of the forward speed waterline contribution to ship motions in ocean waves.
 
-\bibliographystyle{plainnat}
+\bibliographystyle{abbrvnat}
 \bibliography{references}
-
-% \begin{itemize}
-%     \item Baar, J. J. M. and Price, W. G. (1988). Developments in the calculation of the wavemaking resistance of ships. \textit{Proceedings of the Royal Society of London A}, 416(1851), 115--147.
-
-%     \item Farrell, C. (1973). On the wave resistance of a submerged spheroid. \textit{Journal of Ship Research}, 17(1), 1--11.
-
-%     \item Gibbs, A. and Huybrechs, D. (2023). Efficient evaluation of oscillatory integrals via principal value transformations and the numerical method of steepest descent. \textit{IMA Journal of Numerical Analysis}, 43(6), 3619--3656.
-
-%     \item Gibbs, A. and Huybrechs, D. (2024). Fast and accurate evaluation of the Kelvin ship wave pattern and its derivatives. \textit{Journal of Computational Physics}, 499, 112713.
-
-%     \item Huybrechs, D. (2017). Stable high-order quadrature rules with equidistant points. \textit{Journal of Computational and Applied Mathematics}, 231(2), 933--947.
-
-%     \item Iwashita, H. and Ohkusu, M. (1992). The Green function method for ship motions at forward speed. \textit{Ship Technology Research}, 39(1), 3--21.
-
-%     \item Newman, J. N. (1987). Evaluation of the wave-resistance Green function: Part 1---The double integral. \textit{Journal of Ship Research}, 31(2), 79--90.
-
-%     \item Noblesse, F. (1981). Alternative integral representations for the Green function of the theory of ship wave resistance. \textit{Journal of Engineering Mathematics}, 15(4), 241--265.
-
-%     \item Noblesse, F. (1983). A slender-ship theory of wave resistance. \textit{Journal of Ship Research}, 27(1), 13--33.
-
-%     \item Noblesse, F., Huang, F., and Yang, C. (2013). The Neumann-Michell theory of ship waves. \textit{Journal of Engineering Mathematics}, 79(1), 51--71.
-
-%     \item Peters, A. S. (1949). A new treatment of the ship wave problem. \textit{Communications on Pure and Applied Mathematics}, 2(2--3), 123--148.
-% \end{itemize}
-
 \end{document}
