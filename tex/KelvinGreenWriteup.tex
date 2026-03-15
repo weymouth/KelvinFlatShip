@@ -11,7 +11,7 @@
 \title{Linear Kelvin Wave Predictions in the $z\to 0$ Limit}
 \author{Gabriel D. Weymouth}
 \corresau{\email{G.D.Weymouth@tudelft.nl}}
-\affiliation{Faculty of Mechanical Engineering (ME), Delft University of Technology, Delft, Netherlands}
+\affiliation{Ship Hydromechanics, Delft University of Technology, Delft, Netherlands}
 \date{\today}
 
 \begin{document}
@@ -84,7 +84,7 @@ Stationary points of the wavelike phase satisfy $\partial_t g = 0$, and are give
 \begin{equation}\label{eq:sp}
 t_\pm = -\frac{x \pm \sqrt{x^2 - 8y^2}}{4y}
 \end{equation}
-corresponding to the transverse and diverging wave systems inside the Kelvin wedge $|y| < |x|/\sqrt{8}$. Near the centerline we have $|y/x|\to 0$ and therefore the diverging ridge goes to $t_+ \approx -x/(2y) \to \infty$. The stationary-phase estimate for the diverging wave contribution on $z=0$ is
+corresponding to the transverse and diverging wave systems inside the Kelvin wedge $y \le \pm x /\sqrt{8}$. Near the centerline we have $|y/x|\to 0$ and therefore the diverging ridge goes to $t_+ \approx -x/2y \to \infty$. The stationary-phase estimate for the diverging wave contribution on $z=0$ is
 \[
 W(x,y,0) \sim \frac{A_+}{\sqrt{\partial_{tt}g_+}}\sim \sqrt{\frac{t_+}{R}},\quad\text{where}\quad R = \sqrt{x^2+y^2}
 \]
@@ -104,11 +104,11 @@ As $z\to 0$, the peak migrates to an arbitrarily high wavenumber with unbounded 
 
 \section{Line-Integrated Potential for Flat-Ship Theory}\label{sec:line_integrated_kernels}
 
-The singularity identified above motivates replacing the point-source waterline kernel with an integrated Green's function. The flat-ship model provides a uniquely challenging setting as the entire planform rests on $z=0$, Figure~\ref{fig:schematic}.
+The singularity identified above motivates replacing the point-source kernel with an integrated Green's function. The flat-ship model provides a uniquely challenging setting as the entire planform rests on $z=0$, Figure~\ref{fig:schematic}.
 
 \subsection{The Flat-Ship Model}\label{ssec:flat_ship_model}
 
-Consider an extremely shallow-draft ship such as a flat-bottom planing hull with a small pitch angle $\alpha$. In the limit $z_p\to 0^-$, the surface integral that defines the potential, \eqref{eq:patch}, reduces via Green's theorem and the linear free-surface boundary condition to a waterline contour integral around the planform boundary $\partial\mathcal{P}$ \citep{noblesse_slender-ship_1983,baar_developments_1988}
+Consider an extremely shallow-draft ship such as a flat-bottom planing hull with a small pitch angle $\alpha$. In the limit $z_p\to 0^-$, the surface integral~\eqref{eq:patch} that defines the potential reduces via Green's theorem and the linear free-surface boundary condition to a waterline contour integral around the planform boundary $\partial\mathcal{P}$ \citep{noblesse_slender-ship_1983,baar_developments_1988}
 \[
 \phi(\vec x_f) = \oint_{\partial\mathcal{P}} q(\vec x_p)\,G(\vec x_f-\vec x_p)\,n_x\,\di{y_p}.
 \]
@@ -202,7 +202,7 @@ As in \cite{gibbs_numerical_2024}, the wavelike integral is partitioned into two
 
 The kernel is smooth over the non-oscillatory interval by construction, meaning direct quadrature can be applied efficiently. For this manuscript, we use adaptive Gauss-Kronrod quadrature to ensure a prescribed accuracy. The semi-infinite tails are evaluated using numerical steepest descent with Gauss-Laguerre quadrature on a complex contour emanating from the interval endpoints. The points along the complex contour are located by Newton's method, selecting the $\sqrt{1+t^2}$ branch such that the phase remains continuous along each contour. Outside the Kelvin wedge, a single pseudo-stationary point $t_0=-x/4y=\Re(t_\pm)$ is used, and the procedure is otherwise identical; this ensures continuity across the wedge boundary and the correct exponential decay in its vicinity.
 
-Figure~\ref{fig:delta_phase} shows the error of the point-source wavelike integral using this partitioning method. The error envelope is insensitive to $\vec x$, handling the wave cusp merge as $y\to \pm x/\sqrt{8}$ and the energy growth as $z\to 0$ gracefully. The partition half-width $\Delta g$ is the primary numerical parameter of the approach, encoding a tradeoff between the number of oscillations integrated along the real line and the exponential decay along the contours. If the contour starts too close to a stationary point (small $\Delta g$), the phase is slowly varying and the integrand decays slowly in the complex plane, requiring more Gauss-Laguerre points for accuracy. Conversely, large $\Delta g$ ensures rapid decay and efficient contour quadrature, but increases the oscillations in the real-axis intervals, making them more expensive to integrate. The number of Gauss-Laguerre points $N$, is a secondary parameter: increasing $N$ increases the error decay rate but also increases the length of the contours and computational expense. Herein, we set $\Delta g \approx 2\pi$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost.
+Figure~\ref{fig:delta_phase} shows the error of the point-source wavelike integral using this partitioning method. The error envelope is insensitive to $\vec x$, handling the transverse and diverging wave ridge merge as $y\to \pm x/\sqrt{8}$ and the energy growth as $z\to 0$ gracefully. The partition half-width $\Delta g$ is the primary numerical parameter of the approach, encoding a tradeoff between the number of oscillations integrated along the real line and the exponential decay along the contours. If the contour starts too close to a stationary point (small $\Delta g$), the phase is slowly varying and the integrand decays slowly in the complex plane, requiring more Gauss-Laguerre points for accuracy. Conversely, large $\Delta g$ ensures rapid decay and efficient contour quadrature, but increases the oscillations in the real-axis intervals, making them more expensive to integrate. The number of Gauss-Laguerre points $N$, is a secondary parameter: increasing $N$ increases the error decay rate but also increases the length of the contours and computational expense. Herein, we set $\Delta g \approx 2\pi$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost.
 
 \subsection{Hankel function decomposition}
 
@@ -225,7 +225,7 @@ The same contour-deformation strategy applies to the line-integrated source, ext
 \begin{equation}\label{eq:Hankel}
 \mathrm{J}_1(bk_y) = \frac{1}{2}\left(\mathrm{Hx}_1^{(1)}(bk_y)\,e^{ibk_y} + \mathrm{Hx}_1^{(2)}(bk_y)\,e^{-ibk_y}\right)
 \end{equation}
-where the scaled Hankel functions $\mathrm{Hx}_1^{(1,2)}$ are slowly varying. The exponential factors $e^{\pm i b\,k_y(t)}$ introduce additional oscillations whose frequency depends on the beam half-width $b$, but these can be absorbed into the wavelike phase, yielding two integrals with shifted phases $g(x,y \pm b,t)$. Each shifted phase has its own stationary points and associated non-oscillatory interval. The union of these intervals is integrated along the real line using the $A_b$ prefactor. The union operator ensures that the contour starting points are sufficiently far from any stationary point, and these contours are computed twice, once for each Hankel function using its respective phase.\footnote{The same approach can also be applied to the wave resistance integral~\eqref{eq:Cw}. However, the faster $A_w\sim t^{-5}$ decay and slower $k_x\sim t$ phase function mean direct quadrature is also practical for that integral.}
+where the scaled Hankel functions $\mathrm{Hx}_1^{(1,2)}$ are slowly varying. The exponential factors $e^{\pm i b\,k_y(t)}$ oscillate at a frequency that depends on the beam half-width $b$, but these can be absorbed into the wavelike phase, yielding two integrals with shifted phases $g(x,y \pm b,t)$. Each shifted phase has its own stationary points and associated non-oscillatory interval. The union of these intervals is integrated along the real line using the $A_b$ prefactor. The union operator ensures that the contour starting points are sufficiently far from any stationary point, and these contours are computed twice, once for each Hankel function using its respective phase.\footnote{The same approach can also be applied to the wave resistance integral~\eqref{eq:Cw}. However, the faster $A_w\sim t^{-5}$ decay and slower $k_x\sim t$ phase function mean direct quadrature is also practical for that integral.}
 
 In general, the $W_b$ quadrature requires approximately twice as many phase and kernel evaluations as $W$, and Bessel function evaluations are $O(10)$ times as expensive as simple trigonometric functions. However, the computational cost is still $10^4$--$10^5$ faster than direct quadrature on $z=0$ with relative errors less than $10^{-6}$, Table~\ref{tab:wavelike}.
 
@@ -249,7 +249,7 @@ Figure~\ref{fig:wave_elevation} shows a set of resulting flat-ship wave-fields f
 
 Second, the predictions capture many well-known physical patterns beyond the obvious Kelvin-wedge and wake shape. In particular, directly behind the planform we see that the interaction of the stern corner waves generates a large rooster-tail in the near wake, leaving a rough but low amplitude wave-field after the wave trains diverge in the far wake. The distinct waves generated by each corner of the planform also imply that the use of a smooth elliptical distribution has not artificially \textit{rounded} the geometry.
 
-An initially counter-intuitive feature is the strong \textit{decrease} in wave elevation amplitude with increasing $b$. Increasing the Kelvin-scaled beam $b$ decreases the beam-based Froude number $\mathrm{F_b}=b^{-1/2}$, taking the planform out of strong resonance with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. As $b$ increases, the continuous elliptic source distribution integrated across the trailing edge generates waves with increasingly diverse spanwise phases, increasing the destructive interference. This mechanism is encoded in the Bessel function amplitude $A_b$, which decays as $b$ increases and filters high-wavenumber contributions even at $z=0$.
+Another interesting feature is the strong decrease in wave elevation amplitude with increasing $b$. Intuitively, increasing the Kelvin-scaled beam $b$ decreases the beam-based Froude number $\mathrm{F_b}=b^{-1/2}$, taking the planform out of strong resonance with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. More specifically, as $b$ increases, the continuous elliptic source distribution integrated across the trailing edge generates waves with increasingly diverse spanwise phases, increasing the destructive interference. This mechanism is encoded in the Bessel function amplitude $A_b$~\eqref{eq:Ab} which filters high-wavenumber contributions more aggressively as $b$ increases.
 
 \begin{figure}
     \centering
@@ -258,7 +258,7 @@ An initially counter-intuitive feature is the strong \textit{decrease} in wave e
     \label{fig:wave_drag}
 \end{figure}
 
-Figure~\ref{fig:wave_drag} plots scaled resistance across a wide range of $b,L$. The interference factor $1-\cos(Lk_x)$ produces classical constructive and destructive interference between the bow and stern wave systems, resulting in oscillating resistance values with $L$. More notably, the strong decay of the $A_w$ weighting with increased $b$ leads to a monotonic decrease in the resistance coefficient $C_W$. This contrasts with classical thin-ship theory, which uses beam-to-length ratio as a small parameter and predicts wave drag increasing quadratically with beam. In flat-ship theory, the pitch angle $\alpha$ is the perturbation parameter while $b$ is encoded into the Bessel function weighting of the wavelike kernel and in the $C_W$ normalization. The destructive interference discussed above, encoded mathematically in the Bessel function decay $A_w\sim k_x/(bk_y)^3$ for large $bk_y$ in~\eqref{eq:Cw}, leads to the observed behavior.
+Figure~\ref{fig:wave_drag} plots scaled resistance~\eqref{eq:Cw} across a wide range of $b,L$. The interference factor $1-\cos(Lk_x)$ produces classical constructive and destructive interference between the bow and stern wave systems, resulting in oscillating resistance values with $L$. More notably, the destructive interference discussed above results in a scaling $A_w\sim b^{-3}$ for large $b$ and leads to a monotonic decrease in the resistance coefficient $C_W$. This contrasts with classical thin-ship theory, which uses beam-to-length ratio as a small parameter and predicts wave drag increasing quadratically with beam. In flat-ship theory, the pitch angle $\alpha$ is the perturbation parameter while $b$ is encoded into the Bessel function weighting of the wavelike kernel, leading to the observed $C_W$ behavior.
 
 \section{Conclusions}
 
