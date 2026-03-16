@@ -41,7 +41,7 @@ This paper addresses the $z\to 0$ limit with an emphasis on obtaining meaningful
 
 \begin{figure}
     \centering
-    \includesvg[width=0.8\textwidth]{./flat_ship_schematic.svg}
+    \includesvg[width=0.8\textwidth]{figures/flat_ship_schematic.svg}
     \vspace{-3mm}
     \caption{Schematic of the free surface prediction problem with submerged point source and flat-ship planform.}
     \label{fig:schematic}
@@ -68,8 +68,8 @@ where $q$ is the source strength scaled by $U$. If $\mathcal{P}$ lies on or near
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.55\linewidth]{make_figures/wavecut.png}
-    \includegraphics[width=0.44\linewidth]{make_figures/spectrum.png}
+    \includegraphics[width=0.55\linewidth]{figures/wavecut.png}
+    \includegraphics[width=0.44\linewidth]{figures/spectrum.png}
     \caption{Free surface wave cut and spectra downstream of a unit point-source with $z\to 0$ and line-integrated source on $z=0$. The wave cuts on the left are $\zeta(x\mathbin{=}-8,y,z)$. The spectra on the right are $S^*_\zeta=|\zeta(x\mathbin{=}-40,y(t_+),z)|^2$ evaluated along the divergent wave ridge, \eqref{eq:sp}, with the carrier demodulated via Hilbert transform. The line-integrated results use half-beam $b\mathbin{=}1$ and $q_0\mathbin{=}\frac{2}{\pi}$ and the dashed line is the predicted $S_\zeta\sim k_y^{-3/2}$ decay.}
     \label{fig:wavecut}
 \end{figure}
@@ -192,13 +192,13 @@ Direct numerical quadrature and series expansions for the wavelike integral \eqr
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.495\linewidth]{make_figures/dphase_z.png}
-    \includegraphics[width=0.495\linewidth]{make_figures/dphase_GLn.png}
+    \includegraphics[width=0.495\linewidth]{figures/dphase_z.png}
+    \includegraphics[width=0.495\linewidth]{figures/dphase_GLn.png}
     \caption{Error convergence of the partitioned quadrature method applied to $W(-8,y,z)$ on the same wavecuts in figure \ref{fig:wavecut}. Left shows the independence of the error as $z\to 0$ for $N=4$ Gauss-Laguerre points, and right shows the trend with $N$ for $z=-0.01$.}
     \label{fig:delta_phase}
 \end{figure}
 
-As in \cite{gibbs_numerical_2024}, the wavelike integral is partitioned into two types of regions; (i) non-oscillatory intervals around stationary points, where standard quadrature is efficient, and (ii) the remaining semi-infinite tails, where complex contour quadratures converge exponentially. Unlike the analytic phase functions treated in Gibbs et al., the wavelike phase $g(x,y,t) = (x+yt)\sqrt{1+t^2}$ is non-analytic and introduces branch points at $t = \pm i$. Therefore, we limit the non-oscillatory intervals to the real axis, defined such that each endpoint is separated from the nearest stationary point by a prescribed phase increment $\Delta g$. Limiting the intervals to the real axis also simplifies locating the partition boundaries with numerical 1D root-finding.
+As in \cite{gibbs_numerical_2024}, the wavelike integral is partitioned into two types of regions; (i) non-oscillatory intervals around stationary points, where standard quadrature is efficient, and (ii) the remaining semi-infinite tails, where complex contour quadratures converge exponentially. Unlike the analytic phase functions treated in Gibbs et al., the wavelike phase $g(x,y,t) = (x+yt)\sqrt{1+t^2}$ is non-analytic and introduces branch points at $t = \pm i$. Therefore, we limit the non-oscillatory intervals to the real axis, defined such that each endpoint is separated from the stationary points $t_\pm$~\eqref{eq:sp} by a prescribed phase increment $\Delta g$. Limiting the intervals to the real axis also simplifies locating the partition boundaries with numerical 1D root-finding.
 
 The kernel is smooth over the non-oscillatory interval by construction, meaning direct quadrature can be applied efficiently. For this manuscript, we use adaptive Gauss-Kronrod quadrature to ensure a prescribed accuracy. The semi-infinite tails are evaluated using numerical steepest descent with Gauss-Laguerre quadrature on a complex contour emanating from the interval endpoints. The points along the complex contour are located by Newton's method, selecting the $\sqrt{1+t^2}$ branch such that the phase remains continuous along each contour. Outside the Kelvin wedge, a single pseudo-stationary point $t_0=-x/4y=\Re(t_\pm)$ is used, and the procedure is otherwise identical; this ensures continuity across the wedge boundary and the correct exponential decay in its vicinity.
 
@@ -233,13 +233,15 @@ In general, the $W_b$ quadrature requires approximately twice as many phase and 
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.54\linewidth]{make_figures/wave_field_b1.png}
+    \includegraphics[width=0.485\linewidth,trim=0 0 60 0,clip]{figures/wave_field_b1.png}
     \hfill
-    \begin{minipage}[]{0.45\linewidth}
+    \begin{minipage}[]{0.445\linewidth}
         \vspace{-65mm}
-        \includegraphics[width=\linewidth,trim=30 292 60 0,clip]{make_figures/wave_field_b0.5.png}\\[1pt]
-        \includegraphics[width=\linewidth,trim=30 0 60 249,clip]{make_figures/wave_field_b2.png}
+        \includegraphics[width=\linewidth,trim=30 291 60 0,clip]{figures/wave_field_b0.5.png}\\[1pt]
+        \includegraphics[width=\linewidth,trim=30 0 60 249,clip]{figures/wave_field_b2.png}
     \end{minipage}
+    \hfill
+    \includegraphics[width=0.05\linewidth,trim=545 0 0 0,clip]{figures/wave_field_b1.png}
     \caption{Flat-ship wave elevation $\zeta$ scaled by the spanwise integrated strength $\tfrac \pi 2 q_0b$ for $L=5$. Left: full symmetric field for $b=1$. Right: half-field for $b=1/2$ (top) and $b=2$ (bottom) using the same contour levels.}
     \label{fig:wave_elevation}
 \end{figure}
@@ -254,16 +256,16 @@ Figure~\ref{fig:wave_elevation} shows a set of resulting flat-ship wave-fields f
 
 Second, the predictions capture many well-known physical patterns beyond the obvious Kelvin-wedge and wake shape. In particular, directly behind the planform we see that the interaction of the stern corner waves generates a large rooster-tail in the near wake, leaving a rough but low amplitude wave-field after the wave trains diverge in the far wake. The distinct waves generated by each corner of the planform also imply that the use of a smooth elliptical distribution has not artificially \textit{rounded} the geometry.
 
-Another interesting feature is the strong decrease in wave elevation amplitude with increasing $b$ for a given integrated line-source strength $\frac \pi 2 q_0 b$. Intuitively, increasing the Kelvin-scaled beam $b$ decreases the beam-based Froude number $\mathrm{F_b}=b^{-1/2}$, taking the planform out of strong resonance with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. More specifically, as $b$ increases, the continuous elliptic source distribution integrated across the spanwise edges generates waves with increasingly diverse spanwise phases, increasing the destructive interference. This mechanism is encoded in the Bessel function amplitude $A_b$~\eqref{eq:Ab} which filters high-wavenumber contributions more aggressively as $b$ increases.
+The theory also predicts a strong decrease in the diverging wave elevation amplitude with increasing $b$ for a given integrated line-source strength $\frac \pi 2 q_0 b$. Intuitively, increasing the Kelvin-scaled beam $b$ decreases the beam-based Froude number $\mathrm{F_b}=b^{-1/2}$, taking the planform out of strong resonance with the Kelvin wavelengths $\lambda=2\pi\ell\cos^2\theta$. More specifically, as $b$ increases, the continuous elliptic source distribution integrated across the spanwise edges generates diverging waves with increasingly diverse spanwise phases, increasing the destructive interference. This mechanism is encoded in the Bessel function amplitude $A_b$~\eqref{eq:Ab} which filters high-wavenumber contributions more aggressively as $b$ increases. In contrast, the transverse wave has $k_y\approx0$ where $A_b \approx \frac \pi 2 b$, resulting in a roughly constant transverse amplitude after scaling by $\frac \pi 2 q_0b$.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.9\linewidth]{make_figures/wave_drag.png}
-    \caption{Flat ship wave drag coefficient $C_W$ scaled by $q_0^2$ as a function of the Kelvin-scaled planform length $L$ and width $b$.}
+    \includegraphics[width=0.9\linewidth]{figures/wave_drag.png}
+    \caption{Flat ship wave resistance coefficient $C_W$ scaled by $q_0^2$ as a function of the Kelvin-scaled planform length $L$ and width $b$.}
     \label{fig:wave_drag}
 \end{figure}
 
-Figure~\ref{fig:wave_drag} plots scaled resistance~\eqref{eq:Cw} across a wide range of $b,L$. The interference factor $1-\cos(Lk_x)$ produces classical constructive and destructive interference between the bow and stern wave systems, resulting in oscillating resistance values with $L$. More notably, the destructive spanwise interference discussed above results in a scaling $A_w\sim b^{-3}$ for large $b$ and leads to a monotonic decrease in the resistance coefficient $C_W$ with increasing $b$. This contrasts with classical thin-ship theory, which uses the beam-to-length ratio as a small parameter and predicts that wave drag increases quadratically with beam. In flat-ship theory, the pitch angle $\alpha$ is the perturbation parameter while $b$ is encoded in the Bessel function of the wavelike kernel, leading to the observed behavior of $C_W$.
+Figure~\ref{fig:wave_drag} plots scaled resistance~\eqref{eq:Cw} across a wide range of $b,L$. The interference factor $1-\cos(Lk_x)$ produces classical constructive and destructive interference between the bow and stern wave systems, resulting in oscillating resistance values with $L$. More notably, the destructive spanwise interference discussed above results in a scaling $A_w\sim b^{-3}$ for large $b$ and leads to a gradual but monotonic decrease in the resistance coefficient $C_W$ with increasing $b$. This contrasts with classical thin-ship theory, which uses the beam-to-length ratio as a small parameter and predicts that wave resistance increases quadratically with beam. In flat-ship theory, the pitch angle $\alpha$ is the perturbation parameter while $b$ is encoded in the Bessel function of the wavelike kernel, leading to the observed behavior of $C_W$.
 
 \section{Conclusions}
 
