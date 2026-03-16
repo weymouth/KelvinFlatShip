@@ -38,7 +38,7 @@
   \newcommand*\fsize{\dimexpr\f@size pt\relax}%
   \newcommand*\lineheight[1]{\fontsize{\fsize}{#1\fsize}\selectfont}%
   \ifx\svgwidth\undefined%
-    \setlength{\unitlength}{629.5217859bp}%
+    \setlength{\unitlength}{561.79768125bp}%
     \ifx\svgscale\undefined%
       \relax%
     \else%
@@ -50,22 +50,22 @@
   \global\let\svgwidth\undefined%
   \global\let\svgscale\undefined%
   \makeatother%
-  \begin{picture}(1,0.44908762)%
+  \begin{picture}(1,0.50322465)%
     \lineheight{1}%
     \setlength\tabcolsep{0pt}%
     \put(0,0){\includegraphics[width=\unitlength,page=1]{flat_ship_schematic.pdf}}%
-    \put(0.71999664,0.13087064){\rotatebox{2.5880748}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$L$\end{tabular}}}}}%
-    \put(0.68433359,0.08257198){\color[rgb]{1,0.24313725,0}\rotatebox{0.10652211}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\cal P$\end{tabular}}}}}%
-    \put(0.64817492,0.11118645){\rotatebox{-50.49668833}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$2b$\end{tabular}}}}}%
+    \put(0.80679146,0.14664695){\rotatebox{2.5880748}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$L$\end{tabular}}}}}%
+    \put(0.76949929,0.08718595){\color[rgb]{1,0.24313725,0}\rotatebox{0.10652211}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\cal P$\end{tabular}}}}}%
+    \put(0.7263117,0.12458986){\rotatebox{-50.49668833}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$2b$\end{tabular}}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=2]{flat_ship_schematic.pdf}}%
-    \put(0.67332286,0.20818599){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}\textbf{$U$}\end{tabular}}}}%
+    \put(0.75449121,0.23328259){\color[rgb]{0,0,0}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\mathscr{U}$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{flat_ship_schematic.pdf}}%
-    \put(0.85581867,0.25269251){\color[rgb]{0,0,0}\transparent{0.91372502}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\mathrm{g}$\end{tabular}}}}%
-    \put(0.63019285,0.24592286){\color[rgb]{0,0,1}\transparent{0.91372502}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\vec x_p$\end{tabular}}}}%
-    \put(0.63019285,0.3481836){\color[rgb]{0,0,1}\transparent{0.63960749}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\vec x_p\!'$\end{tabular}}}}%
+    \put(0.96029817,0.28366269){\color[rgb]{0,0,0}\transparent{0.91372502}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\mathscr{g}$\end{tabular}}}}%
+    \put(0.70616192,0.2755686){\color[rgb]{0,0,1}\transparent{0.91372502}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\vec x_p$\end{tabular}}}}%
+    \put(0.70616192,0.39015676){\color[rgb]{0,0,1}\transparent{0.63960749}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\vec x_p\!'$\end{tabular}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=4]{flat_ship_schematic.pdf}}%
-    \put(0.35485072,0.2063529){\color[rgb]{0,0,0}\transparent{0.91372502}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\vec x_f$\end{tabular}}}}%
-    \put(0.49612289,0.29046649){\color[rgb]{0,0,0}\transparent{0.91372502}\rotatebox{31.17183135}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\vec x$\end{tabular}}}}}%
+    \put(0.39762759,0.23122852){\color[rgb]{0,0,0}\transparent{0.91372502}\makebox(0,0)[lt]{\lineheight{1.25}\smash{\begin{tabular}[t]{l}$\vec x_f$\end{tabular}}}}%
+    \put(0.55592997,0.32548192){\color[rgb]{0,0,0}\transparent{0.91372502}\rotatebox{31.17183135}{\makebox(0,0)[t]{\lineheight{1.25}\smash{\begin{tabular}[t]{c}$\vec x$\end{tabular}}}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=5]{flat_ship_schematic.pdf}}%
   \end{picture}%
 \endgroup%
