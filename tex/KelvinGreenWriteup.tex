@@ -1,4 +1,4 @@
-\documentclass[lineno]{JFM-FLM_Au}
+\documentclass[]{JFM-FLM_Au}
 
 \usepackage{amsmath, amssymb, amsfonts}
 \usepackage{hyperref}
@@ -48,7 +48,7 @@ This paper addresses the $z\to 0$ limit with an emphasis on obtaining meaningful
     \label{fig:schematic}
 \end{figure}
 
-We consider steady, incompressible and irrotational flow in the half-space $z\le0$ with a reference frame translating in direction $x$ at speed $U$, Figure~\ref{fig:schematic}. After scaling all lengths by the Kelvin length $\ell=U^2/\mathrm{g}$ (where $\mathrm{g}$ is the gravitational acceleration) and the velocity potential $\phi$ by $U\ell$, that potential must satisfy $\nabla^2\phi = 0$ in the half-space and the linear free-surface boundary condition on the undisturbed free-surface plane
+We consider steady, incompressible and irrotational flow in the half-space $z\le0$ with a reference frame translating in direction $x$ at speed $\mathscr{U}$, Figure~\ref{fig:schematic}. After scaling all lengths by the Kelvin length $\ell=\mathscr{U}^2/\mathscr{g}$ (where $\mathscr{g}$ is the gravitational acceleration) and the velocity potential $\phi$ by $\mathscr{U}\ell$, that potential must satisfy $\nabla^2\phi = 0$ in the half-space and the linear free-surface boundary condition on the undisturbed free-surface plane
 \[
 \partial_{xx}\phi + \partial_z\phi = 0\quad\text{on}\quad z=0
 \]
@@ -63,7 +63,7 @@ Applying this Green's function, the induced potential of a source-patch $\mathca
 \begin{equation}\label{eq:patch}
 \phi(\vec x_f) = \iint_{\mathcal{P}} q(\vec x_p)\,G(\vec x_f,\vec x_p)\,\di{a_p}
 \end{equation}
-where $q$ is the source strength scaled by $U$. If $\mathcal{P}$ lies on or near $z=0$, then evaluating the linear free-surface elevation $\zeta = \partial_x\phi|_{z_f=0}$ and wave drag requires evaluating $G$, and in particular $W$, close to $z=0$. In the next section, we show that this limit is singular for a point source even far downstream. This divergence is well known in practice, spurring developments such as Neumann-Michell theory, but we characterize it explicitly below as a basis for comparison.
+where $q$ is the source strength scaled by $\mathscr{U}$. If $\mathcal{P}$ lies on or near $z=0$, then evaluating the linear free-surface elevation $\zeta = \partial_x\phi|_{z_f=0}$ and wave drag requires evaluating $G$, and in particular $W$, close to $z=0$. In the next section, we show that this limit is singular for a point source even far downstream. This divergence is well known in practice, spurring developments such as Neumann-Michell theory, but we characterize it explicitly below as a basis for comparison.
 
 \section{Point-Source Singularity as $z\to 0$}\label{sec:point_source_asymptotics}
 
@@ -173,9 +173,9 @@ The wave spectrum leads directly to the flat-ship wave resistance $D_W$ from the
 %
 where the Kochin function $\mathrm{K}(t)$ is the integral of the wavelike kernel over the planform. For the elliptic spanwise distribution and rectangular planform we have
 \[
-\mathrm{K}(t) = q_0U\ell^2\,A_b(t)\Delta_Le^{ix_pk_x}.
+\mathrm{K}(t) = q_0\mathscr{U}\ell^2\,A_b(t)\Delta_Le^{ix_pk_x}.
 \]
-Substituting into~\eqref{eq:havelock} and defining a resistance coefficient $C_W = D_W/(\rho U^2 b^2\ell^2)$ gives
+Substituting into~\eqref{eq:havelock} and defining a resistance coefficient $C_W = D_W/(\rho \mathscr{U}^2 b^2\ell^2)$ gives
 %
 \begin{equation}
   C_W = 4\pi q_0^2 \int_0^{\infty}
