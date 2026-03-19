@@ -1,0 +1,20 @@
+cff-version: "1.1.0"
+message: "If you use this software, please cite it using the metadata from this file."
+authors:
+  - family-names: Weymouth
+    given-names: Gabriel D.
+    orcid: "https://orcid.org/0000-0001-5080-5016"
+identifiers:
+  -
+    type: doi
+    value: "10.5281/zenodo.19108744"
+keywords:
+  - "Linear Kelvin waves"
+  - "Green's functions"
+  - "Flat-ship theory"
+  - Julia
+title: "Linear Kelvin Wave Predictions in the z -> 0 Limit Repository"
+version: "0.1"
+date-released: 2026-03-19
+license: "MIT"
+repository-code: "https://github.com/weymouth/KelvinFlatShip"
