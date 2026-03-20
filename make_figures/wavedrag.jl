@@ -1,6 +1,6 @@
 # wave drag
 include("../src/flatship.jl")
-Cw(L,b) = 4π*quadgk(t->SpecialFunctions.besselj1(b*k(t))^2/(b*k(t))^2*kₓ(t)*(1-cos(L*hypot(1,t))),0,Inf;atol=1e-6)[1]
+Cw(L,b) = quadgk(t->(π*SpecialFunctions.besselj1(b*k(t))/b/k(t))^2*kₓ(t)*(1-cos(L*hypot(1,t))),0,Inf;atol=1e-6)[1]
 
 # multi-threaded evaluation
 import AcceleratedKernels as AK
@@ -18,6 +18,6 @@ z = Cw(L,b)
 contourf(L,b,z',levels=18,lw=0,cmap=:amp,clims=(0,30),
     ylabel="       "*L"b",yscale=:log10,yguidefontrotation=-90,
     xlabel=L"L",xticks=([π,3π,5π],["π","3π","5π"]),
-    size=(800,300),colorbar_title=L"C_W/q_0^2",
+    size=(800,300),colorbar_title=L"C_W/8\pi q_0^2",
     rightmargin=3Plots.mm,bottommargin=3Plots.mm,labelfontsize=12)
 savefig("wave_drag.png")
