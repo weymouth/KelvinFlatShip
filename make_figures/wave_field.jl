@@ -44,3 +44,21 @@ begin
     savefig("pointsource_surface.png")
 
 end
+
+# Graphical abstract: b=1 wave field, no axes/labels/colorbar/borders
+begin
+    using FileIO, ImageMagick
+    b, h = 1, 0.025
+    x = -20:h:1; y = -10:h:10
+    z = clamp.((ζb(x,y,b) - ζb(x .+ 5,y,b)), -ζm, ζm)
+    contourf(x, y, z', levels=18, clims=(-ζm,ζm), colormap=:balance, line=0,
+        xlims=(-20,1), ylims=(-10,10),
+        axis=false, ticks=false, colorbar=false,
+        framestyle=:none,
+        size=(709,591), dpi=300,
+        margin=0Plots.mm)
+    plot!(Shape([(0,b),(0,-b),(-5,-b),(-5,b)]), label="", c=:black, alpha=0.8)
+    savefig("graphical_abstract.png")
+    save("graphical_abstract.jpg", load("graphical_abstract.png"))
+    rm("graphical_abstract.png")
+end
