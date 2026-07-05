@@ -50,7 +50,7 @@ make_figures/
 
 Provides `wavelike(x, y, z; kwargs...)`, which evaluates the wavelike part of the Kelvin Green's function:
 
-$$W(x,y,z) = 4H(-x)\int_{-\infty}^{\infty} \exp\!\bigl(z(1+t^2)\bigr)\sin\!\bigl(g(x,y,t)\bigr)\,dt$$
+$$W(x,y,z) = 4H(-x)\int_{-\infty}^{\infty} \exp\bigl(z(1+t^2)\bigr)\sin\bigl(g(x,y,t)\bigr)\,dt$$
 
 where $g(x,y,t)=(x+yt)\sqrt{1+t^2}$ and $H$ is the Heaviside function. The integral is evaluated using a modified steepest descent method: stationary points of $g$ are located, smooth finite-range integrals around them are evaluated with Gauss-Kronrod quadrature, and the highly oscillatory semi-infinite tails are handled by numerical steepest descent. An optional weight function `γ` allows slowly-varying pre-factors to be included.
 
@@ -60,7 +60,7 @@ This builds on the internal routines of [NeumannKelvin.jl](https://github.com/we
 
 Provides `∫₂wavelike(x, y, z; b=1, kwargs...)`, which evaluates the elliptically-weighted line integral:
 
-$$\int_{-b}^{b} \sqrt{1-(y'/b)^2}\; W(x,y-y',z)\; dy' = 4\pi H(-x)\int_{-\infty}^{\infty} \frac{J_1(bk(t))}{k(t)}\exp\!\bigl(z(1+t^2)\bigr)\sin\!\bigl(g(x,y,t)\bigr)\,dt$$
+$$\int_{-b}^{b} \sqrt{1-(y'/b)^2}\; W(x,y-y',z)\; dy' = 4\pi H(-x)\int_{-\infty}^{\infty} \frac{J_1(bk(t))}{k(t)}\exp\bigl(z(1+t^2)\bigr)\sin\bigl(g(x,y,t)\bigr)\,dt$$
 
 where $k(t)=t\sqrt{1+t^2}$ and $J_1$ is the Bessel function of the first kind. The $y'$ integration is performed analytically via the Fourier transform of the elliptic distribution, giving the $J_1/k$ prefactor. The Bessel function is decomposed into scaled Hankel functions $Hx_1^{(1,2)}$, which serve as slowly varying prefactors for the steepest descent path integration.
 
