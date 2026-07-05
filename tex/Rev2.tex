@@ -1,0 +1,33 @@
+\documentclass[12pt]{letter}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+Reviewer 2
+\vspace{1cm}
+
+Thank you for the review, and for your appreciation of the open source implementation. To address your first point, numerical steepest-descent is indeed a well-established method which has been used on the wavelike term. I have expanded the introduction to clarify the gap more precisely:
+\begin{quote}
+Numerical steepest-descent is an established contour deformation approach for computing oscillatory integrals which has been applied to the Kelvin Green's function (Iwashita 1992), but these methods fail to converge near the Kelvin wedge boundary due to stationary point coalescence.
+\end{quote}
+As the text makes clear, the new domain partitioning approach has no such limitation because the regions near the stationary points are \textit{always} treated on the real-line, not with steepest-descent.
+
+To address your second point on the derivation logic in Section 4.1, I have expanded that section to clarify that the reduction to a waterline contour integral is exact within the linearized framework, how it leads to a completely ill-posed inversion, and how the current method avoids this problem. 
+\begin{quote}
+In Neumann-Kelvin methods (Baar 1988), this waterline contour is discretized with the goal of determining the source distribution $q$ by applying the body-boundary condition. However, until they are regularized, each of these integrals generates singular wave energy at unresolvable high wave number, making the inversion ill-posed. In contrast, the present work analytically evaluates the integral over a physically motivated trial strength distribution $q$, regularizing the integral and enabling universal finite energy predictions with an explicit Green's function.
+\end{quote}
+
+Regarding your suggestion to compare against the `correct' $\phi$: unfortunately this comparison is impossible, and I have expanded the discussion in the Introduction and Section 4 to make this explicit. There is no exact flat-ship solution to compare against as Tuck (1975) and related works are high Froude number approximations while the first-principle approach of Cole (1988) leads to singular behavior labeled as ``spray drag'' in that work and others. In addition, the quote above makes clear that any panel method attempting to invert the waterline integral without first regularizing is ill-posed. Resolving this ill-posedness is the primary motivation and contribution of the present work.
+
+For your other comments:
+\begin{enumerate}
+    \item I hope the expanded introduction has clarified that there is no satisfactory approach to compare against. Cole 1988 is probably the most ``first-principle'', but still singular. Nobelesse 2013 is the most ``successful'' in resolving the waterline singularity, but it lacks an explicit potential and (as I've clarified in the revision) truncates the wavelike terms energy spectra, akin to a box-filter. I believe the current model is the only ``first-principle'' Green's function approach which resolves the singularity. 
+    \item The $b\to0$ limit is a very interesting direction of inquiry. I have added a few sentences to the text, but there is likely more to do in that direction in the future, particularly when studying the convergence of a (currently only notional) Neumann-Kelvin method based on this potential.
+    \item The README has been updated.
+    \item As expanded upon in the revised manuscript, \textit{any} surface ship needs to deal with this limit, not just flat ships. The regularized Green's function is a building block of a robust modeling approach - one simple application of which is the flat ship example given in the manuscript. 
+\end{enumerate}
+
+Regards,\\
+G D Weymouth
+
+\end{document}

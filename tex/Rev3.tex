@@ -1,0 +1,33 @@
+\documentclass[12pt]{letter}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+Reviewer 3
+\vspace{1cm}
+
+Thank you for the review, which helped me clarify the previous work and the paper's contributions. First, I have expanded the introduction and discussion to clarify that the analytic contribution of the paper is unique in that we regularize this wavelike term completely while maintaining a general Green's function framework. This process can therefore be the building block of a robust modeling approach - one simple application of which is given in the manuscript. 
+
+I appreciate the second comment as well, and the ability to expand the text a little to address the method's limitation. I have added the following to the analytic development section.
+
+\begin{quote}
+    Using this elliptic distribution satisfies the body boundary condition to leading order and, as shown in the following, admits an exact Bessel function representation that regularizes the wavelike function for all $z$. As in classical thin-ship theory, this formulation neglects the wavelike influence on the hull. Corrections for the wave-interaction effects could in principle be incorporated with a Bessel function expansion or by building a Neumann-Kelvin approach from these regularized elements.
+\end{quote}
+
+The third comment is very interesting! We do not achieve exponential decay in the wave energy spectrum, and this is physically consistent (perhaps even mandatory) for a linear potential flow problem with no dissipative mechanisms. I've added the following discussion to the conclusions.
+
+\begin{quote}
+    The $k_y^{-3/2}$ spectral decay of the regularized kernel ensures finite wave energy and elevation everywhere, but higher-order derivatives of the wave field will eventually diverge at small scales, due to the absence of nonlinear and viscous dissipative mechanisms. However, the present formulation resolves the ill-posedness in the physically relevant quantities of wave elevation, energy, and drag within the inviscid linear framework. 
+\end{quote}
+
+The forth comment is certainly valid and I've added the following sentences to the conclusion, reiterating the limitations in the current model
+\begin{quote}
+    The present work focuses on the leading-order flat-ship approximation, neglecting nonlocal wave interactions on a finite depth hull. Accounting for local hull geometry while retaining the regularized kernel framework is a natural extension, at which point the predictions could be compared to experimental or high-fidelity nonlinear simulations. 
+\end{quote}
+
+For your minor figure comments, I'm afraid I don't understand the suggestion for the upper and lower panels of figure 1. This figure is already an SVG which uses the same Latex fonts as the manuscript. I will work with the editors to make sure the fonts are consistent for the other figures as well. (I remember there being issues with SVGs in previous submissions.)
+
+Regards,\\
+G D Weymouth
+
+\end{document}
