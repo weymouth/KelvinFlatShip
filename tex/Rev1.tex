@@ -1,0 +1,16 @@
+\documentclass[12pt]{letter}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+
+Reviewer 1, 
+
+Thank you for the review, which helped me clarify the paper's contributions. First, I appreciate the additional references. As you say, this is a classical problem and the literature on the topic is extensive. I've added references to Ursell 1960 and Clarisse and Newman 1994 in the revised manuscript and edited the introduction to clarify that Ursell identified the singularity and that asymptotic expansions (such as those in Baar \& Price and Clarisse \& Newman) can be used to evaluate the wavelike term. However, as pointed out in both of these papers, this requires a patchwork of different series in different regions and the optimal series truncation point is not well defined. As you say, the proposed numerical method provides a consistent and highly accurate approach to avoid these problems. 
+
+Second, as you say, various semi-empirical pressure distributions have been suggested for shallow-draft ships building on Tuck 1975, but I disagree that these results are essentially equivalent to the analytic contribution herein. I've adjusted the introduction to clarify that these models are high Froude number approximations, not exact solutions to the linearize potential flow problem, and do not automatically regularize the singular wave energy at the waterline. Indeed, Cole (1988) acknowledged the resulting singular wave energy by labeling it ``spray drag''. These models are not capable of resolving the local singularities in the wavelike integral, particularly on the waterline, leading to the development of many alternative approaches, the most prominent being the Neumann-Michell theory of Noblesse et al. (2013). However, as now clarified in both the introduction and Section 4, this reformulation still requires an explicit truncation of the short-wave spectrum to avoid the singular behavior, which therefore remains unresolved. The analytic contribution of the present paper is unique in that it regularizes the wavelike kernel without empirical damping or arbitrary wavenumber filtering, while retaining an explicit Green's function framework. This regularized kernel is therefore a genuine building block for robust free-surface modeling, one simple application of which is demonstrated in the manuscript.
+
+Regards,\\
+G D Weymouth
+
+\end{document}
