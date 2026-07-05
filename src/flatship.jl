@@ -68,13 +68,3 @@ begin
     brutepointwavelike(x,y,z) = quadgk_count(y′->√(1-y′^2)*NeumannKelvin.wavelike(x,abs(y-y′),z),-1,1,rtol=1e-7)
     @assert isapprox(brute∫₂wavelike(x,y,z),brutepointwavelike(x,y,z)[1],rtol=1e-6)
 end
-
-# Check the two ∫₂wavelike implementations give the same answer and compare timings
-function flatship_check(y,x=-1.,z=-0.)
-    Wᵦ = @btimed ∫₂wavelike($x,$y,$z,Δg=7) seconds=0.1
-    W = @btimed wavelike($x,$y-1,$z) seconds=0.1
-    brute = @timed brute∫₂wavelike(x,y,z)
-    println("y = $y: Wᵦ = $(Wᵦ.value), brute = $(brute.value), Wᵦ time = $(Wᵦ.time) seconds, brute time = $(brute.time) seconds, W time = $(W.time) seconds")
-    (y=y, abserror = abs(Wᵦ.value-brute.value), relerror = abs(Wᵦ.value/brute.value-1), time = Wᵦ.time, speedup = brute.time/Wᵦ.time, slowdown = Wᵦ.time/W.time)
-end
-flatship_table()=Table(flatship_check(y) for y in (0.,0.5,0.9,1.1,1.35))
