@@ -6,7 +6,7 @@
 
 Julia repository for the paper: "Linear Kelvin Wave predictions as $z\to 0$"
 
-This repository implements efficient numerical methods for evaluating the Kelvin Green's function and its line integral, which arise in the Neumann-Kelvin boundary value problem for ship wave resistance. The preprint can be [read online](https://arxiv.org/abs/2603.14945).
+This repository implements efficient numerical methods for evaluating the Kelvin Green's function and its line integral, which arise in the Neumann-Kelvin boundary value problem for ship waves. The preprint can be [read online](https://arxiv.org/abs/2603.14945).
 
 All figures can be reproduced using the scripts in the `make_figures` folder. The benchmark table can be reproduced using `make_figures/table.jl`, although timing results will vary by machine. Each script in `make_figures/` is self-contained. From the repository root:
 
