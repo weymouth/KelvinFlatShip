@@ -1,0 +1,39 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{color}
+
+\begin{document}
+
+\begin{center}
+{\Large Response to Referee 1}\\[6pt]
+{\large JFM-2026-0887.R1 ---
+\textit{Linear Kelvin Wave Predictions in the $z\to 0$ Limit}}\\[6pt]
+\end{center}
+
+\bigskip
+
+\paragraph{Comment:}
+\textit{The author developed a numerical algorithm using the contour-deformation approach to evaluate the Green function, claiming that this algorithm is extremely efficient and applicable to general bodies. However, this algorithm does not appear to be entirely novel. It has been commonly used to evaluate wave source Green functions (e.g., Iwashita & Ohkusu, 1992, as mentioned in the paper). Furthermore, the claim regarding this second contribution is not validated through comparisons with existing methods.}
+
+\paragraph{Response:}
+We thank the review and agree that further comparison is insightful. Iwashita \& Ohkusu is the classic reference, but as further clarified in the updated introduction paragraph, their formulation is only valid for a pulsating source. Their contour path relies explicitly on the frequency greater than zero and becomes degenerate for steady flow. To avoid speculating about its steady performance, we found the more recent paper by \cite{motygin_numerical_2017} who did apply a variant of steepest-descent to the wavelike integral and compared it to an alternative (Levin ODE) method. Motygin found that steepest descent was the more robust method as $z\to 0$, but the exponential convergence that such methods rely upon fails in this limit, so the number of evaluations grows without limit. The current approach requires a constant number of evaluations even exactly at $z=0$, O(10) complex evaluations (4 for each of the 2-4 tails) and O(10) real-line evaluations (for the 1 or 2 non-oscillatory interval). Motygin's approach requires $O(10^5-10^6)$ evaluations for the same accuracy. We also quantify that the evaluation time per point of our method is on the order of $1\mu s$, documented in Table 1. 
+
+We feel this substantially clarifies the magnitude of the numerical contribution and appreciate the push to add this comparison. 
+
+
+\bigskip
+
+\subsection*{Summary of manuscript changes}
+
+\begin{enumerate}
+  \item \textbf{Introduction, paragraph 2}: New and clarified references: \\
+  \textcolor{blue}{Efficient and robust evaluation of the Green's function is challenging even for a well submerged source due to the oscillatory nature of the wavelike term's integrand, and this challenge intensifies as the exponential decay goes to zero with $z\to 0$, see Sec~3. This makes direct numerical quadrature feasible only at moderate submergence depths \cite{furth_dissipative_2021}.}  Asymptotic series expansions have been developed, but require a patchwork of different series in different regions with no universally optimal series truncation criterion and unable to handle the $z\to 0$ limit for arbitrary distances from the source, \cite{baar_evaluation_1988, clarisse_evaluation_1994}. Numerical steepest-descent methods have been applied \textcolor{blue}{to the related problem of a pulsating translating Green's function \cite{iwashita_green_1992}, but the contour geometry used in that work degenerates in the steady limit. The steady problem has also been attempted with steepest-descent, but the exponential convergence mechanism used in steepest descent collapses as $z\to 0$ regardless \cite{motygin_numerical_2017}.} Recent advances in contour deformation methods enable robust and efficient integration of analytic functions \cite{gibbs_numerical_2024}, but the Kelvin wavelike integral depends on a non-analytic phase function, preventing the direct application of these methods.
+  \item \textbf{Section~4.1, final paragraph}: Added evaluation comparison and total cost\\
+  Herein, we set $\Delta g \approx 2\pi$ and $N=4$, producing maximum errors around $10^{-6}$ with minimal computational cost. \textcolor{blue}{In comparison, methods based purely on steepest-descent such as \cite{motygin_numerical_2017} lose their exponential convergence as $z\to 0$, requiring a rapid increase in the number of function evaluations in this limit. To reduce the error to $10^{-6}$, for example, that method requires between $10^5-10^6$ function evaluations for points near $z=0$, while the current partitioned approach uses only $O(10)$ evaluations for the complex tails and another $O(10)$ real-line evaluations, leading to evaluation times on the order of $1\mu s$, Table~1.}
+\end{enumerate}
+
+\bibliographystyle{jfm}
+\bibliography{references}
+\end{document}
