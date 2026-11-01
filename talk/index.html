@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>No one cares about your research (yet!)</title>
+  <meta name="description" content="Gabriel Weymouth, TU Delft — a seminar on research communication, using a JFM paper on Kelvin ship waves as the running example.">
+  <link rel="stylesheet" href="vendor/reveal/reset.css">
+  <link rel="stylesheet" href="vendor/reveal/reveal.css">
+  <link rel="stylesheet" href="css/theme.css?v=20261102">
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- Each slide: a headline (the point, as a sentence), its graphic, and speaker notes.
+     Meta slides carry the "you are here" hourglass: data-at = motivation | theory | results | conclusion.
+     Text in class="fragment" steps in with the arrow keys. -->
+
+<!-- ============================ OPENING ============================ -->
+
+<!-- 1 -->
+<section class="title">
+  <div class="media" data-file="assets/img/graphical_abstract.jpg" data-pos="0% 50%" data-alt="Flat-ship wave field"></div>
+  <div class="scrim"></div>
+  <div class="headline">
+    <h1>No one cares about your research <em>(yet!)</em></h1>
+    <div class="byline"><b>Gabriel Weymouth</b> · TU Delft</div>
+  </div>
+  <aside class="notes">Title. Don't explain the picture yet.</aside>
+</section>
+
+<!-- 2 -->
+<section>
+  <h2 class="headline top">You don't care about my latest paper <em>(yet)</em></h2>
+  <div class="paper">
+    <h3>Linear Kelvin Wave Predictions in the <i>z</i> → 0 Limit</h3>
+    <div class="venue">G. D. Weymouth · Journal of Fluid Mechanics, 2026</div>
+    <p>Linear wave theory captures the essential physics of free-surface flows at a fraction of the computational cost of nonlinear and viscous methods, making it attractive for design, real-time control, and surrogate modeling applications. However, the Kelvin Green's function for a translating point-source generates unbounded wave energy in the <i>z</i> → 0 limit, causing both numerical difficulties and physical inconsistencies. This paper develops a modified kernel for the Kelvin potential incorporating an elliptic spanwise line integration that naturally resolves this ill-posedness, yielding finite wave energy over the entire free surface. We then present a fast evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving 10<sup>4</sup>–10<sup>5</sup> speedup over direct quadrature while preserving the wake asymptotics. Predictions on the most challenging <i>z</i> = 0 limit demonstrate physically consistent wave patterns and wave resistance trends. An open-source Julia implementation is provided.</p>
+  </div>
+  <aside class="notes">The abstract, untouched. "Hands up if you care." Nobody does, and that's the honest starting point for every talk.</aside>
+</section>
+
+<!-- 3 -->
+<section>
+  <h2 class="headline top">Your audience is smart, busy, and <em>not you</em></h2>
+  <ul class="points wide">
+    <li><em>The curse of knowledge</em>: once you know something, you can't imagine not knowing it
+      <span class="source">Camerer, Loewenstein &amp; Weber, <i>J. Political Economy</i>, 1989</span></li>
+  </ul>
+  <div class="quiz fragment">
+    <div class="q">Quiz: my title says “in the <i>z</i> → 0 limit”. What does that mean?</div>
+    <ol>
+      <li>the error goes to zero</li>
+      <li>the ship stops</li>
+      <li class="fragment custom answer">at the water surface</li>
+      <li>the waves disappear</li>
+    </ol>
+  </div>
+  <aside class="notes">The curse of knowledge, coined by Camerer, Loewenstein and Weber (1989): traders who knew a company's true earnings couldn't predict what less-informed traders would pay, even when they were paid to get it right. Knowing something makes it hard to imagine not knowing it. [click] Quiz: hands up for each. [click] To me it's obvious: z is the depth, so z → 0 is the water surface. To you it meant nothing. After years on a problem the jargon, the motivation and the "obvious" next step all live in your head, not theirs.</aside>
+</section>
+
+<!-- ============================ MOTIVATION ============================ -->
+
+<!-- 4 -->
+<section>
+  <h2 class="headline top">Open wide with a reason to care, then funnel down to your work</h2>
+  <ul class="points" style="max-width:820px">
+    <li>Open with a hook the room <em>already</em> cares about, then funnel down to your work</li>
+    <li class="fragment" data-fragment-index="1">Make it concrete: dates, costs, tallies</li>
+    <li class="fragment" data-fragment-index="3">Rethink the hook for <em>each</em> audience</li>
+  </ul>
+  <div class="figure side" data-figure="funnel" data-w="830" data-h="710"></div>
+  <div class="figure side fragment" data-fragment-index="1" data-figure="word-soup" data-w="830" data-h="710"></div>
+  <div class="figure side fragment" data-fragment-index="3" data-figure="audience" data-w="830" data-h="710"></div>
+  <div class="figure map" data-figure="hourglass" data-at="motivation" data-w="300" data-h="200"></div>
+  <aside class="notes">The funnel: a hook the whole room already cares about → narrow to the problem → your contribution → widen back out to what it changes. The paper's introduction starts at the narrow end, with Green's functions and citations. [click] Make the wide end concrete: [click] each vague word has a specific version. [click] Pick the hook for this audience; lead with one, the conclusion can widen past it. We'll poll this room in a minute.</aside>
+</section>
+
+<!-- 5 -->
+<section>
+  <div class="media" data-file="assets/img/speedboat_wake.jpg" data-credit="Photo: sammccool47 · Pexels" data-alt="A speedboat and its wake, from above"></div>
+  <div class="scrim top"></div><div class="scrim"></div>
+  <h2 class="headline top"><em>Option 1:</em> Making waves burns fuel</h2>
+  <div class="bignums">
+    <div><b>~3%</b>of global CO₂ is shipping</div>
+    <div class="fragment"><b>~½</b>of resistance can be wave-making</div>
+    <div class="fragment"><b>4x</b>less wave drag when wave height is halved</div>
+  </div>
+  <aside class="notes">Hook for everyone. Shipping burns ~300 Mt of fuel a year, ~3% of global CO₂ (IMO, 2020). [click] For a fast ship, wave-making can be around half the resistance. Predict the waves, and you can design them away. [verify numbers]</aside>
+</section>
+
+<!-- 6 -->
+<section>
+  <h2 class="headline top"><em>Option 2:</em> Our physics models are built from points, and points blow up</h2>
+  <div class="figure" data-figure="points"></div>
+  <div class="overlay fragment"><div class="media inset" data-file="assets/img/pointsource_surface.png" data-alt="Kelvin point source near the surface: the spike fills the whole wake"></div>
+    <div class="caption small">Kelvin's infinity fills the whole wake · Ursell, 1960</div></div>
+  <aside class="notes">Hook for physicists. Point mass (Newton, 1687), point charge (Coulomb, 1785), point vortex (Helmholtz, 1858), moving wave source (Kelvin, 1887): each idealisation is infinite at the point, and we learn to live with it. [click] Kelvin's is different: at the water surface its infinity doesn't stay put but fills the whole wake (Ursell, 1960). Is the simplest wave theory wrong, or is the point the problem?</aside>
+</section>
+
+<!-- 7 -->
+<section>
+  <h2 class="headline top"><em>Option 3:</em> Kelvin developed stationary phase to explain ship waves</h2>
+  <div class="figure" data-figure="cornu" data-w="1190" data-h="760" style="right:620px;top:230px;bottom:90px"></div>
+  <div class="footnote fragment" style="left:1400px;top:420px;bottom:auto;font-size:40px;max-width:420px">Now in optics, quantum mechanics and seismology. Yet his original application is still slow and unreliable!</div>
+  <aside class="notes">Hook for mathematicians. Each wave direction adds a little arrow; the running sum is a spiral (the Cornu spiral of Fresnel diffraction). It only makes progress where the phase stands still: name them, the stationary points. Here there are two, Kelvin's transverse and diverging waves. Everywhere else it curls up, tighter and tighter, but at the surface nothing decays, so it never quite finishes. [click] His 1887 method now runs through optics, quantum mechanics and seismology, yet his own integral is still the slow, unreliable case at the surface. Why is the problem that launched the method still the hard one? (Sets up slide 14.)</aside>
+</section>
+
+<!-- 8 -->
+<section>
+  <h2 class="headline top"><em>Option 4:</em> Design, control and AI need wave predictions in microseconds</h2>
+  <div class="figure" data-figure="timescale"></div>
+  <aside class="notes">Hook for engineers. A hull optimisation or an ML training set needs 10⁴–10⁶ evaluations; a CFD run takes hours on a cluster; an autopilot gets milliseconds. Each answer must be fast and must never blow up.</aside>
+</section>
+
+<!-- 9 -->
+<section>
+  <h2 class="headline top">Same research, four hooks: pick the one your audience already cares about</h2>
+  <div class="cards">
+    <div><b>Everyone</b>Making waves burns fuel</div>
+    <div><b>Physicists</b>Our models are built from points, and points blow up</div>
+    <div><b>Mathematicians</b>Kelvin's own integral is still the hard case</div>
+    <div><b>Engineers</b>Design, control and AI need microseconds</div>
+  </div>
+  <div class="figure map" data-figure="hourglass" data-at="motivation" data-w="300" data-h="200"></div>
+  <aside class="notes">The four options side by side, each with its audience. Poll the room: hands up for each. For this talk, the funnel continues from fuel.</aside>
+</section>
+
+<!-- ============================ THEORY ============================ -->
+
+<!-- 10 -->
+<section>
+  <h2 class="headline top">“Any sufficiently unexplained result is indistinguishable from magic”<span class="source">adapted from Arthur C. Clarke's third law</span></h2>
+  <div class="figure" data-figure="dial" data-w="1100" data-h="420" style="right:700px;top:260px;bottom:auto;height:400px"></div>
+  <ul class="points" style="top:790px">
+    <li>One mechanism per result, one picture per mechanism</li>
+    <li>Equations that clear up the mechanism, not ones that prove you're smart</li>
+  </ul>
+  <div class="figure map" data-figure="hourglass" data-at="theory" data-w="300" data-h="200"></div>
+  <aside class="notes">Too much theory loses everyone; too little makes your result magic. The dial between "lecture" and "magic trick". A technical audience only trusts a result when they can see why it works. Equations are fine when they clear up the mechanism, not when they prove how smart you are or load up information nobody needs yet.</aside>
+</section>
+
+<!-- 11 -->
+<section>
+  <div class="media contain" data-file="assets/img/point_wake.png" data-alt="One point disturbance and its Kelvin wake, top view (new Julia render)"></div>
+  <div class="media contain beat fragment" data-file="assets/img/graphical_abstract.jpg" data-alt="Many points summed into a ship's wake"></div>
+  <div class="scrim top"></div>
+  <h2 class="headline top">Add together tiny disturbances to make any ship wake</h2>
+  <aside class="notes">The theory in one picture: Kelvin's single-point wake is the building block; [click] add many up and you get a ship. This is the Green's function — name it only now, after it's been shown.</aside>
+</section>
+
+<!-- 12 -->
+<section>
+  <div class="split" style="top:250px;bottom:60px">
+    <div class="media contain" data-file="assets/img/pointsource_surface.png" data-alt="Point source near the surface, 3D: one spike, and a wake full of it"></div>
+    <div class="media contain" data-file="assets/img/wavecut_points.png" data-alt="Wave cut: smooth when deep, wild spikes as the source rises to the surface"></div>
+  </div>
+  <h2 class="headline top">A singularity at the surface makes infinitely short & steep waves</h2>
+  <aside class="notes">The building block breaks exactly where a ship touches the water: the spike on the left, and on the right a slice across the wake as the source rises towards the surface. Known since 1960, usually patched with fake damping.</aside>
+</section>
+
+<!-- 13 -->
+<section>
+  <h2 class="headline top">Superposition cancels the short waves, but slowly</h2>
+  <div class="figure half-left" data-figure="cancel" data-w="800" data-h="640"></div>
+  <div class="figure half-left fragment" data-figure="integrand" data-w="800" data-h="640" style="left:1010px"></div>
+  <aside class="notes">The problem, both sides. Physics: two points side by side make long waves that add and short waves that cancel, so a real ship's width kills the noise — but cancelling ever-shorter waves needs ever more points. [click] Numerics: each answer is an integral of fast wiggles that almost cancel; brute force must count every wiggle, and at the surface there are infinitely many.</aside>
+</section>
+
+<!-- 14 -->
+<section>
+  <h2 class="headline top">So do the cancelling analytically instead!</h2>
+  <div class="figure half-left" data-figure="shortcut" data-w="800" data-h="640" style="height:540px"></div>
+  <div class="wordeq fragment" data-fragment-index="0" style="bottom:80px;font-size:42px">wave <i>=</i> Σ <b>stationary regions</b> <i>+</i> Σ <b>detours</b></div>
+  <div class="media half-right contain fragment" data-fragment-index="1" data-file="assets/img/wavecut.png" data-alt="Wave cut: point sources spike, the width-integrated source stays smooth"></div>
+  <aside class="notes">The solution, both sides. Numerics: back to Kelvin's spiral. Brute force walks every one of its curls. [click] We only do real work in the regions around the stationary points, and jump each curled-up tail in one step through the complex plane: wave = Σ stationary regions + Σ detours. Only ~50 points, so 10⁴–10⁵ times faster: ~30 µs instead of seconds. [click] Physics: integrate across the width exactly, with the elliptic loading of a finite wing: the short waves are gone and the wave stays finite right at the surface.</aside>
+</section>
+
+<!-- 15 -->
+<section>
+  <h2 class="headline top">Every result got a "why", none got a proof</h2>
+  <ul class="points">
+    <li>Smooth wake <em>because</em> steep waves cancel across the width</li>
+    <li>Fast <em>because</em> only the stationary points need real work</li>
+    <li class="ask">Ask yourself: can your audience say, in one sentence, why each result works?</li>
+  </ul>
+  <div class="figure map" data-figure="hourglass" data-at="theory" data-w="300" data-h="200"></div>
+  <aside class="notes">Two contributions, two mechanisms, one equation that earned its place.</aside>
+</section>
+
+<!-- ============================ RESULTS ============================ -->
+
+<!-- 16 -->
+<section>
+  <h2 class="headline top">Show the result, then say it in the title</h2>
+  <ul class="points">
+    <li>"Fast", "robust", "significantly better" are <em>claims</em></li>
+    <li>A demo, a side-by-side, a number in a familiar unit is an <em>experience</em></li>
+    <li class="fragment">The title is the headline: the audience reads it first, and may read nothing else</li>
+  </ul>
+  <div class="figure map" data-figure="hourglass" data-at="results" data-w="300" data-h="200"></div>
+  <aside class="notes">Claims vs experiences. [click] And each result's title is its headline: the one sentence to remember.</aside>
+</section>
+
+<!-- 17 -->
+<section>
+  <h2 class="headline top">10k accurate wake points in less than a second</h2>
+  <div class="demo" id="demo">
+    <div><h4>Our method</h4><canvas data-method="fast" width="480" height="240"></canvas><div class="clock" data-clock="fast"></div></div>
+    <div><h4>Brute force</h4><canvas data-method="brute" width="480" height="240"></canvas><div class="clock" data-clock="brute"></div></div>
+    <div class="sliders">
+      <label>model <select data-param="model"><option value="flat">flat ship</option><option value="point">point source</option></select></label>
+      <label>depth <input type="range" data-param="depth" min="0" max="1" step="0.05" value="1"></label>
+      <label>speed <input type="range" data-param="speed" min="0.25" max="0.8" step="0.05" value="0.5"></label>
+      <label>width <input type="range" data-param="width" min="0.1" max="0.6" step="0.05" value="0.3"></label>
+      <span class="status" data-status></span>
+    </div>
+  </div>
+  <aside class="notes">Speed: same sliders, brute force stutters while ours redraws live (the told version was the abstract's "10⁴–10⁵ speedup"). Robustness: drag the ship onto the surface; the point-source wake turns to noise, the flat ship stays clean. Physics: sweep speed and width and watch each corner launch its own wave train, with a rooster tail behind the stern. Start the server first: julia --project=talk --threads=auto talk/server.jl</aside>
+</section>
+
+<!-- 18 -->
+<section>
+  <div class="media inset" data-file="assets/img/drag_vs_length.png" data-alt="Wave drag rising and falling with speed: bow and stern waves interfere (new Julia render)"></div>
+  <h2 class="headline top">Wave drag rises and falls with speed as bow and stern waves interfere</h2>
+  <aside class="notes">The classic result, and a sanity check: as speed changes, the bow and stern wave systems drift in and out of phase, so drag has humps and hollows, with the big hump near Froude number 0.6. Well known since Michell and Havelock; our method reproduces it. Cut this slide if running long.</aside>
+</section>
+
+<!-- 19 -->
+<section>
+  <h2 class="headline top">Wide ships make less wave drag than textbook theory predicts</h2>
+  <div class="split3">
+    <div class="media contain" data-file="assets/img/wave_field_b0.5.png" data-alt="Narrow ship wave field"><div class="tag">Narrow</div></div>
+    <div class="media contain" data-file="assets/img/wave_field_b1.png" data-alt="Medium ship wave field"><div class="tag">Medium</div></div>
+    <div class="media contain" data-file="assets/img/wave_field_b2.png" data-alt="Wide ship wave field"><div class="tag">Wide</div></div>
+  </div>
+  <div class="overlay fragment"><div class="media inset" data-file="assets/img/drag_vs_width.png" data-alt="Wave drag per unit area against width: thin-ship theory grows linearly, ours tapers off (new Julia render)"></div></div>
+  <aside class="notes">The key width finding: same colour scale, the angled (diverging) waves fading as the ship widens. [click] Wave drag per unit planform area: thin-ship theory has it grow linearly with width, ours tapers off. It's slide 13's cancellation, now visible in the result.</aside>
+</section>
+
+<!-- 20 -->
+<section>
+  <h2 class="headline top">A result convinces when it's a comparison that pays off a mechanism</h2>
+  <ul class="points">
+    <li>Brute force <em>vs</em> ours → only the stationary points matter</li>
+    <li>Point source <em>vs</em> flat ship → short waves cancel across the width</li>
+    <li>Thin-ship <em>vs</em> flat-ship theory → the same cancellation, in the drag</li>
+    <li class="fragment">Every slide title so far was a headline: read them alone and you get the story</li>
+    <li class="ask">Ask yourself: what is each result compared against, and which mechanism does it pay off?</li>
+  </ul>
+  <div class="figure map" data-figure="hourglass" data-at="results" data-w="300" data-h="200"></div>
+  <aside class="notes">No number in this section stood alone, and each paid off a "why" from the theory, so it felt earned, not magic. [click] Headline reveal; the paper's title and first sentence fail this test.</aside>
+</section>
+
+<!-- ============================ CONCLUSION ============================ -->
+
+<!-- 21 -->
+<section>
+  <h2 class="headline top">End wide, and cut everything that isn't the story</h2>
+  <div class="paper small fragment fade-out" data-fragment-index="0" style="left:110px;right:110px;z-index:12">
+    <p>The singular behavior of the point-source Kelvin Green's function as <i>z</i> → 0 is a fundamental inconsistency which produces unbounded wave energy even far downstream, but the present work shows that this pathology is not intrinsic to linear wave theory. An elliptic source distribution, motivated by the finite disturbance width, yields a regularized kernel with finite energy and consistent spectral decay, without the introduction of empirical damping, arbitrary wavenumber filtering, or implicit formulations.</p>
+    <p>The resulting formulation produces well-behaved free-surface predictions directly on <i>z</i> = 0, capturing Froude number trends and wave interference patterns consistent with finite-width ships. The <i>k<sub>y</sub></i><sup>−3/2</sup> spectral decay of the regularized kernel ensures finite wave energy and elevation everywhere, but higher-order derivatives of the wave field will eventually diverge at small scales, due to the absence of nonlinear and viscous dissipative mechanisms. However, the present formulation resolves the ill-posedness in the physically relevant quantities of wave elevation, energy, and drag within the inviscid linear framework.</p>
+    <p>The present work focuses on the leading-order flat-ship approximation, neglecting nonlocal wave interactions on a finite depth hull. Accounting for local hull geometry while retaining the regularized kernel framework is a natural extension, at which point the predictions could be compared to experiments or high-fidelity nonlinear simulations. However, the contour-deformation approach developed here is completely general, evaluating both point and line kernels efficiently (achieving 10<sup>4</sup>–10<sup>5</sup> speedup over direct quadrature) while maintaining accuracy across the entire lower-half domain. <mark class="on">Therefore the regularized kernel and efficient evaluator form a foundation for a well-posed Kelvin solver fast enough for use in applications requiring repeated evaluations, including design optimization and physics-informed surrogate modeling.</mark></p>
+  </div>
+  <ul class="points">
+    <li>Go back to the hook and say what changes</li>
+    <li>Conclusions attract noise: caveats, future-work lists, a recap of every result, thank-you slides, logos</li>
+    <li>The paper: ~30 equations, 5 figures, 17 references. This talk: <em>one equation</em></li>
+  </ul>
+  <div class="figure map" data-figure="hourglass" data-at="conclusion" data-w="300" data-h="200"></div>
+  <aside class="notes">Before: the paper's conclusion. One paragraph of findings, two of limits and extensions, and the payoff in its very last sentence. [click] The funnel's wide end: go back to the hook and say what changes.</aside>
+</section>
+
+<!-- 22 -->
+<section>
+  <div class="media" data-file="assets/img/graphical_abstract.jpg" data-alt="Flat-ship wave field"></div>
+  <div class="scrim top"></div><div class="scrim"></div>
+  <h2 class="headline top">Wakes with width are finite, fast, and ready for applications</h2>
+  <div class="bignums">
+    <div><b>finite</b>everywhere, no fake damping</div>
+    <div class="fragment"><b>30 µs</b>per prediction, anywhere</div>
+    <div class="fragment"><b>30 s</b>for a million predictions<br>(brute force: 3 weeks; CFD: a century)</div>
+  </div>
+  <aside class="notes">The infinity was the idealisation, not the physics. [click] Kelvin's own integral now costs ~30 µs anywhere, [click] so a million wave predictions take 30 seconds: enough for an optimiser, an autopilot or an ML training set. And it already says something about fuel: wave drag rises and falls with speed and drops as hulls widen.</aside>
+</section>
+
+<!-- 23 -->
+<section>
+  <h2 class="headline top">Now you might care about my latest paper</h2>
+  <div class="paper" style="top:190px;left:110px;right:640px">
+    <p>Linear wave theory captures the essential physics of free-surface flows at a fraction of the computational cost of nonlinear and viscous methods, making it attractive for <mark class="fragment custom">design, real-time control, and surrogate modeling applications</mark>. However, the <mark class="fragment custom">Kelvin Green's function for a translating point-source generates unbounded wave energy</mark> in the <mark class="fragment custom"><i>z</i> → 0 limit</mark>, causing both numerical difficulties and physical inconsistencies. This paper develops a modified kernel for the Kelvin potential incorporating an elliptic spanwise line integration that naturally resolves this ill-posedness, yielding <mark class="fragment custom">finite wave energy</mark> over the entire free surface. We then present a fast evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving <mark class="fragment custom">10<sup>4</sup>–10<sup>5</sup> speedup</mark> over direct quadrature while preserving the wake asymptotics. Predictions on the most challenging <i>z</i> = 0 limit demonstrate physically consistent wave patterns and <mark class="fragment custom">wave resistance trends</mark>. An open-source Julia implementation is provided.</p>
+  </div>
+  <div class="qr" data-qr="https://weymouth.github.io/KelvinFlatShip/talk/" style="top:190px"></div>
+  <p class="qr-url" style="top:630px">weymouth.github.io/KelvinFlatShip/talk</p>
+  <ul class="points wide fragment" style="top:auto;bottom:40px">
+    <li class="ask">Your turn: one sentence on why anyone should care about your work</li>
+  </ul>
+  <aside class="notes">Slide 2's abstract, untouched. Now the room can read it, and some of them care. That's the "(yet!)". [clicks] Light up each phrase the talk explained. [click] Your turn. Then Q&amp;A.</aside>
+</section>
+
+</div></div>
+
+<script src="vendor/reveal/reveal.js"></script>
+<script src="vendor/reveal/plugin/notes/notes.js"></script>
+<script src="js/credits.js?v=20261102"></script>
+<script src="js/figures.js?v=20261102"></script>
+<script src="js/demo.js?v=20261102"></script>
+<script src="vendor/qrcode/qrcode.js"></script>
+<script src="js/deck.js?v=20261102"></script>
+<script>
+  Reveal.initialize({
+    width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 3,
+    center: false, controls: false, progress: false, slideNumber: false,
+    hash: true, transition: 'fade', transitionSpeed: 'slow', backgroundTransition: 'fade',
+    autoPlayMedia: true, preloadIframes: true, pdfSeparateFragments: false,
+    plugins: [RevealNotes],
+  });
+</script>
+</body>
+</html>
