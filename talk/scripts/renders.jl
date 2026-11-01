@@ -27,16 +27,24 @@ begin
     savefig(img("point_wake.png"))
 end
 
-# Slide 12: make_figures/spectrum.jl's wave cut with the point sources only
+slide(; kw...) = plot(; size=(900,450), legend=:right, background_color=:transparent, foreground_color=:gray30,
+    guidefontsize=16, tickfontsize=13, legendfontsize=14, grid=false, framestyle=:axes, margin=4Plots.mm, bottom_margin=8Plots.mm, kw...)
+warm, cool = colorant"#b3650a", colorant"#00739a"
+
+# Slides 12 and 14: make_figures/spectrum.jl's wave cut in the deck's colours,
+# point sources only, then with the flat ship on z = 0
 begin
     ∂ₓW(x,y,z) = derivative(x->wavelike(x,y,z),x)
+    ∂ₓWᵦ(x,y,z) = derivative(x->∫₂wavelike(x,y,z)*2/π,x)
     x = -8; y = range(-2+x/√8, 2-x/√8, 2^10)
-    plt = plot(size=(500,300), xlabel=L"y", ylabel=L"\zeta", labelfontsize=14, ylims=(-50,50), yticks=-50:25:50)
+    plt = slide(xlabel=L"y", ylabel=L"\zeta", ylims=(-50,50), yticks=-50:25:50, legend=:topright)
     for n in 3:6
         z = -0.46416^n
-        plot!(plt, y, ∂ₓW.(x,y,z), label="z=$(round(z, digits=3))", c=colormap("Blues",6)[n])
+        plot!(plt, y, ∂ₓW.(x,y,z), label="z = $(round(z, digits=3))", c=colormap("Blues",6)[n])
     end
     savefig(plt, img("wavecut_points.png"))
+    plot!(plt, y, ∂ₓWᵦ.(x,y,-0.), label="flat ship, z = 0", c=warm, lw=4)
+    savefig(plt, img("wavecut.png"))
 end
 
 # Results slides: slices of make_figures/wavedrag.jl's C_W(L,b), in the deck's colours.
@@ -44,9 +52,6 @@ end
 # theory keeps C_W fixed, so this grows linearly with b: drawn (cool, dashed) as the tangent
 # to the flat-ship curve at the narrowest ship, since the flat-ship C_W diverges as b → 0.
 Cw(L,b) = quadgk(t->(π*SpecialFunctions.besselj1(b*k(t))/b/k(t))^2*kₓ(t)*(1-cos(L*hypot(1,t))),0,Inf;atol=1e-6)[1]
-slide(; kw...) = plot(; size=(900,450), legend=:right, background_color=:transparent, foreground_color=:gray30,
-    guidefontsize=16, tickfontsize=13, legendfontsize=14, grid=false, framestyle=:axes, margin=4Plots.mm, bottom_margin=8Plots.mm, kw...)
-warm, cool = colorant"#b3650a", colorant"#00739a"
 begin
     L = 3π; r = range(0.02, 1, 100); D(r) = Cw(L,r*L/2)*r   # aspect ratio r = 2b/L
     d = D.(r); s = (D(0.025)-d[1])/0.005
