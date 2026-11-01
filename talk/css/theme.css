@@ -42,6 +42,9 @@ html[data-theme="light"] .reveal .scrim { background: linear-gradient(to top, rg
 .reveal .slides { text-align: left; }
 .reveal .slides > section { width: 1920px; height: 1080px; padding: 0; }
 .reveal ::selection { background: var(--warm); color: var(--bg); }
+.reveal sup, .reveal sub { font-size: 0.65em; line-height: 0; }   /* reset.css flattens them */
+.reveal sup { vertical-align: super; }
+.reveal sub { vertical-align: sub; }
 
 /* ---------- Full-bleed media layers ------------------------------------ */
 .reveal .media {
