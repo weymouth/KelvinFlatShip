@@ -11,11 +11,10 @@
   const clock = m => root.querySelector(`[data-clock=${m}]`);
   const status = root.querySelector('[data-status]');
   const param = p => root.querySelector(`[data-param=${p}]`).value;
-  const query = () => {
-    const s = +param('depth');
-    return `F=${(+param('speed')).toFixed(2)}&beta=${(+param('width')).toFixed(2)}` +
-           `&model=${param('model')}&z=${s ? (-0.5 * 10 ** (-2.7 * s)).toPrecision(3) : -0}`;
-  };
+  // depth slider is log-spaced: 0 is the surface (z = -10⁻³), 1 is z = -0.5
+  const query = () =>
+    `F=${(+param('speed')).toFixed(2)}&beta=${(+param('width')).toFixed(2)}` +
+    `&model=${param('model')}&z=${(-0.5 * 10 ** (-2.7 * (1 - param('depth')))).toPrecision(3)}`;
 
   // Diverging blue–white–red, like the paper's figures
   const STOPS = [[22, 52, 120], [96, 150, 200], [241, 237, 234], [205, 110, 90], [120, 20, 30]];
@@ -35,19 +34,32 @@
     ctx.putImageData(img, 0, 0);
   }
 
-  let live = false, version = 0;
+  // One frame in flight at a time: a slider drag fires many inputs, so
+  // only the latest is requested once the current frame lands. A refused
+  // connection takes ~2 s on Windows, so once offline, stay offline until
+  // the slide is shown again.
+  let live = false, version = 0, busy = false, offline = false;
+  function request() {
+    version++;
+    if (offline) baked(version); else if (!busy) fast();
+  }
   async function fast() {
-    const v = ++version;
-    try {
-      const r = await (await fetch(`${SERVER}/field?${query()}`)).json();
-      if (v !== version) return;
+    busy = true;
+    let v, r;
+    do {
+      v = version;
+      try {
+        r = await (await fetch(`${SERVER}/field?${query()}`)).json();
+      } catch {
+        busy = false; offline = true;
+        return baked(version);
+      }
       paint(fastCv, r.nx, r.ny, r.z);
       clock('fast').textContent = `computed in ${r.time.toFixed(2)} s`;
       status.textContent = '';
-      brute(v, r.nx, r.ny, r.kbow);
-    } catch {
-      baked(v);
-    }
+    } while (v !== version);
+    busy = false;
+    brute(v, r.nx, r.ny, r.kbow);
   }
   async function baked(v) {
     status.textContent = 'server offline: saved frames';
@@ -75,15 +87,27 @@
       if (v !== version) return;
       paint(bruteCv, nx, ny, r.z, k0);
       done++;
-      eta = ` · done in ~${((performance.now() - t0) / 1000 / done * total / 3600).toFixed(0)} hours`;
+      const s = (performance.now() - t0) / 1000 / done * total;
+      eta = ` · done in ~${s < 3600 ? `${(s / 60).toFixed(0)} min` : `${(s / 3600).toFixed(0)} hours`}`;
     }
     clearInterval(tick);
   }
 
-  root.querySelectorAll('[data-param]').forEach(i => i.addEventListener('input', fast));
+  // depth only moves the point source, which starts deep; width only shapes the flat ship
+  const model = root.querySelector('[data-param=model]'), depth = root.querySelector('[data-param=depth]');
+  const modelSliders = () => {
+    depth.disabled = model.value !== 'point';
+    root.querySelector('[data-param=width]').disabled = model.value === 'point';
+  };
+  model.addEventListener('input', () => {
+    if (model.value === 'point') depth.value = depth.max;
+    modelSliders();
+  });
+  modelSliders();
+  root.querySelectorAll('[data-param]').forEach(i => i.addEventListener('input', request));
   const show = e => {
     live = e.currentSlide.contains(root);
-    if (live) fast(); else version++;
+    if (live) { offline = false; request(); } else version++;
   };
   Reveal.on('ready', show);
   Reveal.on('slidechanged', show);

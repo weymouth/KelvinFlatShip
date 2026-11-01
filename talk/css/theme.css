@@ -338,8 +338,9 @@ body.hide-placeholders .reveal .ph { display: none; }
 .reveal .demo canvas { width: 100%; aspect-ratio: 2 / 1; background: var(--ph1); border-radius: 8px; image-rendering: auto; }
 .reveal .demo h4 { font-family: var(--serif); text-transform: none; font-weight: 400; font-size: 34px; margin: 0 0 12px; color: var(--ink-dim); }
 .reveal .demo .clock { font-size: 34px; margin-top: 10px; color: var(--warm); font-variant-numeric: tabular-nums; }
-.reveal .demo .controls { grid-column: 1 / span 2; display: flex; gap: 40px; font-size: 32px; align-items: center; }
-.reveal .demo .controls label { display: flex; gap: 16px; align-items: center; }
+.reveal .demo .sliders { grid-column: 1 / span 2; display: flex; gap: 40px; font-size: 32px; align-items: center; }
+.reveal .demo .sliders label { display: flex; gap: 16px; align-items: center; }
+.reveal .demo .sliders label:has(:disabled) { opacity: 0.3; }
 .reveal .demo input[type=range] { width: 240px; }
 .reveal .demo select { font: inherit; font-size: 28px; }
 .reveal .demo .status { font-size: 24px; color: var(--ink-faint); margin-left: auto; }

@@ -204,13 +204,13 @@
 
 <!-- 17 -->
 <section>
-  <h2 class="headline top">Live: put the ship anywhere, at any speed, and the wake keeps up</h2>
+  <h2 class="headline top">10k accurate wake points in less than a second</h2>
   <div class="demo" id="demo">
     <div><h4>Our method</h4><canvas data-method="fast" width="480" height="240"></canvas><div class="clock" data-clock="fast"></div></div>
     <div><h4>Brute force</h4><canvas data-method="brute" width="480" height="240"></canvas><div class="clock" data-clock="brute"></div></div>
-    <div class="controls">
+    <div class="sliders">
       <label>model <select data-param="model"><option value="flat">flat ship</option><option value="point">point source</option></select></label>
-      <label>depth <input type="range" data-param="depth" min="0" max="1" step="0.05" value="0"></label>
+      <label>depth <input type="range" data-param="depth" min="0" max="1" step="0.05" value="1"></label>
       <label>speed <input type="range" data-param="speed" min="0.25" max="0.8" step="0.05" value="0.5"></label>
       <label>width <input type="range" data-param="width" min="0.1" max="0.6" step="0.05" value="0.3"></label>
       <span class="status" data-status></span>

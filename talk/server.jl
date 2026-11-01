@@ -9,8 +9,10 @@ using HTTP
 nearline(x,y,b) = quadgk(y′->√(1-(y′/b)^2)*nearfield(x,y-y′,-0.),-b,b;atol=1e-4)[1]
 ζb(x,y,b) = derivative(x->∫₂wavelike(x,y,-0.;b)+nearline(x,y,b),x)*2/(π*b)
 ζp(x,y,z) = derivative(x->wavelike(x,y,z)+nearfield(x,y,z),x)
-bruteζb(x,y,b) = (x ≥ 0 ? 0. : 4π*quadgk(t->γj(t,b)*cos(g(x,y,t))*hypot(1,t),-Inf,0,Inf,maxevals=10^8)[1]
+bruteζb(x,y,b) = (x ≥ 0 ? 0. : 4π*quadgk(t->γj(t,b)*cos(g(x,y,t))*hypot(1,t),-Inf,0,Inf,atol=10exp(-10),maxevals=7*10^6)[1]    # same atol as ∫₂wavelike; quadgk's estimate is unreliable at z=0, so cap it
                   + derivative(x->nearline(x,y,b),x))*2/(π*b)
+bruteζp(x,y,z) = (x ≥ 0 ? 0. : quadgk(t->4exp(z*(1+t^2))*cos(g(x,y,t))*hypot(1,t),-Inf,0,Inf,atol=10exp(-10),maxevals=7*10^6)[1]
+                  + derivative(x->nearfield(x,y,z),x))
 
 # Window in Kelvin lengths for Froude number F: bow at x=0, columns run from the bow
 # (x = 0.1X) downstream, rows from y = +X/4 to -X/4. The stern is nL columns behind.
@@ -32,12 +34,12 @@ function frame(f, F)
 end
 
 # Pixels k0+1:k0+n of the same frame (column-major from the bow) by direct quadrature
-function brute(F, b, k0, n)
+function brute(f, F, k0, n)
     (; nx, ny, nL, x, y) = window(F)
     k = k0+1:min(k0+n, nx*ny); z = zeros(length(k))
     for m in eachindex(k)
         i, j = divrem(k[m]-1, ny) .+ 1; j = min(j, ny+1-j)
-        z[m] = bruteζb(x(i), y(j), b)-bruteζb(x(i-nL), y(j), b)
+        z[m] = f(x(i), y(j))-f(x(i-nL), y(j))
     end; z
 end
 
@@ -46,18 +48,20 @@ json(z; kw...) = "{" * join(["\"$k\":$v" for (k,v) in kw] ∪ ["\"z\":[" * join(
 function handle(req)
     u = HTTP.URI(req.target); q = HTTP.queryparams(u)
     F, β = parse(Float64, q["F"]), parse(Float64, q["beta"]); b = β/(2F^2)
+    point = get(q, "model", "flat") == "point"; zs = min(parse(Float64, get(q, "z", "0")), -1e-3)
     body = if u.path == "/field"
-        f = q["model"] == "point" ? (x,y)->ζp(x, y, min(parse(Float64, q["z"]), -1e-3)) : (x,y)->ζb(x, y, b)
+        f = point ? (x,y)->ζp(x, y, zs) : (x,y)->ζb(x, y, b)
         time = @elapsed (z, nx, ny) = frame(f, F)
         kbow = count(i->window(F).x(i) ≥ 0, 1:nx)*ny    # pixels ahead of the bow are still water
         json(z; nx, ny, kbow, time)
     else
-        json(brute(F, b, parse(Int, q["k0"]), parse(Int, q["n"])))
+        f = point ? (x,y)->bruteζp(x, y, zs) : (x,y)->bruteζb(x, y, b)
+        json(brute(f, F, parse(Int, q["k0"]), parse(Int, q["n"])))
     end
     HTTP.Response(200, ["Access-Control-Allow-Origin"=>"*", "Content-Type"=>"application/json"], body)
 end
 
-frame((x,y)->ζb(x,y,0.5), 0.6); brute(0.6, 0.5, 0, 1)    # compile before the first request
+frame((x,y)->ζb(x,y,0.5), 0.6); brute((x,y)->bruteζb(x,y,0.5), 0.6, 0, 1)    # compile before the first request
 if "--bake" in ARGS
     mkpath(joinpath(@__DIR__, "assets", "demo"))
     for F in 0.25:0.05:0.8, β in 0.1:0.05:0.6
