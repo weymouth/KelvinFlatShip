@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Image picker</title>
+<style>
+  :root { --bg: #0f1215; --panel: #171b20; --ink: #eee9df; --dim: #9a978f; --warm: #f0a53c; --cool: #00a6d6; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--panel); padding: 12px 20px; border-bottom: 1px solid #2a2f35; }
+  header h1 { font-size: 18px; margin: 0 0 4px; }
+  header p { margin: 0; color: var(--dim); }
+  main { padding: 12px 20px 260px; }
+  .slot { margin: 18px 0 26px; }
+  .slot h2 { font-size: 15px; margin: 0 0 2px; }
+  .slot h2 code { color: var(--warm); font-weight: 400; }
+  .slot .desc { color: var(--dim); margin-bottom: 6px; }
+  .slot form { display: flex; gap: 6px; margin-bottom: 8px; }
+  .slot input { flex: 1; max-width: 420px; background: #0b0d10; color: var(--ink); border: 1px solid #333; border-radius: 6px; padding: 5px 8px; }
+  .slot button, footer button { background: #262c33; color: var(--ink); border: 1px solid #3a414a; border-radius: 6px; padding: 5px 10px; cursor: pointer; }
+  .row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+  .cand { flex: none; width: 250px; background: var(--panel); border: 3px solid transparent; border-radius: 8px; cursor: pointer; overflow: hidden; }
+  .cand img { width: 100%; height: 160px; object-fit: cover; display: block; background: #000; }
+  .cand .meta { padding: 5px 7px; font-size: 12px; color: var(--dim); }
+  .cand .meta b { color: var(--ink); font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cand.current { border-color: #555; }
+  .cand.current .meta::before { content: "current · "; color: var(--ink); }
+  .cand.picked { border-color: var(--warm); }
+  .cand a { color: var(--cool); }
+  footer { position: fixed; left: 0; right: 0; bottom: 0; background: var(--panel); border-top: 1px solid #2a2f35; padding: 10px 20px; }
+  footer textarea { width: 100%; height: 150px; box-sizing: border-box; background: #0b0d10; color: var(--ink); border: 1px solid #333; border-radius: 6px; font: 12px Consolas, monospace; padding: 8px; }
+  footer .bar { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; color: var(--dim); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Image picker — Still Designing Ships</h1>
+  <p>Grey border = image in the deck now. Click another to pick it (amber). Edit the search box to look for something else. Then copy the commands at the bottom and run them from the repo folder, or paste them to Claude.</p>
+</header>
+<main id="slots"></main>
+<footer>
+  <div class="bar"><span id="count">No changes picked yet.</span><button id="copy">Copy commands</button></div>
+  <textarea id="out" readonly placeholder="python scripts/commons.py fetch … commands appear here"></textarea>
+</footer>
+
+<script src="../js/credits.js"></script>
+<script>
+// [file in assets/img, what the slide needs, starting search]
+const SLOTS = [
+  ['pesse_title.jpg', 'Title slide: striking, unexplained Pesse canoe', 'Pesse canoe'],
+  ['pesse_canoe.jpg', 'The canoe itself (Drents Museum)', 'Pesse canoe Drents Museum'],
+  ['doggerland.jpg', 'Doggerland: the North Sea as dry land ~10,000 years ago', 'Doggerland'],
+  ['batavia.jpg', 'Batavia replica under sail (fades into the coded VOC route map)', 'Batavia replica ship'],
+  ['paddle_steamer.jpg', 'Dramatic paddle steamer (currently Brunel’s Great Western in a gale)', 'paddle steamer storm'],
+  ['stokers.jpg', 'Stokers shovelling coal below deck', 'ship stoker boiler coal'],
+  ['brunel_chains.jpg', 'Brunel in front of the launching chains (Howlett, 1857)', 'Brunel launching chains Howlett'],
+  ['torquay_tank.jpg', 'Froude’s test tank at Torquay (1872)', 'Froude test tank Torquay'],
+  ['model_waves.jpg', 'Split, left: model making waves in a towing tank', 'ship model basin test wave'],
+  ['ship_waves.jpg', 'Split, right: full-size ship wave pattern (portrait crop works best)', 'Kelvin wake'],
+  ['wind_tunnel.jpg', 'Submarine model in a (high-pressure) wind tunnel', 'submarine model wind tunnel'],
+  ['centrifuge.jpg', 'Geotechnical centrifuge', 'Southampton geotechnical centrifuge'],
+  ['mouse.jpg', 'Split, left: a mouse (portrait crop)', 'house mouse'],
+  ['elephant_asian.jpg', 'Split, right: an elephant (portrait crop)', 'Asian elephant'],
+  ['flettner.jpg', 'Modern ship with rotor sails', 'rotor sail ship'],
+  ['kite_ship.jpg', 'Ship towed by a kite', 'SkySails kite ship'],
+  ['ever_given.jpg', 'Ever Given grounded in the Suez Canal', 'Ever Given Suez'],
+  ['broken_ship.jpg', 'Ship broken in half by waves', 'MOL Comfort'],
+  ['plesiosaur.jpg', 'Plesiosaur fossil or reconstruction', 'plesiosaur complete skeleton'],
+  ['octopus_robot.jpg', 'Octopus- or squid-inspired soft underwater robot (missing)', 'soft robot underwater'],
+];
+const CREDITS = window.CREDITS || {};
+const API = 'https://commons.wikimedia.org/w/api.php?origin=*&format=json&formatversion=2&action=query&prop=imageinfo&iiprop=url|size|extmetadata&iiurlwidth=500';
+const picks = {};
+
+function card(slot, p, isCurrent) {
+  const ii = p.imageinfo[0], md = ii.extmetadata || {};
+  const d = document.createElement('div');
+  d.className = 'cand' + (isCurrent ? ' current' : '');
+  d.dataset.title = p.title;
+  const lic = (md.LicenseShortName && md.LicenseShortName.value) || '';
+  d.innerHTML = `<img loading="lazy" src="${ii.thumburl}" alt=""><div class="meta"><b></b>${ii.width}×${ii.height} · ${lic} · <a target="_blank">source</a></div>`;
+  d.querySelector('b').textContent = p.title.replace(/^File:/, '');
+  d.querySelector('a').href = ii.descriptionurl;
+  d.querySelector('a').addEventListener('click', e => e.stopPropagation());
+  d.addEventListener('click', () => {
+    const row = d.parentNode;
+    const again = d.classList.contains('picked');
+    row.querySelectorAll('.cand').forEach(c => c.classList.remove('picked'));
+    if (again || isCurrent) delete picks[slot]; else { d.classList.add('picked'); picks[slot] = p.title; }
+    render();
+  });
+  return d;
+}
+
+async function fill(slot, query, row, current) {
+  row.textContent = 'searching…';
+  const searches = [fetch(API + '&generator=search&gsrnamespace=6&gsrlimit=12&gsrsearch=' + encodeURIComponent(query + ' filetype:bitmap')).then(r => r.json())];
+  if (current) searches.push(fetch(API + '&titles=' + encodeURIComponent(current)).then(r => r.json()));
+  const [res, cur] = await Promise.all(searches);
+  row.textContent = '';
+  const curPage = cur && cur.query.pages[0];
+  if (curPage && curPage.imageinfo) row.append(card(slot, curPage, true));
+  (res.query ? res.query.pages : []).sort((a, b) => a.index - b.index)
+    .filter(p => p.imageinfo && p.title !== current)
+    .forEach(p => row.append(card(slot, p, false)));
+  if (picks[slot]) row.querySelectorAll('.cand').forEach(c => c.classList.toggle('picked', c.dataset.title === picks[slot]));
+}
+
+function render() {
+  const lines = Object.entries(picks).map(([slot, t]) => `python scripts/commons.py fetch ${slot} "${t}"`);
+  document.getElementById('out').value = lines.join('\n');
+  document.getElementById('count').textContent = lines.length ? `${lines.length} change(s) picked.` : 'No changes picked yet.';
+}
+
+const main = document.getElementById('slots');
+SLOTS.forEach(([slot, desc, query], k) => {
+  const current = (CREDITS['assets/img/' + slot] || {}).title;
+  const sec = document.createElement('section');
+  sec.className = 'slot';
+  sec.innerHTML = `<h2><code>${slot}</code></h2><div class="desc"></div><form><input><button>Search</button></form><div class="row"></div>`;
+  sec.querySelector('.desc').textContent = desc;
+  const input = sec.querySelector('input'), row = sec.querySelector('.row');
+  input.value = query;
+  sec.querySelector('form').addEventListener('submit', e => { e.preventDefault(); fill(slot, input.value, row, current); });
+  main.append(sec);
+  setTimeout(() => fill(slot, query, row, current), 250 * k);   // stagger to stay polite to the API
+});
+
+document.getElementById('copy').addEventListener('click', () => {
+  const t = document.getElementById('out');
+  t.select(); navigator.clipboard && navigator.clipboard.writeText(t.value);
+});
+</script>
+</body>
+</html>

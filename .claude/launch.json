@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "talk", "runtimeExecutable": "python", "runtimeArgs": ["talk/scripts/serve.py", "8000"], "port": 8000 }
+  ]
+}
