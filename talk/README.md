@@ -2,6 +2,8 @@
 
 Seminar on research communication, Gabriel Weymouth (TU Delft), with the JFM paper in this repo as the running example. Same toolkit as StillDesigningShips: a plain [reveal.js](https://revealjs.com) deck, vendored, no build step. The outline lives in `outline.md`.
 
+Published at <https://weymouth.github.io/KelvinFlatShip/talk/> (GitHub Pages from `main`, repo root, with `.nojekyll`). There the live demo doesn't run; slide 17 links back here instead. After changing `css/` or `js/`, bump the `?v=` tags in `index.html`: Pages lets browsers cache for about 10 minutes.
+
 ## Run it
 Needs Python 3 and Julia 1.11 (tested 1.11.5). All commands run from the repo root.
 ```

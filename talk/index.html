@@ -7,7 +7,7 @@
   <meta name="description" content="Gabriel Weymouth, TU Delft — a seminar on research communication, using a JFM paper on Kelvin ship waves as the running example.">
   <link rel="stylesheet" href="vendor/reveal/reset.css">
   <link rel="stylesheet" href="vendor/reveal/reveal.css">
-  <link rel="stylesheet" href="css/theme.css?v=20261101">
+  <link rel="stylesheet" href="css/theme.css?v=20261102">
 </head>
 <body>
 <div class="reveal"><div class="slides">
@@ -287,9 +287,11 @@
 <!-- 23 -->
 <section>
   <h2 class="headline top">Now you might care about my latest paper</h2>
-  <div class="paper" style="top:190px">
+  <div class="paper" style="top:190px;left:110px;right:640px">
     <p>Linear wave theory captures the essential physics of free-surface flows at a fraction of the computational cost of nonlinear and viscous methods, making it attractive for <mark class="fragment custom">design, real-time control, and surrogate modeling applications</mark>. However, the <mark class="fragment custom">Kelvin Green's function for a translating point-source generates unbounded wave energy</mark> in the <mark class="fragment custom"><i>z</i> → 0 limit</mark>, causing both numerical difficulties and physical inconsistencies. This paper develops a modified kernel for the Kelvin potential incorporating an elliptic spanwise line integration that naturally resolves this ill-posedness, yielding <mark class="fragment custom">finite wave energy</mark> over the entire free surface. We then present a fast evaluator for both point and line kernels using contour deformation adapted to the non-analytic Kelvin phase, achieving <mark class="fragment custom">10<sup>4</sup>–10<sup>5</sup> speedup</mark> over direct quadrature while preserving the wake asymptotics. Predictions on the most challenging <i>z</i> = 0 limit demonstrate physically consistent wave patterns and <mark class="fragment custom">wave resistance trends</mark>. An open-source Julia implementation is provided.</p>
   </div>
+  <div class="qr" data-qr="https://weymouth.github.io/KelvinFlatShip/talk/" style="top:190px"></div>
+  <p class="qr-url" style="top:630px">weymouth.github.io/KelvinFlatShip/talk</p>
   <ul class="points wide fragment" style="top:auto;bottom:40px">
     <li class="ask">Your turn: one sentence on why anyone should care about your work</li>
   </ul>
@@ -300,10 +302,11 @@
 
 <script src="vendor/reveal/reveal.js"></script>
 <script src="vendor/reveal/plugin/notes/notes.js"></script>
-<script src="js/credits.js?v=20261101"></script>
-<script src="js/figures.js?v=20261101"></script>
-<script src="js/demo.js?v=20261101"></script>
-<script src="js/deck.js?v=20261101"></script>
+<script src="js/credits.js?v=20261102"></script>
+<script src="js/figures.js?v=20261102"></script>
+<script src="js/demo.js?v=20261102"></script>
+<script src="vendor/qrcode/qrcode.js"></script>
+<script src="js/deck.js?v=20261102"></script>
 <script>
   Reveal.initialize({
     width: 1920, height: 1080, margin: 0, minScale: 0.1, maxScale: 3,

@@ -1,11 +1,19 @@
 // Live wave-field demo (slide 17). Fields come from talk/server.jl on
 // localhost:8081; if it isn't running, baked frames in assets/demo/ are used.
+// Served from elsewhere (GitHub Pages), it only points to the repo: the point
+// is computing live, and a public page asking localhost prompts for permission.
 //   fast:  /field?F=&beta=&model=&z=   → whole frame, with its compute time
 //   brute: /brute?F=&beta=&k0=&n=      → the next n pixels by direct quadrature
 
 (function () {
   const root = document.getElementById('demo');
   if (!root) return;
+  if (!['localhost', '127.0.0.1'].includes(location.hostname)) {
+    root.querySelectorAll('[data-param]').forEach(i => i.disabled = true);
+    root.querySelector('[data-clock=fast]').innerHTML =
+      'This demo runs live in Julia: <a href="https://github.com/weymouth/KelvinFlatShip/tree/main/talk">run it yourself</a>';
+    return;
+  }
   const SERVER = 'http://localhost:8081', ZMAX = 10;
   const [fastCv, bruteCv] = ['fast', 'brute'].map(m => root.querySelector(`canvas[data-method=${m}]`));
   const clock = m => root.querySelector(`[data-clock=${m}]`);
