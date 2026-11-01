@@ -29,7 +29,7 @@ Keys: Esc overview · S speaker notes · L light/dark · H hide placeholders · 
 - **Tuning**: frame size is `window(F; nx, ny)` in `server.jl`; slider ranges are in `index.html` (keep `--bake`'s loop in step); the colour range is `ZMAX` in `js/demo.js`.
 
 ## Renders
-`julia --project=talk --threads=auto talk/scripts/renders.jl` remakes the talk-only figures in `assets/img`: the single point wake, the blue-only wave cut and the two drag plots. The other paper figures are copied from `make_figures`/`tex/figures`.
+`julia --project=talk --threads=auto talk/scripts/renders.jl` remakes the talk-only figures in `assets/img`: the single point wake, both wave cuts (slides 12 and 14) and the two drag plots, in the deck's colours. The other paper figures are copied from `make_figures`/`tex/figures`.
 
 ## Editing
 - `index.html` holds every slide in order: headline, graphic, and speaker notes in `<aside class="notes">`. Text inside `class="fragment"` steps in on a click.
