@@ -5,13 +5,12 @@ Seminar on research communication, Gabriel Weymouth (TU Delft), with the JFM pap
 Published at <https://weymouth.github.io/KelvinFlatShip/talk/> (GitHub Pages from `main`, repo root, with `.nojekyll`). There the live demo doesn't run; slide 17 links back here instead. After changing `css/` or `js/`, bump the `?v=` tags in `index.html`: Pages lets browsers cache for about 10 minutes.
 
 ## Run it
-Needs Python 3 and Julia 1.11 (tested 1.11.5). All commands run from the repo root.
+Needs Julia 1.11 (tested 1.11.5). All commands run from the repo root.
 ```
 julia --project=talk -e "using Pkg; Pkg.instantiate()"    # first time only, a few minutes
-python talk/scripts/serve.py                              # the deck, on localhost:8000
-julia --project=talk --threads=auto talk/server.jl        # the live demo, on localhost:8081
+julia --project=talk --threads=auto talk/server.jl        # the deck and live demo, on localhost:8081
 ```
-Then open <http://localhost:8000>. Start the Julia server a minute early: it compiles before printing `Serving wave fields…`. `talk/Manifest.toml` pins the tested versions (registered NeumannKelvin 0.9.3).
+It opens <http://localhost:8081> in your browser once ready, about a minute after starting (it compiles first). To edit slides without Julia, `python talk/scripts/serve.py` serves the deck alone on localhost:8000. `talk/Manifest.toml` pins the tested versions (registered NeumannKelvin 0.9.3).
 
 Keys: Esc overview · S speaker notes · L light/dark · H hide placeholders · F fullscreen. Use a full-size browser window: below a few hundred pixels wide, reveal.js switches to a scrolling layout.
 

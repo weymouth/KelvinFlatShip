@@ -1,4 +1,4 @@
-# Wave fields for the live demo slide (js/demo.js).
+# The deck and the wave fields for its live demo slide (js/demo.js).
 #   julia --project=talk --threads=auto talk/server.jl           # serve on localhost:8081
 #   julia --project=talk --threads=auto talk/server.jl --bake    # save fallback frames to assets/demo/
 include(joinpath(@__DIR__, "..", "src", "flatship.jl"))
@@ -45,8 +45,19 @@ end
 
 json(z; kw...) = "{" * join(["\"$k\":$v" for (k,v) in kw] ∪ ["\"z\":[" * join(round.(clamp.(z,-20,20), digits=2), ",") * "]"], ",") * "}"
 
+# Everything else is a file of the deck, so one server runs the whole talk
+const TYPES = Dict(".html"=>"text/html; charset=utf-8", ".css"=>"text/css", ".js"=>"text/javascript", ".json"=>"application/json",
+                   ".png"=>"image/png", ".jpg"=>"image/jpeg", ".svg"=>"image/svg+xml", ".woff2"=>"font/woff2")
+function deckfile(path)
+    f = normpath(joinpath(@__DIR__, lstrip(HTTP.unescapeuri(path), '/')))
+    f = isdir(f) ? joinpath(f, "index.html") : f
+    startswith(f, joinpath(@__DIR__, "")) && isfile(f) || return HTTP.Response(404)
+    HTTP.Response(200, ["Content-Type"=>get(TYPES, splitext(f)[2], "application/octet-stream"), "Cache-Control"=>"no-cache"], read(f))
+end
+
 function handle(req)
     u = HTTP.URI(req.target); q = HTTP.queryparams(u)
+    u.path in ("/field", "/brute") || return deckfile(u.path)
     F, β = parse(Float64, q["F"]), parse(Float64, q["beta"]); b = β/(2F^2)
     point = get(q, "model", "flat") == "point"; zs = min(parse(Float64, get(q, "z", "0")), -1e-3)
     body = if u.path == "/field"
@@ -71,6 +82,12 @@ if "--bake" in ARGS
         write(joinpath(@__DIR__, "assets", "demo", "F_$(f2(F))_beta_$(f2(β)).json"), json(z; nx, ny, time))
     end
 else
-    println("Serving wave fields on http://localhost:8081 with $(Threads.nthreads()) threads")
-    HTTP.serve(handle, "127.0.0.1", 8081)
+    url = "http://localhost:8081"
+    server = HTTP.serve!(handle, "127.0.0.1", 8081)
+    println("Serving the talk on $url with $(Threads.nthreads()) threads")
+    try    # in the default browser; without one, the printed link will do
+        run(Sys.iswindows() ? `cmd /c start $url` : Sys.isapple() ? `open $url` : `xdg-open $url`)
+    catch
+    end
+    wait(server)
 end
