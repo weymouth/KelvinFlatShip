@@ -23,15 +23,6 @@
     if (index !== undefined) g.setAttribute('data-fragment-index', index);
     return g;
   }
-  // Polyline through f(t) for t in [t0, t1], mapped by X(t), Y(f)
-  function curve(parent, f, t0, t1, X, Y, attrs, n = 1500) {
-    let d = '';
-    for (let i = 0; i <= n; i++) {
-      const t = t0 + (t1 - t0) * i / n;
-      d += `${i ? 'L' : 'M'}${X(t).toFixed(1)},${Y(f(t)).toFixed(1)}`;
-    }
-    return el('path', { d, fill: 'none', ...attrs }, parent);
-  }
 
   // Run step(dt) every frame while the figure's slide is showing
   function animate(step) {
@@ -140,14 +131,16 @@
 
   // Kelvin's wavelike integral at x = -8, y = 1, just below the surface: the phase g(t), the
   // running sum S of exp(i g) over t (a Cornu spiral, as in Fresnel diffraction), and which
-  // samples sit near the two stationary points, where |g'| is small.
-  function kelvinSum(T = 9, n = 9000, z = -0.002) {
+  // samples sit near the two stationary points, where |g'| is small. The range [t0, t1] gives
+  // the same phase, 60 rad (~10 loops), beyond each stationary point.
+  function kelvinSum(t0 = -5.09, t1 = 11.7, n = 9000, z = -0.002) {
     const x = -8, y = 1, g = t => (x + y * t) * Math.hypot(1, t), dg = t => y * Math.hypot(1, t) + (x + y * t) * t / Math.hypot(1, t);
-    const t = Array.from({ length: n + 1 }, (_, i) => -T + 2 * T * i / n), dt = 2 * T / n;
+    const t = Array.from({ length: n + 1 }, (_, i) => t0 + (t1 - t0) * i / n), dt = (t1 - t0) / n;
     let re = 0, im = 0;
     const S = t.map(s => { const a = Math.exp(z * (1 + s * s)) * dt; re += a * Math.cos(g(s)); im += a * Math.sin(g(s)); return [re, im]; });
-    const sp = [1, -1].map(s => Math.round(((-(x + s * Math.sqrt(x * x - 8 * y * y)) / (4 * y)) + T) / (2 * T) * n));   // g'(t±) = 0
-    return { t, g, S, n, T, sp, flat: t.map(s => Math.abs(dg(s)) < 1.5) };
+    S.unshift([0, 0]); S.pop();   // the sum before each step, so S[0] is the origin
+    const sp = [1, -1].map(s => Math.round(((-(x + s * Math.sqrt(x * x - 8 * y * y)) / (4 * y)) - t0) / (t1 - t0) * n));   // g'(t±) = 0
+    return { t, g, S, n, t0, t1, sp, flat: t.map(s => Math.abs(dg(s)) < 1.5) };
   }
   // S scaled to fit the box (x0, y0) → (x0 + bw, y0 + bh), keeping its aspect
   function fit(S, x0, y0, bw, bh) {
@@ -160,10 +153,11 @@
 
   // The integral built up as t sweeps: on top the integrand cos g(t), below its running sum.
   // It only travels near the two stationary points (warm, marked on both); elsewhere it curls
-  // up, ever tighter but never quite finished: at the surface nothing decays.
+  // up, ever tighter but never quite finished: at the surface nothing decays. When the sweep
+  // ends, the integral itself appears as the arrow from the origin to the end of the sum.
   FIGURES['cornu'] = (svg, w, h) => {
-    const { t, g, S, n, T, sp } = kelvinSum(), top = 170;
-    const P = fit(S, 40, top + 30, w - 80, h - top - 60), Q = t.map(s => [40 + (s + T) / (2 * T) * (w - 80), 95 - 45 * Math.cos(g(s))]);
+    const { t, g, S, n, t0, t1, sp } = kelvinSum(), top = 170;
+    const P = fit(S, 40, top + 30, w - 80, h - top - 60), Q = t.map(s => [40 + (s - t0) / (t1 - t0) * (w - 80), 95 - 45 * Math.cos(g(s))]);
     const traced = pts => {   // revealed along its length by stroke-dashoffset
       const len = [0];
       pts.slice(1).forEach((p, i) => len.push(len[i] + Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1])));
@@ -171,13 +165,20 @@
     };
     const strip = traced(Q), spiral = traced(P);
     const marks = sp.flatMap(i => [P, Q].map(pts => ({ i, n: el('circle', { cx: pts[i][0], cy: pts[i][1], r: 10, fill: 'var(--warm)', opacity: 0 }, svg) })));
-    text(svg, 40, 20, 'the integrand: waves of every direction', { 'font-size': 28, class: 'dim' });
-    text(svg, 40, top + 10, 'their running sum', { 'font-size': 28, class: 'dim' });
-    const first = { i: Math.min(...sp) }, name = text(svg, P[first.i][0] + 24, P[first.i][1] - 16, 'stationary points: the phase stands still',
+    text(svg, 40, 20, 'each wave adds a small step in its own direction (phase)', { 'font-size': 28, class: 'dim' });
+    text(svg, 40, top + 10, 'the steps added head to tail', { 'font-size': 28, class: 'dim' });
+    el('circle', { cx: P[0][0], cy: P[0][1], r: 8, fill: 'var(--ink)' }, svg);
+    const defs = el('defs', {}, svg), head = el('marker', { id: 'cornu-head', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' }, defs);
+    el('path', { d: 'M0,0 L10,5 L0,10 Z', fill: 'var(--ink)' }, head);
+    const answer = el('g', { opacity: 0 }, svg), mid = [(P[0][0] + P[n][0]) / 2, (P[0][1] + P[n][1]) / 2];
+    el('line', { x1: P[0][0], y1: P[0][1], x2: P[n][0], y2: P[n][1], stroke: 'var(--ink)', 'stroke-width': 6, 'marker-end': 'url(#cornu-head)' }, answer);
+    text(answer, mid[0] + 30, mid[1] + 50, 'the answer: the wave at this point', { 'font-size': 32 });
+    marks.push({ i: n, n: answer });
+    const first = { i: Math.max(...sp) }, name = text(svg, P[first.i][0] + 24, P[first.i][1] + 44, 'stationary point: the phase stands still',
       { 'font-size': 30, class: 'warm', opacity: 0 });
     let s = 0;
     return animate(dt => {
-      s = (s + dt / 10) % 1.15;
+      s = (s + dt / 5) % 1.4;   // 5 s sweep, then 2 s to read the answer
       const i = Math.min(n, Math.round(Math.min(1, s) * n));
       [strip, spiral].forEach(p => p.n.setAttribute('stroke-dashoffset', p.len[n] - p.len[i]));
       marks.forEach(m => m.n.setAttribute('opacity', m.i <= i ? 1 : 0));
@@ -302,17 +303,12 @@
     };
   };
 
-  // The wavelike integrand behind each prediction, x = -8, y = 1: it decays when
-  // the source is submerged and wiggles forever at the surface.
-  FIGURES['integrand'] = (svg, w, h) => {
-    const x = -8, y = 1, g = t => (x + y * t) * Math.hypot(1, t), T = 10;
-    const X = t => 40 + (t + T) / (2 * T) * (w - 80);
-    [[-0.05, 'submerged: decays', h * 0.3], [0, 'at the surface: never stops', h * 0.75]].forEach(([z, label, y0], i) => {
-      const grp = i ? frag(svg) : svg;
-      curve(grp, t => Math.exp(z * (1 + t * t)) * Math.sin(g(t)), -T, T, X, v => y0 - 90 * v, { stroke: 'var(--cool)', 'stroke-width': 2 }, 4000);
-      text(grp, 40, y0 - 120, label, { 'font-size': 38 });
-    });
-  };
+  // <ol class="titles">: the slide titles marked data-story, so it stays in step with edits
+  document.querySelectorAll('.titles').forEach(ol => document.querySelectorAll('[data-story]').forEach(h => {
+    const c = h.cloneNode(true);
+    c.querySelectorAll('.source, .opt').forEach(n => n.remove());
+    ol.append(Object.assign(document.createElement('li'), { innerHTML: c.innerHTML.trim() }));
+  }));
 
   const controls = [];
   document.querySelectorAll('.figure[data-figure]').forEach(div => {
@@ -321,6 +317,7 @@
     const w = +div.dataset.w || W, h = +div.dataset.h || H;
     const svg = el('svg', { viewBox: `0 0 ${w} ${h}`, 'aria-hidden': 'true' }, div);
     const ctl = draw(svg, w, h, div);
+    if (div.closest('.steps')) svg.querySelectorAll('.fragment').forEach(f => f.classList.remove('fragment'));   // thumbnails show every step
     if (ctl) controls.push([div, ctl]);
   });
 

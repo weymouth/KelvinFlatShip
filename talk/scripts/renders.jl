@@ -31,8 +31,8 @@ slide(; kw...) = plot(; size=(900,450), legend=:right, background_color=:transpa
     guidefontsize=16, tickfontsize=13, legendfontsize=14, grid=false, framestyle=:axes, margin=4Plots.mm, bottom_margin=8Plots.mm, kw...)
 warm, cool = colorant"#b3650a", colorant"#00739a"
 
-# Slides 12 and 14: make_figures/spectrum.jl's wave cut in the deck's colours,
-# point sources only, then with the flat ship on z = 0
+# Slides 12 and 14: make_figures/spectrum.jl's wave cut in the deck's colours, point
+# sources only, built up one depth at a time (wavecut_points_k), then with the flat ship on z = 0
 begin
     ∂ₓW(x,y,z) = derivative(x->wavelike(x,y,z),x)
     ∂ₓWᵦ(x,y,z) = derivative(x->∫₂wavelike(x,y,z)*2/π,x)
@@ -41,6 +41,7 @@ begin
     for n in 3:6
         z = -0.46416^n
         plot!(plt, y, ∂ₓW.(x,y,z), label="z = $(round(z, digits=3))", c=colormap("Blues",6)[n])
+        savefig(plt, img("wavecut_points_$(n-2).png"))
     end
     savefig(plt, img("wavecut_points.png"))
     plot!(plt, y, ∂ₓWᵦ.(x,y,-0.), label="flat ship, z = 0", c=warm, lw=4)
